@@ -969,6 +969,23 @@ def main():
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("RQ1 \u00b7 How can Shapley values explain black-box clustering faithfully at instance and cluster level?", 0, True),
+            ("Objective O1 \u00b7 Build a pipeline that yields cluster-level explanation while keeping feature-level attribution.", 1),
+            ("Objective O2 \u00b7 Preserve the semantics of the original feature space, not a reduced latent space.", 1),
+            ("Objective O3 \u00b7 Justify Shapley over an ad-hoc surrogate such as LIME.", 1),
+        ])],
+        "RQ1 asks how Shapley values can explain black-box clustering faithfully at both instance "
+        "and cluster level, and it decomposes into three objectives. O1 is a pipeline that produces a "
+        "cluster-level explanation while preserving feature-level attribution, so the explanation is "
+        "coherent rather than a single summary number. O2 requires that attribution stays in the "
+        "original feature space \u2014 density, pH, acidity, sulfur dioxide, alcohol \u2014 because that "
+        "is what makes it actionable for a domain expert. O3 is a justificatory objective: we must show "
+        "why Shapley is the right allocation rule rather than an ad-hoc surrogate such as LIME. The next "
+        "methodology slide shows how these three objectives are met.", chip=0)
+
+    contrib("Contribution I \u2014 Explainable Black-Box Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Player set N = F \u2014 each feature is a player.", 0, True),
             ("Value function v(S) = Silhouette( KMeans(X_S, k*) ) \u2014 how well data cluster using only features in S.", 0),
             ("A feature's Shapley value = its expected marginal contribution to clustering quality over all coalition orders.", 0),
@@ -1106,20 +1123,72 @@ def main():
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
-            ("Achieved: cluster-level explanation anchored to individual feature contributions; explanations returned to original variables; theoretically-grounded case for Shapley over LIME.", 0, True),
-            ("Limitations: fidelity depends on the LightGBM surrogate; tabular data only; single-level structure.", 0, True),
-            ("Cannot yet address hierarchical coherence \u2014 that is C2's point of departure.", 1, True),
+            ("Answers to the questions and objectives", 0, True),
+            ("RQ1 answered in the affirmative \u2014 faithful, coherent cluster-level explanation from Shapley values.", 1),
+            ("O1 met \u00b7 cluster-level explanation while preserving feature-level attribution.", 1),
+            ("O2 met \u00b7 attribution returned to the original chemical variables.", 1),
+            ("O3 met \u00b7 Shapley grounded in four axioms; LIME has no equivalent guarantee.", 1),
         ])],
-        "So C1 answers RQ1 in the affirmative: Shapley values can explain black-box clustering "
-        "faithfully, provided the surrogate is high-fidelity, and coherently at cluster level. It "
-        "anchors cluster-level explanation to individual feature contributions, it returns explanations "
-        "to the original variables, and it offers a theoretically grounded argument for Shapley over "
-        "LIME. But I want to be clear about the scope and limits. First, the explanation depends on the "
-        "fidelity of the LightGBM surrogate; it is not a direct mechanism of the K-Means geometry. "
-        "Second, the approach is confined to tabular data. Third, and most importantly for what follows, "
-        "it is single-level: it cannot yet address hierarchical coherence, meaning it cannot explain how "
-        "feature importance reconfigures between a partition and its sub-partitions. That limitation is "
-        "the point of departure for Contribution II.", chip=3)
+        "To answer RQ1 directly: yes. Shapley values explain a black-box partition faithfully, provided "
+        "the surrogate is high-fidelity, and coherently at cluster level. Each objective is met. O1 is met "
+        "because the pipeline yields both a global reading \u2014 density, pH, acidity, sulfur dioxide, "
+        "alcohol \u2014 and a per-cluster reading where the same drivers re-weigh differently. O2 is met "
+        "because attribution is returned to the original chemical variables, which is what makes it "
+        "actionable. O3 is met because Shapley satisfies efficiency, symmetry, the null-player property "
+        "and additivity, whereas LIME has no equivalent guarantee. The honest caveat is that efficiency "
+        "holds with respect to the surrogate output, not directly to the Silhouette-based game \u2014 "
+        "which is why surrogate fidelity is the critical validity condition.", chip=2)
+
+    contrib("Contribution I \u2014 Explainable Black-Box Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Key findings", 0, True),
+            ("Cluster-level explanation anchored to individual feature contributions.", 1),
+            ("Explanations returned to the original chemical variables, not a latent space.", 1),
+            ("Theoretically grounded case for Shapley over LIME (efficiency, symmetry, null player, additivity).", 1),
+            ("Recovers an oenologically interpretable ranking \u2014 density, pH, acidity, sulfur dioxide, alcohol.", 1),
+        ])],
+        "C1 answers RQ1 in the affirmative. The key findings are fourfold. Shapley values explain the "
+        "black-box partition at both cluster level and instance level, anchoring each cluster's meaning "
+        "to individual feature contributions. They return attribution to the original chemical variables "
+        "\u2014 density, pH, fixed acidity, sulfur dioxide, alcohol \u2014 rather than to a reduced or "
+        "latent space, which is what makes the explanation actionable. Because the surrogate reproduces "
+        "the partition from the original variables, the recovered ranking is chemically interpretable and "
+        "faithful. And the approach is theoretically grounded: SHAP satisfies efficiency, symmetry, the "
+        "null-player property and additivity, which LIME does not.", chip=3)
+
+    contrib("Contribution I \u2014 Explainable Black-Box Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Limitations", 0, True),
+            ("Fidelity depends on the LightGBM surrogate \u2014 not a direct mechanism of the K-Means geometry.", 1),
+            ("Confined to tabular data; no structured, graph, or image input.", 1),
+            ("Single-level structure: cannot explain how importance reconfigures between a partition and its sub-partitions.", 1),
+            ("The surrogate approximation compresses observation-level variation.", 1),
+        ])],
+        "Let me be clear about the scope. First, the explanation depends on the fidelity of the LightGBM "
+        "surrogate; it is not a direct mechanism of the K-Means geometry. Second, the approach is confined "
+        "to tabular data. Third, and most importantly for what follows, it is single-level: it cannot yet "
+        "address hierarchical coherence, meaning it cannot explain how feature importance reconfigures "
+        "between a partition and its sub-partitions. And the surrogate plus representative-instance "
+        "reporting compresses some observation-level variation. These limits define the point of departure "
+        "for Contribution II.", chip=3)
+
+    contrib("Contribution I \u2014 Explainable Black-Box Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Takeaways", 0, True),
+            ("Shapley attribution is a single, principled lens for explaining an unsupervised partition.", 1),
+            ("Keeping attribution in the original feature space is what makes it actionable.", 1),
+            ("But real data are rarely single-level: broad regimes contain nested sub-groups.", 1, True),
+            ("So the next question is whether this logic survives scale and hierarchy.", 0, True),
+        ])],
+        "The takeaway is that Shapley attribution works as a single, principled lens for explaining an "
+        "unsupervised partition, and that keeping attribution in the original feature space is what makes "
+        "it actionable. But real data are rarely single-level: broad regimes contain nested sub-groups, "
+        "and a variable can be globally important yet locally uninformative. That flat limitation directly "
+        "motivates Contribution II: can the explanation logic be scaled to multi-level, large-scale "
+        "clustering without losing coherence?", chip=3)
 
     # ---- 19. SECTION: Contribution II ----
     section(SEC_CII, "Contribution II \u2014 Enhanced Multi-Level XAI for Large-Scale Clustering", active=5, note="This brings us to the second contribution: scaling the explanation logic to multi-level, "
@@ -1142,6 +1211,23 @@ def main():
         "so that differences across levels can be interpreted rather than dismissed as inconsistency. "
         "Third, validation on a structurally different large-scale dataset, Beijing air quality, testing "
         "whether the method generalises beyond the small, correlated wine dataset.", chip=0)
+
+    contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("RQ2 \u00b7 How can this extend to large-scale, hierarchical clustering without losing tractability or consistency?", 0, True),
+            ("Objective O1 \u00b7 A genuinely multi-level workflow, not a rerun of the single-level pipeline.", 1),
+            ("Objective O2 \u00b7 A formal cross-level consistency argument (Proposition 6.1).", 1),
+            ("Objective O3 \u00b7 Validation on a structurally different large-scale dataset.", 1),
+        ])],
+        "RQ2 asks whether the C1 logic survives scale and hierarchy without losing tractability or "
+        "consistency, and it decomposes into three objectives. O1 is a genuinely multi-level workflow: "
+        "coarse clustering at the top and nested sub-groups within, so that attribution stays interpretable "
+        "inside a cluster, across sub-clusters, and across the hierarchy. O2 is a formal cross-level "
+        "consistency argument, Proposition 6.1, so that differences across levels can be interpreted rather "
+        "than dismissed as inconsistency. O3 is an empirical check on generality: validation on a "
+        "structurally different large-scale dataset, Beijing air quality, rather than the small, "
+        "chemically correlated wine dataset.", chip=0)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1283,19 +1369,71 @@ def main():
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
-            ("Achieved: scalable, multi-granular explanation without collapsing into a single flat summary; formal consistency argument; validation on a structurally different dataset.", 0, True),
-            ("Limitations: still static clustering (despite temporal Beijing data); surrogate-based SHAP + representative-instance reporting compress variation; tabular only.", 0, True),
+            ("Answers to the questions and objectives", 0, True),
+            ("RQ2 answered in the affirmative, with bounds \u2014 coherence retained under scale and hierarchy.", 1),
+            ("O1 met \u00b7 a multi-granular explanation that does not collapse into a single flat summary.", 1),
+            ("O2 met \u00b7 Proposition 6.1 provides a formal cross-level consistency argument.", 1),
+            ("O3 met \u00b7 validated on a structurally different large-scale dataset (Beijing air quality).", 1),
         ])],
-        "C2 answers RQ2 in the affirmative, with bounds. Shapley-based clustering explanation can scale "
-        "to hierarchical, large-scale settings without losing interpretive coherence, provided the "
-        "hierarchy is modelled explicitly and the approximation is transparent. We achieved a scalable, "
-        "multi-granular explanation that does not collapse into a single flat summary; a formal "
-        "cross-level consistency argument in Proposition 6.1; and validation on a structurally different "
-        "large-scale dataset. The limitations are equally clear: the clustering remains static even "
-        "though the Beijing data are temporal; the surrogate-based SHAP plus representative-instance "
-        "reporting compresses observation-level variation; and the whole approach is confined to tabular "
-        "data. The most important limit, and the bridge to C3, is that the model is still an explanation "
-        "of a pre-computed partition; it does not yet influence learning itself.", chip=3)
+        "To answer RQ2 directly: yes, with bounds. Shapley-based clustering explanation can scale to "
+        "hierarchical, large-scale settings without losing interpretive coherence, provided the hierarchy "
+        "is modelled explicitly and the approximation is transparent. O1 is met: we obtain a "
+        "multi-granular explanation that does not collapse into a single flat summary. O2 is met: "
+        "Proposition 6.1 gives a formal cross-level consistency argument, so regime-level and "
+        "cluster-level stories are not at odds. O3 is met: the approach validates on Beijing air quality, "
+        "a large, noisy, temporally variable dataset, which supports generality. The honest bound is "
+        "that the model is still an explanation of a pre-computed partition; it does not yet influence "
+        "learning itself. That is the bridge to Contribution III.", chip=2)
+
+    contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Key findings", 0, True),
+            ("Scalable, multi-granular explanation that does not collapse into a single flat summary.", 1),
+            ("Formal cross-level consistency argument (Proposition 6.1).", 1),
+            ("Validated on a structurally different large-scale dataset (Beijing air quality).", 1),
+            ("Differences across levels are interpretable, not dismissed as inconsistency.", 1),
+        ])],
+        "C2 answers RQ2 in the affirmative. The key findings are fourfold. The explanation scales to a "
+        "multi-granular structure without collapsing into a single flat summary, because the hierarchy is "
+        "modelled explicitly rather than flattened. Proposition 6.1 provides a formal cross-level "
+        "consistency argument, so that differences across levels can be interpreted as meaningful structure "
+        "rather than dismissed as noise. The approach generalises to a structurally different large-scale "
+        "dataset, Beijing air quality, which is far noisier and more temporally variable than the small "
+        "correlated wine data. And the method produces parent-level regime-selection stories alongside "
+        "cluster-level within-regime variation.", chip=3)
+
+    contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Limitations", 0, True),
+            ("Clustering remains static, even though the Beijing data are temporal.", 1),
+            ("Surrogate-based SHAP plus representative-instance reporting compress observation-level variation.", 1),
+            ("Confined to tabular data.", 1),
+            ("Still an explanation of a pre-computed partition \u2014 it does not influence learning.", 1, True),
+        ])],
+        "The limitations are equally clear. The clustering remains static even though the Beijing data are "
+        "temporal, so the dynamics are not exploited. The surrogate-based SHAP plus representative-instance "
+        "reporting compresses observation-level variation, so some richness is lost. The whole approach is "
+        "confined to tabular data. And, most importantly for what follows, the model is still an explanation "
+        "of a pre-computed partition: it does not yet influence learning itself. This is the bridge to "
+        "Contribution III.", chip=3)
+
+    contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Takeaways", 0, True),
+            ("Shapley attribution stays coherent across granularity \u2014 when the hierarchy is explicit.", 1),
+            ("Explanations become interpretable against scale, not just against a single flat partition.", 1),
+            ("But the attribution is still post-hoc: it explains a partition that was already computed.", 1, True),
+            ("So the next step is to let attribution shape the learning itself.", 0, True),
+        ])],
+        "The takeaway is that Shapley attribution stays coherent across granularity, provided the hierarchy "
+        "is made explicit. Explanations become interpretable against scale, not just against a single flat "
+        "partition, which is precisely where the literature was weakest. But the attribution is still "
+        "post-hoc: it explains a partition that was already computed, and it never influences how the model "
+        "learns. That is the limit that motivates Contribution III \u2014 can cooperative attribution move "
+        "beyond explanation and enter the learning dynamics of a recommender?", chip=3)
 
     # ---- 20. SECTION: Contribution III ----
     section(SEC_CIII, "Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game", active=6, note="The third and principal contribution introduces DyHuCoG, a Dynamic Hypergraph Cooperative "
@@ -1320,6 +1458,24 @@ def main():
         "flows; and improve ranking accuracy, coverage and intra-list diversity jointly. The strongest "
         "claim is not that we explain a recommender; it is that attribution becomes an in-training "
         "signal.", chip=0)
+
+    contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("RQ3 \u00b7 Can cooperative attribution move beyond post-hoc and enter the learning dynamics of graph recommenders?", 0, True),
+            ("RQ4 \u00b7 Can a recommender jointly optimise ranking accuracy, context and diversity when importance is estimated by a cooperative-game utility?", 1),
+            ("Objective O1 \u00b7 Formulate recommendation as a cooperative game with users, items and contexts as players.", 1),
+            ("Objective O2 \u00b7 Embed preference-aware Monte Carlo Shapley into hypergraph message passing.", 1),
+            ("Objective O3 \u00b7 Improve ranking, coverage and diversity jointly.", 1),
+        ])],
+        "C3 answers RQ3 and RQ4 together, and it is the conceptual shift of the thesis. RQ3 asks whether "
+        "cooperative attribution can move beyond post-hoc explanation and enter the learning dynamics of a "
+        "graph recommender. RQ4 asks whether a recommender can jointly optimise ranking accuracy, context "
+        "and diversity when importance is estimated by a cooperative-game utility. Both map to three "
+        "objectives. O1 is to formulate recommendation as a cooperative game in which users, items and "
+        "contexts are players. O2 is to embed preference-aware Monte Carlo Shapley estimates into "
+        "hypergraph message passing, so attribution directly shapes how information flows. O3 is to improve "
+        "ranking, coverage and intra-list diversity jointly \u2014 not at the expense of one another.", chip=0)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1558,19 +1714,74 @@ def main():
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
-            ("Achieved: cooperative attribution used as an in-training signal \u2014 a stronger claim than the clustering chapters; the accuracy\u2013diversity trade-off is not structurally fixed.", 0, True),
-            ("Limitations: measurable computational overhead; depends on availability of meaningful context; MC Shapley could be improved by variance reduction; ablation is component-wise; baselines finalised through early 2026.", 0, True),
+            ("Answers to the questions and objectives", 0, True),
+            ("RQ3 answered in the affirmative \u2014 attribution becomes an in-training signal, not a post-hoc diagnostic.", 1),
+            ("RQ4 answered in the affirmative \u2014 ranking, coverage and diversity improve together.", 1),
+            ("O1 met \u00b7 recommendation formulated as a cooperative game over users, items and contexts.", 1),
+            ("O2 met \u00b7 preference-aware Monte Carlo Shapley embedded in message passing.", 1),
+            ("O3 met \u00b7 +9.9% (MovieLens) / +14.8% (Amazon) NDCG, with higher coverage and diversity.", 1),
         ])],
-        "C3 answers RQ3 and RQ4, and makes the strongest claim of the thesis. Cooperative attribution "
-        "can move beyond post-hoc analysis and enter the learning dynamics of a recommender, letting it "
-        "balance accuracy, diversity and context more effectively. The evidence is that ranking, coverage "
-        "and diversity improve together, with the largest gains on the sparsest data, and that the "
-        "improvement is statistically large. The limitations must be stated honestly: measurable "
-        "computational overhead, roughly one point seven eight times training time; dependence on "
-        "meaningful context; Monte Carlo Shapley could be improved by variance reduction; the ablation is "
-        "component-wise, so it does not test factorial interactions; and the baselines were finalised in "
-        "early 2026, so I claim superiority only against the tested baselines. Within those bounds, the "
-        "claim stands.", chip=3)
+        "To answer RQ3 and RQ4 directly: yes. RQ3 is answered in the affirmative because attribution is no "
+        "longer a post-hoc diagnostic but an in-training signal that directly shapes message passing. RQ4 "
+        "is answered in the affirmative because ranking, coverage and diversity improve together rather "
+        "than trading against one another. Each objective is met. O1: recommendation is formulated as a "
+        "cooperative game with users, items and contexts as players. O2: preference-aware Monte Carlo "
+        "Shapley is embedded into hypergraph message passing. O3: we gain about nine point nine percent "
+        "on MovieLens and fourteen point eight percent on Amazon, with higher coverage and diversity. The "
+        "strongest claim is that the explanation is structurally faithful, because it reads out the same "
+        "components the model already optimises. Within the stated edges \u2014 computational overhead, "
+        "dependence on context, and the early-2026 baseline set \u2014 the claim stands.", chip=2)
+
+    contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Key findings", 0, True),
+            ("Cooperative attribution used as an in-training signal \u2014 a stronger claim than the clustering chapters.", 1),
+            ("The accuracy\u2013diversity\u2013context trade-off is not structurally fixed.", 1),
+            ("NDCG, recall, coverage and diversity improve together on both datasets.", 1),
+            ("Largest gains on the sparsest data (Amazon-Book), consistent with Shapley weighting helping when signal is weak.", 1),
+        ])],
+        "C3 answers RQ3 and RQ4, and makes the strongest claim of the thesis. Cooperative attribution can "
+        "move beyond post-hoc analysis and enter the learning dynamics of a recommender, letting it balance "
+        "accuracy, diversity and context more effectively. The key findings are that ranking, coverage and "
+        "diversity improve together \u2014 NDCG, recall, coverage and intra-list diversity all rise on both "
+        "datasets \u2014 so the accuracy-diversity trade-off is not structurally fixed. The largest gains "
+        "appear on the sparsest data, Amazon-Book, precisely the regime where Shapley-driven weighting is "
+        "most valuable, and the improvement is statistically large against the strongest baseline.", chip=3)
+
+    contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Limitations", 0, True),
+            ("Measurable computational overhead \u2014 roughly 1.78\u00d7 training time over HPCF.", 1),
+            ("Depends on availability of meaningful context.", 1),
+            ("Monte Carlo Shapley could be improved by variance reduction.", 1),
+            ("Ablation is component-wise, so it does not test factorial interactions.", 1),
+            ("Baselines finalised through early 2026, so superiority is claimed only against the tested baselines.", 1),
+        ])],
+        "The limitations must be stated honestly. There is a measurable computational overhead, roughly "
+        "one point seven eight times the training time of the strongest baseline, HPCF. The method depends "
+        "on the availability of meaningful context. The Monte Carlo Shapley estimator could be improved by "
+        "variance reduction. The ablation is component-wise, so it does not test factorial interactions. "
+        "And the baselines were finalised in early 2026, so I claim superiority only against the tested "
+        "baselines. Within those bounds, the claim stands.", chip=3)
+
+    contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
+        ["Objectives", "Methodology", "Results", "Findings"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Takeaways", 0, True),
+            ("Attribution is a first-class part of the learning objective, not a post-hoc diagnostic.", 1),
+            ("The explanation is a direct read-out of the objective the model already optimises.", 1),
+            ("This makes the explanation structurally faithful rather than an external approximation.", 1, True),
+            ("Built on a principled, axiomatic basis \u2014 aligned with trustworthy-AI expectations.", 1),
+        ])],
+        "The takeaway is the conceptual shift of the thesis. Attribution is a first-class part of the "
+        "learning objective, not a post-hoc diagnostic, and the explanation is a direct read-out of the "
+        "objective the model already optimises. That is what makes it structurally faithful rather than an "
+        "external approximation. And because Shapley values rest on an axiomatic, normative basis, the "
+        "perspective is well aligned with the transparency and accountability requirements of emerging AI "
+        "regulation. This is the central claim worth defending: explanation should be part of the modelling "
+        "logic itself.", chip=3)
 
     # ---- 21. SECTION: Conclusion ----
     section(SEC_CONCL, "Conclusion & Perspectives", active=7, note="Let me now bring everything together. I will present a synthesis of the three "
