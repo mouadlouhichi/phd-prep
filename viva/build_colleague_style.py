@@ -462,7 +462,7 @@ def add_figure(slide, path, x, y, w=None, h=None):
     pic = slide.shapes.add_picture(path, Inches(x), Inches(y), Inches(w), Inches(h))
     return pic
 
-def add_table(slide, x, y, w, h, headers, rows, font_size=12, col_ratios=None,
+def add_table(slide, x, y, w, h, headers, rows, font_size=14, col_ratios=None,
               header_bg=None, body_color=BODY, hl_rows=None, hl_bg=None,
               hl_color=WHITE, row_h=None):
     if header_bg is None: header_bg = ACCT
@@ -678,11 +678,90 @@ def _d_metrics(path):
             d.text((x + bw / 2, ly), "\u2022 " + it, fill=_PWh, font=_f(24), anchor="mm"); ly += 80
     img.save(path); return path
 
+def _d_recsys_examples(path):
+    W, H = 1100, 660
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 36), "AI-Powered Recommendation Is Everywhere", fill=_PK, font=_f(28, True), anchor="mm")
+    cards = [
+        ("Streaming & Video", "Netflix, Prime Video, YouTube", _PA),
+        ("Music", "Spotify, YouTube Music, Deezer", _PD),
+        ("Shopping & E-commerce", "Amazon, AliExpress, Noon", _PLM),
+        ("Social & Feeds", "TikTok, Instagram, LinkedIn", _PA),
+        ("Maps & Local", "Google Maps, Uber, Booking", _PD),
+        ("Ads & Search", "Google Ads, Bing, Meta", _PLM),
+    ]
+    cols, x0, y0, gw, gh = 2, 35, 90, 30, 28
+    cw = (W - 2 * x0 - (cols - 1) * gw) / cols
+    ch = (H - y0 - 20 - (rows := 3 - 1) * gh - gh) / 3
+    for idx, (t, ex, col) in enumerate(cards):
+        r = idx // cols; c = idx % cols
+        x = x0 + c * (cw + gw); y = y0 + r * (ch + gh)
+        d.rounded_rectangle([x, y, x + cw, y + ch], radius=16, fill=col, outline=_PWh, width=2)
+        d.text((x + cw / 2, y + 34), t, fill=_PWh, font=_f(24, True), anchor="mm")
+        ly = y + 76
+        for ln in _wrap(d, ex, _f(18), cw - 30):
+            d.text((x + cw / 2, ly), ln, fill=_PWh, font=_f(18), anchor="mm"); ly += 26
+    img.save(path); return path
+
+def _d_content_based(path):
+    W, H = 1100, 620
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 34), "Content-Based Filtering (explainable example)", fill=_PK, font=_f(26, True), anchor="mm")
+    y1 = 110
+    boxes = [("User taste\nprofile", 40, _PA), ("Item feature\nvectors", 320, _PD),
+             ("Similarity\nscore", 600, _PK), ("Top-N\nrecommend", 880, _PLM)]
+    bw, bh = 185, 150
+    for t, x, col in boxes:
+        d.rounded_rectangle([x, y1, x + bw, y1 + bh], radius=16, fill=col)
+        for li, ln in enumerate(t.split("\n")):
+            d.text((x + bw / 2, y1 + 55 + li * 26), ln, fill=_PWh, font=_f(18, True), anchor="mm")
+    for i in range(len(boxes) - 1):
+        _parrow(d, (boxes[i][1] + bw + 6, y1 + bh / 2), (boxes[i + 1][1] - 6, y1 + bh / 2), color=_PA)
+    d.text((W / 2, 330), "Example:  liked sci-fi + Nolan  ->  surface films with similar genre / cast / keywords",
+           fill=_PB, font=_f(20, True), anchor="mm")
+    fy = 370
+    d.rounded_rectangle([60, fy, 500, fy + 150], radius=14, fill=_PM, outline=_PA, width=2)
+    d.text((280, fy + 30), "Candidate item features", fill=_PK, font=_f(18, True), anchor="mm")
+    d.text((280, fy + 72), "genre = Sci-Fi   director = Nolan", fill=_PB, font=_f(17), anchor="mm")
+    d.text((280, fy + 104), "cast = ...   year = 2010   rating = 8.6", fill=_PB, font=_f(17), anchor="mm")
+    d.rounded_rectangle([600, fy, 1040, fy + 150], radius=14, fill=_PM, outline=_PA, width=2)
+    d.text((820, fy + 30), "Why recommended (explainable)", fill=_PK, font=_f(18, True), anchor="mm")
+    d.text((820, fy + 72), "high cosine similarity to your profile", fill=_PB, font=_f(17), anchor="mm")
+    d.text((820, fy + 104), "sim = cos(f_user, f_item)", fill=_PD, font=_f(17, True), anchor="mm")
+    img.save(path); return path
+
+def _d_thesis_map(path):
+    W, H = 1100, 620
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 34), "Our Thesis in One View", fill=_PK, font=_f(28, True), anchor="mm")
+    d.rounded_rectangle([W / 2 - 260, 80, W / 2 + 260, 165], radius=16, fill=_PD)
+    d.text((W / 2, 110), "Everyday AI recommenders are", fill=_PWh, font=_f(19, True), anchor="mm")
+    d.text((W / 2, 140), "powerful but opaque", fill=_PWh, font=_f(19, True), anchor="mm")
+    d.rounded_rectangle([W / 2 - 300, 230, W / 2 + 300, 320], radius=16, fill=_PA)
+    d.text((W / 2, 258), "Our thesis: cooperative game theory", fill=_PWh, font=_f(19, True), anchor="mm")
+    d.text((W / 2, 288), "(Shapley) as a shared, explainable", fill=_PWh, font=_f(19, True), anchor="mm")
+    d.text((W / 2, 315), "attribution perspective", fill=_PWh, font=_f(19, True), anchor="mm")
+    _parrow(d, (W / 2, 165), (W / 2, 230), color=_PA, width=5)
+    contribs = [("C1", "Explainable\nclustering", _PA), ("C2", "Multi-level\nXAI", _PD), ("C3", "DyHuCoG\nrecommender", _PLM)]
+    x0, y, bw, bh = 60, 400, 300, 170
+    gap = (W - 2 * x0 - 3 * bw) / 2
+    for i, (t, sub, col) in enumerate(contribs):
+        x = x0 + i * (bw + gap)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=16, fill=col, outline=_PWh, width=2)
+        d.text((x + bw / 2, y + 50), t, fill=_PWh, font=_f(30, True), anchor="mm")
+        for li, ln in enumerate(sub.split("\n")):
+            d.text((x + bw / 2, y + 100 + li * 30), ln, fill=_PWh, font=_f(20, True), anchor="mm")
+        _parrow(d, (W / 2, 320), (x + bw / 2, y), color=_PA, width=4)
+    img.save(path); return path
+
 def _gen_intro_figs(figdir):
     _d_evolution(os.path.join(figdir, "evolution.png"))
     _d_motivation(os.path.join(figdir, "motivation.png"))
     _d_actionable(os.path.join(figdir, "actionable.png"))
     _d_metrics(os.path.join(figdir, "metrics.png"))
+    _d_recsys_examples(os.path.join(figdir, "recsys_examples.png"))
+    _d_content_based(os.path.join(figdir, "content_based.png"))
+    _d_thesis_map(os.path.join(figdir, "thesis_map.png"))
 
 def _ensure_figs():
     """Generate clean architecture diagrams, extract the genuine paper figures,
@@ -896,6 +975,26 @@ def main():
         "modelling logic rather than an afterthought.",
         chip=2)
 
+    # 6b. Examples of AI-powered recommendation systems (intro)
+    content("AI-Powered Recommendation Systems Around Us",
+        ["Motivation", "Actionable Insight", "Research Context"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
+            ("AI recommendation mediates what billions see, buy and listen to every day:", 0, True),
+            ("Streaming & video: Netflix, Prime Video, YouTube.", 1),
+            ("Music: Spotify, YouTube Music, Deezer.", 1),
+            ("Shopping & e-commerce: Amazon, AliExpress, Noon.", 1),
+            ("Social & feeds: TikTok, Instagram, LinkedIn.", 1),
+            ("Maps, ads, search: Google Maps, Uber, Google Ads, Bing.", 1),
+            ("Accurate yet opaque \u2014 the very gap our thesis targets.", 0, True),
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'recsys_examples.png'), 6.9, 2.2, w=5.7)],
+        "Recommendation is not a niche technique; it is infrastructure for everyday decisions. Streaming "  \
+        "platforms decide what you watch next, music services what you hear, e-commerce what you buy, and "  \
+        "social feeds what you read. Each system is remarkably accurate, yet its reasoning is hidden from "  \
+        "the user. That ubiquity-plus-opacity is precisely what makes explainability a first-class "  \
+        "requirement \u2014 and what motivates the three contributions that follow.",
+        chip=2)
+
     # ---- 7. SECTION: Context & Problematic ----
     section(SEC_CONTEXT, "Context & Problematic", active=2, note="Now let us look more precisely at the problem this thesis addresses. I will quickly "
             "survey the paradigm landscape, then identify the structuring limitations and the five "
@@ -903,13 +1002,14 @@ def main():
     # 8. Recommendation paradigms
     content("Recommendation & Clustering Paradigms",
         ["Paradigms", "Problematic", "Contributions"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
             ("Collaborative filtering \u2013 users who behaved similarly will value similar items (user-/item-based).", 0),
             ("Content-based \u2013 recommends items sharing attributes with a user profile.", 0),
             ("Hybrid \u2013 combines collaborative and content signals.", 0),
             ("Matrix factorisation \u2013 R \u2248 PQ\u1d40: compact but opaque latent factors.", 0),
             ("Graph-based \u2013 interaction graph with neighbourhood propagation (LightGCN, hypergraph).", 0),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'content_based.png'), 6.9, 2.2, w=5.7)],
         "Quick orientation across the paradigms we build on. Collaborative filtering recommends on the "
         "principle that similar users will value similar items, computed from the user side or the item "
         "side. Content-based filtering recommends items sharing attributes with a profile, while hybrid "
@@ -1011,6 +1111,25 @@ def main():
         "cumulative argument. The thesis claim is that cooperative game theory functions as a shared "
         "attribution perspective for explanation, optimisation and intervention \u2014 not that these "
         "are three unrelated papers.",
+        chip=2)
+
+    # 12b. Our Thesis (related diapo)
+    content("Our Thesis",
+        ["Paradigms", "Problematic", "Contributions"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
+            ("Thesis: cooperative game theory (Shapley) is one shared, explainable attribution perspective.", 0, True),
+            ("The same logic spans clustering and recommendation:", 0),
+            ("C1 \u2013 explains black-box clustering faithfully (wine).", 1),
+            ("C2 \u2013 keeps explanation coherent under scale and hierarchy (Beijing).", 1),
+            ("C3 \u2013 DyHuCoG turns attribution into an in-training signal.", 1),
+            ("From post-hoc description to in-training guidance.", 0, True),
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'thesis_map.png'), 6.9, 2.2, w=5.7)],
+        "Our thesis is a single claim: that Shapley-value attribution can function as one shared, explainable "  \
+        "perspective spanning clustering and recommendation. The three contributions are not separate fixes "  \
+        "but one cumulative argument \u2014 each applies the same cooperative-game logic to a different stage, "  \
+        "from faithful clustering explanation to an in-training signal inside a recommender. That is what makes "  \
+        "explanation part of the modelling logic itself, not a by-product attached after prediction.",
         chip=2)
 
     # ---- 13. SECTION: Protocols ----
