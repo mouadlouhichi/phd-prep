@@ -93,43 +93,43 @@ def fig_c1(out="c1_pipeline.png"):
 # Figure 2 -- C2 multi-level hierarchy with cross-level SHAP aggregation
 # ---------------------------------------------------------------------------
 def fig_c2(out="c2_hierarchy.png"):
-    W, H = 1600, 450
+    W, H = 1600, 470
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    # level 1 root (centred, wide enough)
-    rootw = 420
-    root = (W / 2 - rootw / 2, 36, W / 2 + rootw / 2, 118)
+    # level 1 root (centred, wide enough) -- fills the top band
+    rootw = 460
+    root = (W / 2 - rootw / 2, 28, W / 2 + rootw / 2, 150)
     rounded_box(d, root, DEEP, radius=16)
-    _text(d, (W / 2, 77), "Level 1 \u00b7 Coarse clustering (k=3)", fill=WHITE, font=_font(FONT_B, 20))
+    _text(d, (W / 2, 89), "Level 1 \u00b7 Coarse clustering (k=3)", fill=WHITE, font=_font(FONT_B, 24))
     # three level-2 children evenly spaced across the full width
-    cy1 = 190
+    cy1 = 210
     children = [
         ("Regime A", "temp, dew point, ozone"),
         ("Regime B", "CO, SO2, PM, wind"),
         ("Regime C", "clean air, meteorology"),
     ]
-    cw = 330; ch = 110
+    cw = 360; ch = 150
     margin = 40
     gap = (W - 2 * margin - 3 * cw) / 2
     xs = [margin + i * (cw + gap) for i in range(3)]
     for (name, sub), x in zip(children, xs):
         box = (x, cy1, x + cw, cy1 + ch)
         rounded_box(d, box, ACCENT, radius=16)
-        _text(d, (x + cw / 2, cy1 + 34), name, fill=WHITE, font=_font(FONT_B, 18))
-        _text(d, (x + cw / 2, cy1 + 70), sub, fill=(0xE8, 0xF1, 0xF0), font=_font(FONT_R, 14))
-        arrow(d, W / 2, 118, x + cw / 2, cy1)
+        _text(d, (x + cw / 2, cy1 + 52), name, fill=WHITE, font=_font(FONT_B, 22))
+        _text(d, (x + cw / 2, cy1 + 98), sub, fill=(0xE8, 0xF1, 0xF0), font=_font(FONT_R, 17))
+        arrow(d, W / 2, 150, x + cw / 2, cy1)
     # level 3 -- Regime A expanded into nested sub-groups
-    cy2 = 350
+    cy2 = 380
     leaf_w = cw - 60
-    leaf = (xs[0] + 30, cy2, xs[0] + 30 + leaf_w, cy2 + 74)
+    leaf = (xs[0] + 30, cy2, xs[0] + 30 + leaf_w, cy2 + 75)
     rounded_box(d, leaf, MINT, outline=ACCENT, radius=14, width=3)
-    _text(d, (leaf[0] + leaf_w / 2, cy2 + 37), "nested sub-group (level 3)", fill=DARK, font=_font(FONT_R, 15))
+    _text(d, (leaf[0] + leaf_w / 2, cy2 + 37), "nested sub-group (level 3)", fill=DARK, font=_font(FONT_R, 17))
     arrow(d, xs[0] + cw / 2, cy1 + ch, leaf[0] + leaf_w / 2, cy2)
     # Prop 6.1 note placed to the right, below the children, not overlapping
-    note = (W - margin - 300, cy2 - 10, W - margin, cy2 + 74)
+    note = (W - margin - 320, cy2 - 6, W - margin, cy2 + 81)
     rounded_box(d, note, MINT, outline=DEEP, radius=14, width=3)
-    _text(d, (note[0] + 150, note[1] + 26), "Prop. 6.1 cross-level", fill=DARK, font=_font(FONT_B, 15))
-    _text(d, (note[0] + 150, note[1] + 55), "\u03a6^(l,c) = \u03a3 w_c'\u00b7\u03a6^(l+1,c') + \u03b5", fill=DEEP, font=_font(FONT_R, 14))
+    _text(d, (note[0] + 160, note[1] + 28), "Prop. 6.1 cross-level", fill=DARK, font=_font(FONT_B, 18))
+    _text(d, (note[0] + 160, note[1] + 60), "\u03a6^(l,c) = \u03a3 w_c'\u00b7\u03a6^(l+1,c') + \u03b5", fill=DEEP, font=_font(FONT_R, 16))
     img.save(os.path.join(FIGDIR, out))
     return os.path.join(FIGDIR, out)
 

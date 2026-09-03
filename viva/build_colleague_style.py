@@ -596,76 +596,86 @@ def _wrap(draw, text, font, maxw):
     return out
 
 def _d_evolution(path):
-    W, H = 1240, 360
+    W, H = 1100, 720
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 46), "Evolution of recommender systems", fill=_PK, font=_f(30, True), anchor="mm")
     stages = [("Similarity\nmodels", "2003-09"), ("Matrix\nfactorisation", "2009-13"),
               ("Neural CF", "2016-19"), ("Graph\nCNN", "2018-22"), ("Hypergraph\n2022+", "")]
-    n = len(stages); x0 = 30; y = 110; bw = 150; bh = 96; gap = (W - 2 * x0 - n * bw) / (n - 1)
+    n = len(stages); x0 = 30; y = 200; bw = 170; bh = 230; gap = (W - 2 * x0 - n * bw) / (n - 1)
     for i, (t, sub) in enumerate(stages):
         x = x0 + i * (bw + gap)
         col = _PA if i < n - 1 else _PD
-        d.rounded_rectangle([x, y, x + bw, y + bh], radius=16, fill=col)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col)
         for li, ln in enumerate(t.split("\n")):
-            d.text((x + bw / 2, y + 30 + li * 24), ln, fill=_PWh, font=_f(17, True), anchor="mm")
-        d.text((x + bw / 2, y + bh - 16), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(13), anchor="mm")
+            d.text((x + bw / 2, y + 62 + li * 30), ln, fill=_PWh, font=_f(22, True), anchor="mm")
+        d.text((x + bw / 2, y + bh - 28), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(16), anchor="mm")
         if i < n - 1:
-            _parrow(d, (x + bw + 4, y + bh / 2), (x + bw + gap - 4, y + bh / 2), color=_PA)
-    d.line([(x0 + 40, y + bh + 34), (W - x0 - 40, y + bh + 34)], fill=_PR, width=5)
-    d.polygon([(W - x0 - 40, y + bh + 34), (W - x0 - 58, y + bh + 26), (W - x0 - 58, y + bh + 42)], fill=_PR)
-    d.text((W / 2, y + bh + 58), "Interpretability deficit grows: opaque embeddings, non-modifiable factors",
-           fill=_PR, font=_f(18, True), anchor="mm")
+            _parrow(d, (x + bw + 6, y + bh / 2), (x + bw + gap - 6, y + bh / 2), color=_PA)
+    ay = 540
+    d.line([(x0 + 60, ay), (W - x0 - 60, ay)], fill=_PR, width=7)
+    d.polygon([(W - x0 - 60, ay), (W - x0 - 84, ay - 12), (W - x0 - 84, ay + 12)], fill=_PR)
+    d.text((W / 2, ay + 46), "Interpretability deficit grows: opaque embeddings, non-modifiable factors",
+           fill=_PR, font=_f(26, True), anchor="mm")
     img.save(path); return path
 
 def _d_motivation(path):
-    W, H = 1240, 400
+    W, H = 1300, 333
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 30), "Core tension: as models gain expressive power, they lose the transparency "
+           "needed for trustworthy deployment.",
+           fill=_PR, font=_f(22, True), anchor="mm")
     cards = [("Ubiquity", "Recommenders shape news, study, health, credit", "Market > $15B by 2029", _PA),
              ("Black box", "Deep & graph models: opaque, non-auditable", "EU AI Act: high-risk -> explain", _PD),
              ("Toward trust", "Accountable, auditable, modifiable insight", "Actionable, not just accurate", _PLM)]
-    n = 3; x0 = 30; y = 60; bw = (W - 2 * x0 - (n - 1) * 40) / n; bh = 280
+    n = 3; x0 = 25; y = 70; bw = (W - 2 * x0 - (n - 1) * 30) / n; bh = 240
     for i, (t, b, sub, col) in enumerate(cards):
-        x = x0 + i * (bw + 40)
+        x = x0 + i * (bw + 30)
         d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col, outline=_PWh, width=2)
-        d.text((x + bw / 2, y + 40), t, fill=_PWh, font=_f(26, True), anchor="mm")
-        ly = y + 96
-        for ln in _wrap(d, b, _f(17), bw - 36):
-            d.text((x + bw / 2, ly), ln, fill=_PWh, font=_f(17), anchor="mm"); ly += 24
-        d.text((x + bw / 2, y + bh - 30), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(14, True), anchor="mm")
+        d.text((x + bw / 2, y + 42), t, fill=_PWh, font=_f(28, True), anchor="mm")
+        ly = y + 100
+        for ln in _wrap(d, b, _f(19), bw - 36):
+            d.text((x + bw / 2, ly), ln, fill=_PWh, font=_f(19), anchor="mm"); ly += 26
+        d.text((x + bw / 2, y + bh - 30), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(16, True), anchor="mm")
     img.save(path); return path
 
 def _d_actionable(path):
-    W, H = 1240, 330
+    W, H = 1100, 720
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
-    boxes = [("Modifiable\nfactor", 40, _PA), ("-> change in\nmodel output", 300, _PD),
-             ("is it\nactionable?", 560, _PK), ("prescriptive\nlever", 820, _PLM)]
-    bw, bh = 180, 120; y = 90
+    d.text((W / 2, 44), "From explanation to action", fill=_PK, font=_f(30, True), anchor="mm")
+    boxes = [("Modifiable\nfactor", 40, _PA), ("-> change in\nmodel output", 320, _PD),
+             ("is it\nactionable?", 600, _PK), ("prescriptive\nlever", 880, _PLM)]
+    bw, bh, y = 185, 220, 190
     for t, x, col in boxes:
-        d.rounded_rectangle([x, y, x + bw, y + bh], radius=16, fill=col)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col)
         for li, ln in enumerate(t.split("\n")):
-            d.text((x + bw / 2, y + 40 + li * 24), ln, fill=_PWh, font=_f(17, True), anchor="mm")
+            d.text((x + bw / 2, y + 72 + li * 30), ln, fill=_PWh, font=_f(22, True), anchor="mm")
     for i in range(len(boxes) - 1):
-        _parrow(d, (boxes[i][1] + bw + 4, y + bh / 2), (boxes[i + 1][1] - 4, y + bh / 2), color=_PA)
-    _parrow(d, (boxes[3][1] + bw / 2, y + bh + 10), (boxes[3][1] + bw / 2, y + bh + 30), color=_PR)
-    _parrow(d, (boxes[3][1] + bw / 2, y + bh + 30), (boxes[0][1] + bw / 2, y + bh + 30), color=_PR)
-    _parrow(d, (boxes[0][1] + bw / 2, y + bh + 30), (boxes[0][1] + bw / 2, y + bh + 10), color=_PR)
-    d.text((W / 2, y + bh + 56), "Actionable = a real-world lever you can pull to change the outcome",
-           fill=_PR, font=_f(18, True), anchor="mm")
+        _parrow(d, (boxes[i][1] + bw + 6, y + bh / 2), (boxes[i + 1][1] - 6, y + bh / 2), color=_PA)
+    ly = 470
+    d.line([(boxes[3][1] + bw / 2, ly), (boxes[3][1] + bw / 2, ly + 30)], fill=_PR, width=6)
+    d.line([(boxes[3][1] + bw / 2, ly + 30), (boxes[0][1] + bw / 2, ly + 30)], fill=_PR, width=6)
+    d.line([(boxes[0][1] + bw / 2, ly + 30), (boxes[0][1] + bw / 2, ly)], fill=_PR, width=6)
+    d.polygon([(boxes[0][1] + bw / 2, ly), (boxes[0][1] + bw / 2 - 12, ly - 16),
+               (boxes[0][1] + bw / 2 + 12, ly - 16)], fill=_PR)
+    d.text((W / 2, ly + 78), "Actionable = a real-world lever you can pull to change the outcome",
+           fill=_PR, font=_f(26, True), anchor="mm")
     img.save(path); return path
 
 def _d_metrics(path):
-    W, H = 1240, 430
+    W, H = 1100, 720
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    d.text((W / 2, 46), "Evaluation metrics", fill=_PK, font=_f(30, True), anchor="mm")
     groups = [("Ranking", ["NDCG@k", "Recall@k", "MAP@k", "HR@k"], _PA),
               ("Beyond-accuracy", ["Coverage", "ILD", "Novelty", "Fairness"], _PD),
               ("Clustering validity", ["Silhouette", "Davies-Bouldin", "Calinski-H", "Stability"], _PLM)]
-    n = 3; x0 = 30; y = 50; bw = (W - 2 * x0 - (n - 1) * 40) / n; bh = 320
+    n = 3; x0 = 35; y = 120; bw = (W - 2 * x0 - (n - 1) * 35) / n; bh = 520
     for i, (t, items, col) in enumerate(groups):
-        x = x0 + i * (bw + 40)
-        d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col, outline=_PWh, width=2)
-        d.text((x + bw / 2, y + 36), t, fill=_PWh, font=_f(22, True), anchor="mm")
-        ly = y + 84
+        x = x0 + i * (bw + 35)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=20, fill=col, outline=_PWh, width=3)
+        d.text((x + bw / 2, y + 50), t, fill=_PWh, font=_f(27, True), anchor="mm")
+        ly = y + 130
         for it in items:
-            d.text((x + bw / 2, ly), "\u2022 " + it, fill=_PWh, font=_f(18), anchor="mm"); ly += 40
+            d.text((x + bw / 2, ly), "\u2022 " + it, fill=_PWh, font=_f(24), anchor="mm"); ly += 80
     img.save(path); return path
 
 def _gen_intro_figs(figdir):
@@ -835,12 +845,8 @@ def main():
         "the thesis is that as models gain expressive power, they lose the transparency needed for "
         "trustworthy deployment. Throughout this work I hold accuracy and interpretability as "
         "objectives to be reconciled, not traded against one another.")
-    # add a small "core tension" strip
-    add_textbox(s, 0.3, 4.2, 12.7, 0.8,
-                ["Core tension: as models gain expressive power, they lose the transparency needed for trustworthy deployment."],
-                size=16, color=ACCT, bold=True, font=MONTS_M, align=PP_ALIGN.CENTER)
-    # intro image: the evolution of recommender paradigms
-    add_figure(s, os.path.join(HERE, '_figs', 'motivation.png'), 4.16, 5.05, w=5.0)
+    # intro image (full-width banner): core tension + the three motivation cards
+    add_figure(s, os.path.join(HERE, '_figs', 'motivation.png'), 0.3, 3.6, w=12.7)
 
     # 5. Actionable insight
     content("Actionable Insight \u2014 the Definition",
@@ -1721,7 +1727,7 @@ def main():
             ("Attention gate: a_ui = \u03c3( W_a[ e_u, e_i, l_i ] ); y_ui = (1 + a_ui) \u27e8e_u, e_i\u27e9.", 1),
             ("Context-aware score: f(u,i,c) = y_ui + \u03bb_c \u27e8g(c_ui), e_cui\u27e9.", 1),
         ]),
-        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c3_architecture_paper.png'), 1.6, 3.75, w=10.1)],
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c3_architecture_paper.png'), 1.0, 3.7, w=11.3)],
         "The architecture is the decisive move. The base propagation is standard hypergraph message "
         "passing; the Shapley-weighted version weights each message by a normalised Shapley coefficient, "
         "dividing by the sum of coefficients over the neighbourhood. I clip and exponentially smooth the "
