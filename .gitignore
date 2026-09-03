@@ -12,3 +12,7 @@ __pycache__/
 
 # Colleague deck duplicate (rebuilt from origin/main by build scripts)
 viva/colleague_template.pptx
+
+# Regenerated figure / glyph artifacts (rebuilt by viva/figures.py)
+viva/_figs/
+viva/_glyphs/

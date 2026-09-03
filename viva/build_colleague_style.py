@@ -49,16 +49,20 @@ RT_IMAGE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/
 
 MONTS   = "Montserrat"
 MONTS_M = "Montserrat Medium"
-# ENSIAS brand red (accent). Replaces the colleague's theme accent1 blue #4472C4.
-# White text on #D2222A = 5.25:1 contrast (WCAG AA). Do NOT use #B81B24 (dim brick).
-ENSIAS_RED = RGBColor(0xD2, 0x22, 0x2A)
-ACCT    = ENSIAS_RED               # generated accents (chips, bullets, tables, strips)
-DARK    = RGBColor(0x1F, 0x2A, 0x44)
-BODY    = RGBColor(0x33, 0x3F, 0x50)
+# Teal + charcoal palette -- replaces the colleague's theme accent1 blue.
+#   ACCENT  #0E7C7B  primary teal  -> 5.01:1 on white, white-on-teal 5.01:1 (AA)
+#   DEEP    #0A5F5E  deep teal     -> 7.47:1, used for large bars / table highlight
+#   DARK    #22303C  charcoal      -> 13.50:1, headings
+#   BODY    #2F3B49  body text     -> 11.40:1
+ACCENT  = RGBColor(0x0E, 0x7C, 0x7B)
+DEEP    = RGBColor(0x0A, 0x5F, 0x5E)
+ACCT    = ACCENT                  # generated accents (chips, bullets, tables, strips)
+DARK    = RGBColor(0x22, 0x30, 0x3C)   # charcoal headings
+BODY    = RGBColor(0x2F, 0x3B, 0x49)   # body text
 GREY    = RGBColor(0x6B, 0x72, 0x80)
 WHITE   = RGBColor(0xFF, 0xFF, 0xFF)
-LTBLUE  = RGBColor(0xEA, 0xF0, 0xF9)
-HDRBG   = RGBColor(0xE9, 0xEE, 0xF6)
+MINT    = RGBColor(0xE8, 0xF1, 0xF0)   # soft mint-grey panel
+HDRBG   = RGBColor(0xE1, 0xEC, 0xEB)
 
 # Authoritative md5-prefix(PNG) -> digit map for the colleague's corner pager icons
 # (bottom-right, top > 6.9", absolute 1-based slide number). These are the SOLID
@@ -68,10 +72,12 @@ SOLID_DIGIT = {
     '3844ae35': '5', 'dac0f9a2': '6', 'fd8131e6': '7', '51c5fe8c': '8',
     '7d2fba37': '9', 'fa3a5ada': '0',
 }
-OUTLINE_DIGIT = {  # top 7-tab row glyphs -- read-only reference, never rewritten
-    'b51c2b4c': '1', '403a7a78': '2', '8ddc531b': '4', '6635d9f4': '5',
-    '0b4905c7': '6', '7ded1579': '7',
+OUTLINE_DIGIT = {  # top 7-tab row OUTLINE glyphs (inactive tabs)
+    'b51c2b4c': '1', '403a7a78': '2', '381e8bf3': '3', '8ddc531b': '4',
+    '6635d9f4': '5', '0b4905c7': '6', '7ded1579': '7',
 }
+# SOLID glyphs for the ACTIVE tab (visually distinct from the pager solid digits)
+TAB_SOLID_DIGIT = SOLID_DIGIT  # same solid digit PNGs, per-digit
 PAGER_TOP = 7.0            # pager pictures top (inches)
 PAGER_SIZE = 0.42          # pager picture square edge (inches)
 PAGER_TENS_X = 12.502      # tens digit picture left (inches)
@@ -206,34 +212,119 @@ def _add_pager_pic(slide, digit, x_in, digit_blobs):
 
 
 # ---------------------------------------------------------------------------
-# ENSIAS red accent conversion
+# top 7-tab navigation row (active-tab highlight)
 # ---------------------------------------------------------------------------
-def recolor_accent_red(slide):
-    """Convert the colleague's accent1-blue chrome fills to ENSIAS red.
+def _is_tab_picture(sh):
+    """A digit glyph in the top 7-tab row (top<0.7\", x in 0.2–4.2\")."""
+    if sh.shape_type != 13:
+        return False
+    return (sh.top / 914400 < 0.7 and 0.2 < sh.left / 914400 < 4.2)
+
+def _tab_rect_fill_ref(sh):
+    """Return the <a:fillRef> element that controls a tab-square's colour."""
+    for fr in sh._element.iter(qn('a:fillRef')):
+        return fr
+    return None
+
+def collect_tab_glyphs(prs):
+    """Return ({digit: solid_blob}, {digit: outline_blob}) for the tab row."""
+    solid, outline = {}, {}
+    for slide in prs.slides:
+        for sh in slide.shapes:
+            if not _is_tab_picture(sh):
+                continue
+            h = hashlib.md5(sh.image.blob).hexdigest()[:8]
+            d = SOLID_DIGIT.get(h)
+            if d is not None and d not in solid:
+                solid[d] = sh.image.blob
+            d = OUTLINE_DIGIT.get(h)
+            if d is not None and d not in outline:
+                outline[d] = sh.image.blob
+    return solid, outline
+
+def set_active_tab(slide, active, solid_glyphs, outline_glyphs):
+    """Highlight tab `active` (1–7) in the 7-tab row and un-highlight the rest.
+
+    The active tab is accent (fillRef accent1 -> teal) with a SOLID digit glyph;
+    inactive tabs are white (lt1) with OUTLINE digit glyphs.  Tab order runs left→right
+    by picture x-position, so the tab whose digit == position index is active.
+    """
+    pics = sorted([sh for sh in slide.shapes if _is_tab_picture(sh)],
+                  key=lambda sh: sh.left)
+    if not pics:
+        return
+    # The archetype uses x-offset picture names but keeps left→right order = 1..7.
+    # Recompute the tab index each digit glyph should display by its slot (1..7).
+    for slot, pic in enumerate(pics, start=1):
+        digit = str(slot)
+        want_solid = (slot == active)
+        blob = (solid_glyphs if want_solid else outline_glyphs).get(digit)
+        if blob is None:
+            continue
+        _swap_pic_image(slide, pic, blob)
+    # colour the tab squares: active accent, inactive white
+    rects = [sh for sh in slide.shapes
+             if sh.name.startswith('Rectangle')
+             and sh.top / 914400 < 0.7 and 0.2 < sh.left / 914400 < 4.2
+             and 0.3 < sh.width / 914400 < 0.7]
+    # match rectangle slots to picture slots by x position
+    for slot, pic in enumerate(pics, start=1):
+        # find the rect whose left is closest to this pic's left
+        best = None; bestd = 1e9
+        for rect in rects:
+            d = abs(rect.left - pic.left)
+            if d < bestd:
+                bestd = d; best = rect
+        if best is None:
+            continue
+        col = 'accent1' if slot == active else 'lt1'
+        _set_fill_ref_color(best, col)
+
+def _swap_pic_image(slide, pic, blob):
+    """Point `pic` at a new image part created from `blob`."""
+    img_part, rId = slide.part.get_or_add_image_part(io.BytesIO(blob))
+    for blip in pic._element.findall('.//' + qn('a:blip')):
+        blip.set(qn('r:embed'), rId)
+
+def _set_fill_ref_color(shape, scheme_val):
+    """Set a shape's style/fillRef schemeClr to `scheme_val`."""
+    fr = _tab_rect_fill_ref(shape)
+    if fr is None:
+        return
+    sc = fr.find(qn('a:schemeClr'))
+    if sc is not None:
+        sc.set('val', scheme_val)
+
+
+# ---------------------------------------------------------------------------
+# Teal + charcoal accent conversion
+# ---------------------------------------------------------------------------
+def recolor_accent_teal(slide):
+    """Convert the colleague's accent1-blue chrome fills to teal.
 
     Colleague shapes express the accent via <p:style><a:fillRef><a:schemeClr
-    val="accent1"/></a:fillRef>.  Rewrite that reference to a literal #D2222A, and
-    also swap any a:solidFill srgbClr 4472C4 runs to the ENSIAS red.  Text colour
-    (fontRef) is left untouched -- it resolves to white for high contrast.
+    val="accent1"/></a:fillRef>.  Rewrite that reference to a literal #0E7C7B, and
+    also swap any a:solidFill srgbClr 4472C4 runs to teal.  Text colour (fontRef)
+    is left untouched -- it resolves to white for high contrast.
     """
     for sh in slide.shapes:
         el = sh._element
-        # <a:fillRef><a:schemeClr val="accent1"/> -> srgbClr D2222A
+        # <a:fillRef><a:schemeClr val="accent1"/> -> srgbClr 0E7C7B
         for fr in el.iter(qn('a:fillRef')):
             sc = fr.find(qn('a:schemeClr'))
             if sc is not None and sc.get('val') == 'accent1':
-                srgb = sc.makeelement(qn('a:srgbClr'), {'val': 'D2222A'})
+                srgb = sc.makeelement(qn('a:srgbClr'), {'val': '0E7C7B'})
                 fr.replace(sc, srgb)
-        # explicit solidFill 4472C4 -> D2222A
+        # explicit solidFill 4472C4 -> teal
         for c in el.iter(qn('a:srgbClr')):
             if c.get('val') == '4472C4':
-                c.set('val', 'D2222A')
-        # vestigial green default run-colour (endParaRPr) -> red, for a consistent palette
+                c.set('val', '0E7C7B')
+        # vestigial green default run-colour (endParaRPr) -> teal, for a consistent palette
         for c in el.iter(qn('a:srgbClr')):
             if c.get('val') == '98ECB7':
-                c.set('val', 'D2222A')
-        # text that sits directly on a red fill must be white for high contrast
-        if _effective_fill_is_red(sh):
+                c.set('val', '0E7C7B')
+        # text that sits directly on a teal fill must be white for high contrast
+        if _effective_fill_is_accent(sh):
             for rp in el.iter(qn('a:rPr')):
                 sf = rp.find(qn('a:solidFill'))
                 if sf is None:
@@ -245,14 +336,14 @@ def recolor_accent_red(slide):
                 if s is not None and s.get('val') in ('000000', '1F2A44', '333F50'):
                     s.set('val', 'FFFFFF')
 
-def _effective_fill_is_red(sh):
+def _effective_fill_is_accent(sh):
     spPr = sh._element.find(qn('p:spPr'))
     if spPr is not None:
         for c in spPr:
             if c.tag == qn('a:solidFill'):
                 s = c.find(qn('a:srgbClr'))
                 if s is not None:
-                    return s.get('val').upper() == 'D2222A'
+                    return s.get('val').upper() in ('0E7C7B', '0A5F5E')
                 return False
             if c.tag == qn('a:noFill'):
                 return False
@@ -261,7 +352,7 @@ def _effective_fill_is_red(sh):
         if fr is not None:
             s = fr.find(qn('a:srgbClr'))
             if s is not None:
-                return s.get('val').upper() == 'D2222A'
+                return s.get('val').upper() in ('0E7C7B', '0A5F5E')
             sc = fr.find(qn('a:schemeClr'))
             if sc is not None:
                 return sc.get('val') == 'accent1'
@@ -320,11 +411,27 @@ def add_bullets(slide, x, y, w, h, items, size=17, color=BODY, accent=None,
             r.font.color.rgb = color
     return box
 
+def add_figure(slide, path, x, y, w=None, h=None):
+    """Embed a generated PNG figure on the slide at (x,y) with optional size."""
+    if not os.path.exists(path):
+        return None
+    from PIL import Image as _Im
+    with _Im.open(path) as im:
+        iw, ih = im.size
+    if w is None and h is None:
+        raise ValueError("add_figure needs at least one of w/h")
+    if w is None:
+        w = h * iw / ih
+    if h is None:
+        h = w * ih / iw
+    pic = slide.shapes.add_picture(path, Inches(x), Inches(y), Inches(w), Inches(h))
+    return pic
+
 def add_table(slide, x, y, w, h, headers, rows, font_size=12, col_ratios=None,
               header_bg=None, body_color=BODY, hl_rows=None, hl_bg=None,
               hl_color=WHITE, row_h=None):
     if header_bg is None: header_bg = ACCT
-    if hl_bg is None: hl_bg = RGBColor(0x9E, 0x14, 0x1E)
+    if hl_bg is None: hl_bg = DEEP
     ncols = len(headers); nrows = len(rows) + 1
     shape = slide.shapes.add_table(nrows, ncols, Inches(x), Inches(y), Inches(w), Inches(h))
     table = shape.table
@@ -369,7 +476,7 @@ def add_table(slide, x, y, w, h, headers, rows, font_size=12, col_ratios=None,
 # Archetype-aware builders
 # ---------------------------------------------------------------------------
 def build_content(prs, arch, title, chips, body, note, chip_names,
-                  remove_content):
+                  remove_content, active=None, tab_solid=None, tab_outline=None):
     s = clone_slide(prs, arch)
     set_lines(s, 'Rectangle 5', [FOOTER_TEXT])
     # header title bar (name differs between archetypes)
@@ -384,6 +491,8 @@ def build_content(prs, arch, title, chips, body, note, chip_names,
     builders = body if isinstance(body, list) else [body]
     for fn in builders:
         fn(s)
+    if active is not None and tab_solid and tab_outline:
+        set_active_tab(s, active, tab_solid, tab_outline)
     set_slide_notes(s, note)
     return s
 
@@ -434,14 +543,25 @@ def main():
     CONTRIB_CHIPS = ('Rectangle 33', 'Rectangle 36', 'Rectangle 45', 'Rectangle 46')
     CONTRIB_REMOVE = ('TextBox 31', 'Table 7', 'TextBox 41')
 
-    def content(title, chips, body, note):
-        return build_content(prs, CONTENT_ARCH, title, chips, body, note,
-                             CONTENT_CHIPS, CONTENT_REMOVE)
-    def contrib(title, chips, body, note):
-        return build_content(prs, CONTRIB_ARCH, title, chips, body, note,
-                             CONTRIB_CHIPS, CONTRIB_REMOVE)
+    # 7-tab navigation: 1 Introduction, 2 Context, 3 Protocols,
+    # 4 Contribution I, 5 Contribution II, 6 Contribution III, 7 Conclusion
+    TAB_SOLID, TAB_OUTLINE = collect_tab_glyphs(prs)
+    CURRENT_ACTIVE = {'n': 1}
 
-    def section(source, title, note):
+    def content(title, chips, body, note, active=None):
+        a = CURRENT_ACTIVE['n'] if active is None else active
+        return build_content(prs, CONTENT_ARCH, title, chips, body, note,
+                             CONTENT_CHIPS, CONTENT_REMOVE, active=a,
+                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE)
+    def contrib(title, chips, body, note, active=None):
+        a = CURRENT_ACTIVE['n'] if active is None else active
+        return build_content(prs, CONTRIB_ARCH, title, chips, body, note,
+                             CONTRIB_CHIPS, CONTRIB_REMOVE, active=a,
+                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE)
+
+    def section(source, title, note, active=None):
+        if active is not None:
+            CURRENT_ACTIVE['n'] = active
         return build_section(prs, source, title, note)
 
     # ---- 1. TITLE SLIDE ----
@@ -497,11 +617,9 @@ def main():
         "objectives, methodology, results, and findings. So you always know where we are.")
 
     # ---- 3. SECTION: Introduction ----
-    section(SEC_INTRO, "Introduction",
-            "Let us begin with the introduction. I will spend a few minutes establishing why "
+    section(SEC_INTRO, "Introduction", active=1, note="Let us begin with the introduction. I will spend a few minutes establishing why "
             "explainability is not a nice-to-have but a first-class requirement for recommender "
             "systems, and I will define carefully what I mean by an actionable insight.")
-
     # 4. Motivation cards (3-question layout)
     s = clone_slide(prs, CARDS_ARCH)
     set_lines(s, 'Rectangle 5', [FOOTER_TEXT])
@@ -514,6 +632,7 @@ def main():
     set_lines(s, 'Rectangle 48', ["The Black Box", "Why do state-of-the-art recommenders and clustering pipelines remain opaque to users and designers?"])
     set_lines(s, 'Rectangle 49', ["Toward Trust", "How can transparency be built as part of the model, instead of being bolted on afterwards?"])
     remove_shapes(s, ['TextBox 50'])
+    set_active_tab(s, 1, TAB_SOLID, TAB_OUTLINE)
     set_slide_notes(s, "Three questions frame the whole work. First, ubiquity: opaque systems "
         "mediate what billions of people see, buy and watch every day \u2014 not only on streaming "
         "platforms but in e-commerce, news feeds and search. Second, the black box: even strong "
@@ -572,11 +691,9 @@ def main():
         "modelling logic rather than an afterthought.")
 
     # ---- 7. SECTION: Context & Problematic ----
-    section(SEC_CONTEXT, "Context & Problematic",
-            "Now let us look more precisely at the problem this thesis addresses. I will quickly "
+    section(SEC_CONTEXT, "Context & Problematic", active=2, note="Now let us look more precisely at the problem this thesis addresses. I will quickly "
             "survey the paradigm landscape, then identify the structuring limitations and the five "
             "research questions, and finally map the three contributions to those questions.")
-
     # 8. Recommendation paradigms
     content("Recommendation & Clustering Paradigms",
         ["Paradigms", "Limitations", "Gap"],
@@ -686,12 +803,10 @@ def main():
         "are three unrelated papers.")
 
     # ---- 13. SECTION: Protocols ----
-    section(SEC_PROTO, "Experimental Protocol",
-            "Before the contributions, let me briefly cover the shared experimental setup. The "
+    section(SEC_PROTO, "Experimental Protocol", active=3, note="Before the contributions, let me briefly cover the shared experimental setup. The "
             "purpose of this section is to establish that my comparisons are fair: the datasets, the "
             "splitting and preprocessing, the baselines, the evaluation metrics, and the hardware "
             "environment.")
-
     # 14. Datasets
     content("Datasets Used Throughout the Thesis",
         ["Datasets", "Type", "Role"],
@@ -776,11 +891,9 @@ def main():
         "ordinary academic compute; nothing here needs industrial infrastructure.")
 
     # ---- 18. SECTION: Contribution I ----
-    section(SEC_CI, "Contribution I \u2014 Explainable Black-Box Clustering",
-            "Let us move to the first contribution: explaining black-box clustering with Shapley "
+    section(SEC_CI, "Contribution I \u2014 Explainable Black-Box Clustering", active=4, note="Let us move to the first contribution: explaining black-box clustering with Shapley "
             "values. This contribution answers RQ1, and I will present it in four steps: objectives, "
             "methodology, results, findings.")
-
     # C1 slides (4-chip contribution layout)
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -849,7 +962,8 @@ def main():
             ("Stage 4 \u2013 TreeSHAP attribution in the original feature space.", 0),
             ("Stage 5 \u2013 Aggregate into global importance, cluster-specific profiles, and local force plots.", 0),
             ("Complexity: dominated by PCA and repeated K-Means; TreeSHAP scales with tree count, not exponentially in features.", 1),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c1_pipeline.png'), 1.6, 3.75, w=10.1)],
         "The pipeline has five stages. Stage one is feature standardisation. Stage two is PCA, which I "
         "want to stress is used only as a computational and visual diagnostic; it is deliberately not the "
         "explanatory space, because explaining principal components would defeat the purpose of "
@@ -957,11 +1071,9 @@ def main():
         "the point of departure for Contribution II.")
 
     # ---- 19. SECTION: Contribution II ----
-    section(SEC_CII, "Contribution II \u2014 Enhanced Multi-Level XAI for Large-Scale Clustering",
-            "This brings us to the second contribution: scaling the explanation logic to multi-level, "
+    section(SEC_CII, "Contribution II \u2014 Enhanced Multi-Level XAI for Large-Scale Clustering", active=5, note="This brings us to the second contribution: scaling the explanation logic to multi-level, "
             "large-scale clustering. It answers RQ2, and the central concern is not merely scale but "
             "multi-granularity.")
-
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
@@ -988,7 +1100,8 @@ def main():
             ("Cross-level aggregation is NOT a naive average \u2014 it respects cluster size and nesting structure.", 0, True),
             ("Parent-level attribution = an expectation over the explanatory structure of its descendants.", 1),
             ("The hierarchy is a pragmatic analytical device, not a claim of true ontological hierarchy.", 1),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c2_hierarchy.png'), 1.6, 3.75, w=10.1)],
         "The multi-level architecture proceeds recursively: we learn a coarse clustering on the full "
         "dataset, then subdivide each cluster where appropriate, producing a nested structure. For each "
         "level we train a level-specific surrogate and compute SHAP values in the same original feature "
@@ -1134,11 +1247,9 @@ def main():
         "of a pre-computed partition; it does not yet influence learning itself.")
 
     # ---- 20. SECTION: Contribution III ----
-    section(SEC_CIII, "Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
-            "The third and principal contribution introduces DyHuCoG, a Dynamic Hypergraph Cooperative "
+    section(SEC_CIII, "Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game", active=6, note="The third and principal contribution introduces DyHuCoG, a Dynamic Hypergraph Cooperative "
             "Game, where Shapley attribution becomes an in-training signal inside a hypergraph "
             "recommender rather than a post-hoc explanation. It answers RQ3 and RQ4.")
-
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
@@ -1227,7 +1338,8 @@ def main():
             ("Clipped + exponentially smoothed before normalisation (stabilises sparse regimes).", 1),
             ("Attention gate: a_ui = \u03c3( W_a[ e_u, e_i, l_i ] ); y_ui = (1 + a_ui) \u27e8e_u, e_i\u27e9.", 1),
             ("Context-aware score: f(u,i,c) = y_ui + \u03bb_c \u27e8g(c_ui), e_cui\u27e9.", 1),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c3_dyhucog.png'), 1.6, 3.75, w=10.1)],
         "The architecture is the decisive move. The base propagation is standard hypergraph message "
         "passing; the Shapley-weighted version weights each message by a normalised Shapley coefficient, "
         "dividing by the sum of coefficients over the neighbourhood. I clip and exponentially smooth the "
@@ -1410,11 +1522,9 @@ def main():
         "claim stands.")
 
     # ---- 21. SECTION: Conclusion ----
-    section(SEC_CONCL, "Conclusion & Perspectives",
-            "Let me now bring everything together. I will present a synthesis of the three "
+    section(SEC_CONCL, "Conclusion & Perspectives", active=7, note="Let me now bring everything together. I will present a synthesis of the three "
             "contributions, the published papers, the honest limitations, the future directions, and "
             "finally a clear statement of the thesis answer.")
-
     contrib("Conclusion & Perspectives",
         ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
         [lambda sl: add_table(sl, 0.4, 1.9, 12.6, 3.9,
@@ -1526,9 +1636,9 @@ def main():
         prs.part.drop_rel(rId)
         prs.slides._sldIdLst.remove(sid)
 
-    # ---- ENSIAS red accent chrome + high-contrast pager ----
+    # ---- teal accent chrome + high-contrast pager ----
     for slide in prs.slides:
-        recolor_accent_red(slide)
+        recolor_accent_teal(slide)
     digit_blobs = collect_digit_blobs(prs)
     remap_pager(prs, digit_blobs)
 
