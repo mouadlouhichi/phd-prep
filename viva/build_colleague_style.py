@@ -297,6 +297,40 @@ def _set_fill_ref_color(shape, scheme_val):
 
 
 # ---------------------------------------------------------------------------
+# per-section sub-navigation chips  (active chip filled, others outlined)
+# ---------------------------------------------------------------------------
+def _style_ref(shape, name):
+    """Return the <a:style> child element named `name` (fillRef/fontRef/lnRef)."""
+    for sty in shape._element.iter(qn('p:style')):
+        for ch in sty:
+            if ch.tag.endswith('}%s' % name):
+                return ch
+    return None
+
+def set_chip_active(shape, active):
+    """Fill the chip as ACTIVE (accent fill, white text) or INACTIVE (white fill,
+    dark text), mirroring the colleague's chip styling in the archetype."""
+    fr = _style_ref(shape, 'fillRef')
+    if fr is not None:
+        sc = fr.find(qn('a:schemeClr'))
+        if sc is not None:
+            sc.set('val', 'accent1' if active else 'lt1')
+    fnt = _style_ref(shape, 'fontRef')
+    if fnt is not None:
+        sc = fnt.find(qn('a:schemeClr'))
+        if sc is not None:
+            sc.set('val', 'lt1' if active else 'dk1')
+
+def apply_chip_states(slide, chip_names, active_idx):
+    """Highlight the chip at `active_idx` (0-based) in `chip_names`; outline the rest."""
+    for i, nm in enumerate(chip_names):
+        sh = _find(slide.shapes, nm)
+        if sh is None:
+            continue
+        set_chip_active(sh, i == active_idx)
+
+
+# ---------------------------------------------------------------------------
 # Teal + charcoal accent conversion
 # ---------------------------------------------------------------------------
 def recolor_accent_teal(slide):
@@ -476,7 +510,8 @@ def add_table(slide, x, y, w, h, headers, rows, font_size=12, col_ratios=None,
 # Archetype-aware builders
 # ---------------------------------------------------------------------------
 def build_content(prs, arch, title, chips, body, note, chip_names,
-                  remove_content, active=None, tab_solid=None, tab_outline=None):
+                  remove_content, active=None, tab_solid=None, tab_outline=None,
+                  chip_active=None):
     s = clone_slide(prs, arch)
     set_lines(s, 'Rectangle 5', [FOOTER_TEXT])
     # header title bar (name differs between archetypes)
@@ -488,6 +523,8 @@ def build_content(prs, arch, title, chips, body, note, chip_names,
             set_lines(s, nm, [chips[i]])
         else:
             remove_shapes(s, [nm])
+    if chip_active is not None:
+        apply_chip_states(s, chip_names, chip_active)
     builders = body if isinstance(body, list) else [body]
     for fn in builders:
         fn(s)
@@ -548,16 +585,18 @@ def main():
     TAB_SOLID, TAB_OUTLINE = collect_tab_glyphs(prs)
     CURRENT_ACTIVE = {'n': 1}
 
-    def content(title, chips, body, note, active=None):
+    def content(title, chips, body, note, active=None, chip=None):
         a = CURRENT_ACTIVE['n'] if active is None else active
         return build_content(prs, CONTENT_ARCH, title, chips, body, note,
                              CONTENT_CHIPS, CONTENT_REMOVE, active=a,
-                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE)
-    def contrib(title, chips, body, note, active=None):
+                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE,
+                             chip_active=chip)
+    def contrib(title, chips, body, note, active=None, chip=None):
         a = CURRENT_ACTIVE['n'] if active is None else active
         return build_content(prs, CONTRIB_ARCH, title, chips, body, note,
                              CONTRIB_CHIPS, CONTRIB_REMOVE, active=a,
-                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE)
+                             tab_solid=TAB_SOLID, tab_outline=TAB_OUTLINE,
+                             chip_active=chip)
 
     def section(source, title, note, active=None):
         if active is not None:
@@ -625,9 +664,10 @@ def main():
     set_lines(s, 'Rectangle 5', [FOOTER_TEXT])
     if _find(s.shapes, 'Rectangle 27'):
         set_lines(s, 'Rectangle 27', ["Motivation: Three Questions"])
-    set_lines(s, 'Rectangle 29', ["General Context"])
+    set_lines(s, 'Rectangle 29', ["Motivation"])
     if _find(s.shapes, 'Rectangle 28'):
-        set_lines(s, 'Rectangle 28', ["Central Question"])
+        set_lines(s, 'Rectangle 28', ["Actionable Insight"])
+    apply_chip_states(s, ('Rectangle 29', 'Rectangle 28'), 0)
     set_lines(s, 'Rectangle 47', ["Ubiquity", "How do opaque AI systems shape what billions of users see, buy and watch every day?"])
     set_lines(s, 'Rectangle 48', ["The Black Box", "Why do state-of-the-art recommenders and clustering pipelines remain opaque to users and designers?"])
     set_lines(s, 'Rectangle 49', ["Toward Trust", "How can transparency be built as part of the model, instead of being bolted on afterwards?"])
@@ -649,7 +689,7 @@ def main():
 
     # 5. Actionable insight
     content("Actionable Insight \u2014 the Definition",
-        ["Definition", "Why it matters", ""],
+        ["Motivation", "Actionable Insight", "Research Context"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Definition 1.1 (Actionable insight)", 0, True),
             ("An explanation is actionable when it identifies at least one modifiable factor whose change is associated with a specifiable change in model output\u2026", 1),
@@ -666,11 +706,12 @@ def main():
         "preference signal for recommendation. The crucial constraint is that it must not be an opaque "
         "latent code. This distinction separates explanations that let a designer intervene and act from "
         "those that merely describe what happened. By this definition, a credible explanation is "
-        "evaluated by whether it supports a downstream decision, not by whether it looks plausible.")
+        "evaluated by whether it supports a downstream decision, not by whether it looks plausible.",
+        chip=1)
 
     # 6. Research context
     content("Research Context",
-        ["Overview", "Evolution", "Why it matters"],
+        ["Motivation", "Actionable Insight", "Research Context"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             "Recommenders evolved from similarity filters to complex representation-learning systems on sparse, high-dimensional, dynamic data.",
             ("\u2192 MF \u2192 neural CF \u2192 graph CNNs \u2192 hypergraph: each step improved ranking but intensified the interpretability deficit.", 1),
@@ -688,7 +729,8 @@ def main():
         "transparency. The deficit matters for trust, debugging and regulation \u2014 the EU AI Act, the "
         "OECD principles and the GDPR all put a premium on meaningful explanation. That is why a "
         "principled attribution mechanism is needed, and why I will argue it should be part of the "
-        "modelling logic rather than an afterthought.")
+        "modelling logic rather than an afterthought.",
+        chip=2)
 
     # ---- 7. SECTION: Context & Problematic ----
     section(SEC_CONTEXT, "Context & Problematic", active=2, note="Now let us look more precisely at the problem this thesis addresses. I will quickly "
@@ -696,7 +738,7 @@ def main():
             "research questions, and finally map the three contributions to those questions.")
     # 8. Recommendation paradigms
     content("Recommendation & Clustering Paradigms",
-        ["Paradigms", "Limitations", "Gap"],
+        ["Paradigms", "Problematic", "Contributions"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Collaborative filtering \u2013 users who behaved similarly will value similar items (user-/item-based).", 0),
             ("Content-based \u2013 recommends items sharing attributes with a user profile.", 0),
@@ -714,11 +756,12 @@ def main():
         "complicates interpretation in a specific way: matrix factorisation made latent dimensions "
         "opaque; graph models kept importance implicit; hypergraph models added higher-order relations "
         "but assumed uniform message importance. That uniformity assumption is one of the things I will "
-        "challenge.")
+        "challenge.",
+        chip=0)
 
     # 9. Limitations of classical models
     content("Limitations of Classical Recommenders & Unsupervised Models",
-        ["Data & scale", "Interpretability", "The gap"],
+        ["Paradigms", "Problematic", "Contributions"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             "Data sparsity & scalability \u2013 the user\u2013item matrix is overwhelmingly empty.",
             "Cold-start \u2013 new users and items are structurally disadvantaged.",
@@ -735,11 +778,12 @@ def main():
         "interpretability. For clustering specifically the situation is even harder: methods privilege a "
         "local explanation or a global one but not both, they struggle to scale, and their explanations "
         "rarely remain coherent across resolutions. That combination \u2014 no faithful local and global "
-        "explanation, poor scaling, and incoherence across levels \u2014 is precisely the gap I work on.")
+        "explanation, poor scaling, and incoherence across levels \u2014 is precisely the gap I work on.",
+        chip=1)
 
     # 10. Problem statement
     content("Three Structuring Limitations (Problem Statement)",
-        ["L1", "L2", "L3"],
+        ["Paradigms", "Problematic", "Contributions"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("1. Lack of explainability \u2013 complex models remain hard to interpret faithfully and actionably.", 0, True),
             ("2. Difficulty of scaling \u2013 local explanations do not transfer naturally to hierarchical structures or large datasets.", 0, True),
@@ -755,11 +799,12 @@ def main():
         "trying to satisfy. The thesis gap follows directly: the literature still lacks a single "
         "cooperative-attribution framework that explains clustering faithfully, stays coherent under "
         "hierarchy, and then operates as an in-training signal in recommendation. My claim is that "
-        "Shapley-value attribution can be that single framework.")
+        "Shapley-value attribution can be that single framework.",
+        chip=1)
 
     # 11. Research questions
     content("Research Questions (RQ1\u2013RQ5) and Overall Aim",
-        ["Aim", "RQ1", "RQ2"],
+        ["Paradigms", "Problematic", "Contributions"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Aim: develop, justify and evaluate a cooperative-game-theoretic perspective for XAI in clustering and recommendation.", 0, True),
             ("RQ1 \u00b7 How can Shapley values explain black-box clustering faithfully at instance and cluster level?", 0),
@@ -777,11 +822,12 @@ def main():
         "analysis into the learning dynamics of graph recommenders. RQ4 asks whether a recommender can "
         "jointly optimise ranking accuracy, context and diversity when importance is estimated by a "
         "cooperative-game utility. RQ5 is the thesis-level question: what emerges when clustering "
-        "explanation and recommendation learning are read as two stages of one shared perspective.")
+        "explanation and recommendation learning are read as two stages of one shared perspective.",
+        chip=1)
 
     # 12. Three contributions overview
     content("The Three Contributions",
-        ["C1", "C2", "C3"],
+        ["Paradigms", "Problematic", "Contributions"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("C1 \u2013 Explainable black-box clustering: PCA\u2013K-Means\u2013LightGBM\u2013TreeSHAP pipeline.", 0, True),
             ("\u2192 Wine Quality: faithful instance- and cluster-level feature attribution.", 1),
@@ -800,7 +846,8 @@ def main():
         "distinct research question, but they are deliberately designed to be read together as a "
         "cumulative argument. The thesis claim is that cooperative game theory functions as a shared "
         "attribution perspective for explanation, optimisation and intervention \u2014 not that these "
-        "are three unrelated papers.")
+        "are three unrelated papers.",
+        chip=2)
 
     # ---- 13. SECTION: Protocols ----
     section(SEC_PROTO, "Experimental Protocol", active=3, note="Before the contributions, let me briefly cover the shared experimental setup. The "
@@ -809,7 +856,7 @@ def main():
             "environment.")
     # 14. Datasets
     content("Datasets Used Throughout the Thesis",
-        ["Datasets", "Type", "Role"],
+        ["Datasets", "Metrics", "Hardware"],
         [lambda sl: add_table(sl, 0.4, 1.9, 12.6, 3.9,
              ["Dataset", "Scale", "Type", "Role"],
              [["Wine Quality (vinho verde)", "4,898 \u00d7 11", "Tabular, numeric", "C1 \u2013 single-level clustering"],
@@ -826,11 +873,12 @@ def main():
         "datasets with established baselines: MovieLens-1M, with roughly a million interactions and a "
         "density of 0.0447, and Amazon-Book, which is far sparser at 0.0006. The sparsity contrast is "
         "deliberate, because it stress-tests whether a Shapley-guided model helps most precisely when "
-        "interaction data are weak.")
+        "interaction data are weak.",
+        chip=0)
 
     # 15. Splitting & preprocessing
     content("Data Splitting & Preprocessing",
-        ["Clustering", "Recommendation", "Reproducibility"],
+        ["Datasets", "Metrics", "Hardware"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Clustering: five-fold cross-validation for surrogate/attribution stability.", 0),
             ("Recommendation: user-level, temporal split \u2014 70% train / 10% val / 20% test.", 0),
@@ -847,11 +895,12 @@ def main():
         "the target, ranked against sampled negatives. Because MovieLens-1M contains explicit ratings, I "
         "convert ratings greater than three into positive implicit feedback. Negatives are drawn from a "
         "popularity-aware distribution to produce harder contrasts. Results are reported across five "
-        "seeds, with early stopping on validation NDCG at twenty.")
+        "seeds, with early stopping on validation NDCG at twenty.",
+        chip=0)
 
     # 16. Baselines & metrics
     content("Baselines & Evaluation Metrics",
-        ["Baselines", "Ranking", "Diversity"],
+        ["Datasets", "Metrics", "Hardware"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Clustering benchmark: LIME-based surrogate explanation pipeline.", 0, True),
             ("Recommendation benchmarks: MF, NCF, LightGCN, RecDCL, HCCF, HPCF (strongest reference).", 0, True),
@@ -869,11 +918,12 @@ def main():
         "coverage, and list-level intra-list diversity, defined as the average pairwise dissimilarity "
         "inside a ranked list. I want to emphasise that ILD is not decorative: it is deliberately built "
         "into the DyHuCoG coalition utility. Clustering quality is measured with Silhouette and "
-        "Davies-Bouldin.")
+        "Davies-Bouldin.",
+        chip=1)
 
     # 17. Hardware & software
     content("Hardware & Software",
-        ["Compute", "Stack", "Reproducibility"],
+        ["Datasets", "Metrics", "Hardware"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("CPU: Intel Core i9-14900K, 24 cores \u2014 clustering, preprocessing, data loading.", 0),
             ("GPU: NVIDIA GeForce RTX 4090, 24 GB \u2014 DyHuCoG training & inference.", 0),
@@ -888,7 +938,8 @@ def main():
         "3.8, with scikit-learn for PCA and K-Means, LightGBM for the surrogate, SHAP for TreeSHAP, "
         "and PyTorch 2.0.1 for the recommendation model. I use Altair for interactive SHAP "
         "visualisation and report metrics at K equal to five, ten and twenty. Everything stays within "
-        "ordinary academic compute; nothing here needs industrial infrastructure.")
+        "ordinary academic compute; nothing here needs industrial infrastructure.",
+        chip=2)
 
     # ---- 18. SECTION: Contribution I ----
     section(SEC_CI, "Contribution I \u2014 Explainable Black-Box Clustering", active=4, note="Let us move to the first contribution: explaining black-box clustering with Shapley "
@@ -913,7 +964,7 @@ def main():
         "threefold: build a pipeline yielding a cluster-level explanation while preserving "
         "feature-level attribution; preserve the semantics of the original feature space rather than a "
         "transformed latent space; and justify why Shapley is the right concept rather than an ad-hoc "
-        "surrogate such as LIME.")
+        "surrogate such as LIME.", chip=0)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -932,7 +983,7 @@ def main():
         "receives a high Shapley value when its presence consistently improves separation across all "
         "coalitions, in expectation. The problem is that evaluating Silhouette for every subset is "
         "combinatorial and infeasible even for a modest number of features, which is exactly why we "
-        "need a bridge between the unsupervised partition and a tractable attribution method.")
+        "need a bridge between the unsupervised partition and a tractable attribution method.", chip=1)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -951,7 +1002,7 @@ def main():
         "This keeps attribution in the original semantic feature space, which is what makes the "
         "explanation actionable. The key validity condition is surrogate fidelity: if the surrogate does "
         "not reproduce the partition well, the attribution is not faithful. We require a macro-F1 of "
-        "around 0.82 as the floor.")
+        "around 0.82 as the floor.", chip=1)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -973,7 +1024,7 @@ def main():
         "attribution in the original feature space, aggregated into global importance, cluster-specific "
         "profiles, and local force plots. Complexity is dominated by PCA and repeated K-Means; TreeSHAP "
         "scales with tree count and depth rather than exponentially in features, which is what makes the "
-        "approach tractable.")
+        "approach tractable.", chip=1)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -993,7 +1044,7 @@ def main():
         "chemically meaningful oenological narratives, far more actionable than a dichotomous split. I "
         "select the partition a domain expert would find useful, not the one that maximises a separation "
         "index. And to avoid a common confusion: the 0.63 Silhouette belongs to the Beijing dataset in "
-        "Contribution II, not this one.")
+        "Contribution II, not this one.", chip=2)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1011,7 +1062,7 @@ def main():
         "in that original space, the recovered hierarchy corresponds to a chemically interpretable "
         "structure. This is the strongest evidence that the pipeline is faithful: it recovers domain "
         "knowledge without being told to. It also illustrates the value of keeping attribution in the "
-        "semantic feature space rather than in a reduced or latent space.")
+        "semantic feature space rather than in a reduced or latent space.", chip=2)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1030,7 +1081,7 @@ def main():
         "with different relative weights within each. This is the actionable insight: a cluster is not "
         "just a label, it is a distinct, domain-meaningful combination of drivers. It also shows the "
         "method supports both a global reading, which variable matters most overall, and a local, "
-        "per-cluster reading, where the practical value lies.")
+        "per-cluster reading, where the practical value lies.", chip=2)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1050,7 +1101,7 @@ def main():
         "design. SHAP supports both local and global explanation, whereas LIME is primarily local, and "
         "SHAP is much stronger for comparing clusters, which is central here. One caveat: in this "
         "surrogate pipeline, efficiency holds with respect to the LightGBM output, not directly to the "
-        "Silhouette-based game. That is exactly why surrogate fidelity matters.")
+        "Silhouette-based game. That is exactly why surrogate fidelity matters.", chip=2)
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1068,7 +1119,7 @@ def main():
         "Second, the approach is confined to tabular data. Third, and most importantly for what follows, "
         "it is single-level: it cannot yet address hierarchical coherence, meaning it cannot explain how "
         "feature importance reconfigures between a partition and its sub-partitions. That limitation is "
-        "the point of departure for Contribution II.")
+        "the point of departure for Contribution II.", chip=3)
 
     # ---- 19. SECTION: Contribution II ----
     section(SEC_CII, "Contribution II \u2014 Enhanced Multi-Level XAI for Large-Scale Clustering", active=5, note="This brings us to the second contribution: scaling the explanation logic to multi-level, "
@@ -1090,7 +1141,7 @@ def main():
         "the single-level pipeline. Second, a formal cross-level consistency argument, Proposition 6.1, "
         "so that differences across levels can be interpreted rather than dismissed as inconsistency. "
         "Third, validation on a structurally different large-scale dataset, Beijing air quality, testing "
-        "whether the method generalises beyond the small, correlated wine dataset.")
+        "whether the method generalises beyond the small, correlated wine dataset.", chip=0)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1111,7 +1162,7 @@ def main():
         "contributions of the clusters it contains. One methodological point: the hierarchy here is a "
         "pragmatic analytical device. I am not claiming the data have a true, ontological hierarchy of "
         "levels; the nested structure is a computational and interpretive tool, and Proposition 6.1 is "
-        "stated with that in mind.")
+        "stated with that in mind.", chip=1)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1133,7 +1184,7 @@ def main():
         "perfect fidelity. The derivation uses the law of total expectation and the fact that children "
         "partition the parent. Crucially, it does not claim explanations are identical across levels; it "
         "says differences can be interpreted rather than dismissed as inconsistency. That makes a "
-        "hierarchical explanation self-consistent and auditable.")
+        "hierarchical explanation self-consistent and auditable.", chip=1)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1152,7 +1203,7 @@ def main():
         "projection, using two components, is used only for visual inspection. I also tested "
         "sensitivity: the conclusions are robust to modest variation in k, in the number of projection "
         "dimensions, and in the surrogate depth; only low-ranked variables shift. So the finding is not "
-        "an artefact of a particular parameter choice.")
+        "an artefact of a particular parameter choice.", chip=2)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1171,7 +1222,7 @@ def main():
         "under which pollution accumulates. This is exactly the kind of insight that flat, descriptive "
         "summaries often fail to make explicit: a naive ranking of pollutant concentrations would "
         "overlook the fact that the weather is what sets the regime. It is a good illustration of why "
-        "attribution in the original variable space is valuable.")
+        "attribution in the original variable space is valuable.", chip=2)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1189,7 +1240,7 @@ def main():
         "associated with favourable meteorology and weak pollutant pushes. The interpretative value is "
         "not merely showing that these regimes exist \u2014 it is showing which combinations of "
         "variables define each one. That is the actionable insight: an air-quality analyst can see the "
-        "specific drivers of a given pollution episode and act on them.")
+        "specific drivers of a given pollution episode and act on them.", chip=2)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1209,7 +1260,7 @@ def main():
         "a regime. A variable can be globally important yet locally uninformative within a "
         "sub-cluster. Proposition 6.1 lets us interpret these shifts as meaningful structure rather than "
         "noise; a flat, single-level explanation would present them as conflicting, whereas our "
-        "framework makes them coherent.")
+        "framework makes them coherent.", chip=2)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1227,7 +1278,7 @@ def main():
         "we observe weaker structural coherence and less stable local narratives for hierarchical "
         "reasoning. I want to be careful here: these are comparative observations rather than a "
         "comprehensive benchmark, but they support the claim that a cooperative-attribution approach "
-        "produces more structured, more coherent explanations for hierarchical clustering.")
+        "produces more structured, more coherent explanations for hierarchical clustering.", chip=2)
 
     contrib("Contribution II \u2014 Multi-Level XAI for Large-Scale Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1244,7 +1295,7 @@ def main():
         "though the Beijing data are temporal; the surrogate-based SHAP plus representative-instance "
         "reporting compresses observation-level variation; and the whole approach is confined to tabular "
         "data. The most important limit, and the bridge to C3, is that the model is still an explanation "
-        "of a pre-computed partition; it does not yet influence learning itself.")
+        "of a pre-computed partition; it does not yet influence learning itself.", chip=3)
 
     # ---- 20. SECTION: Contribution III ----
     section(SEC_CIII, "Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game", active=6, note="The third and principal contribution introduces DyHuCoG, a Dynamic Hypergraph Cooperative "
@@ -1268,7 +1319,7 @@ def main():
         "estimates into hypergraph message passing so that attribution directly shapes how information "
         "flows; and improve ranking accuracy, coverage and intra-list diversity jointly. The strongest "
         "claim is not that we explain a recommender; it is that attribution becomes an in-training "
-        "signal.")
+        "signal.", chip=0)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1287,7 +1338,7 @@ def main():
         "recommendation: we produce a ranked list for a user that balances relevance, diversity and "
         "contextual fit. This parallels the clustering formulation, but with a value function that is "
         "recommendation-oriented. That parallelism is deliberate and is one of the thesis-level "
-        "contributions: the same cooperative-game logic applies to both tasks.")
+        "contributions: the same cooperative-game logic applies to both tasks.", chip=1)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1306,7 +1357,7 @@ def main():
         "in the coalition. Alpha, beta, gamma were grid-searched to 0.60, 0.25, 0.15, with the preference "
         "coefficient at 0.20 and NDCG varying by under one and a half percent. One honest boundary: "
         "coalition evaluation is scoped to the interaction episode, a few dozen players, not the full "
-        "catalogue.")
+        "catalogue.", chip=1)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1327,7 +1378,7 @@ def main():
         "the minus five, and roughly ninety-nine percent accuracy. Because preferences evolve, estimates "
         "are refreshed every ten batches, about forty-nine updates per epoch, and smoothed with an "
         "exponential moving average, so attribution is adaptive without making training hypersensitive "
-        "to a single estimate.")
+        "to a single estimate.", chip=1)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1349,7 +1400,7 @@ def main():
         "score, acting as a stabiliser; a context-aware score then adds a context term. The essential "
         "point is that the model is told not only who is connected to whom, but how much each coalition "
         "is worth, and that worth directly governs how information propagates. That is what "
-        "distinguishes it from a post-hoc explainer.")
+        "distinguishes it from a post-hoc explainer.", chip=1)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1370,7 +1421,7 @@ def main():
         "alignment: the model is trained to optimise the same accuracy-diversity-context balance that "
         "later determines cooperative attribution. So the explanation is not a separate diagnostic; it is "
         "a direct read-out of the objective the model is already optimising. This is what gives the "
-        "explanation its structural faithfulness.")
+        "explanation its structural faithfulness.", chip=1)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1389,7 +1440,7 @@ def main():
         "Amazon-Book, which is much sparser, the relative gains are larger: plus thirteen point three "
         "three percent NDCG and plus sixteen point one six percent recall, with coverage up by nearly "
         "thirty percent. The sparser the data, the larger the gain \u2014 precisely the pattern you "
-        "would expect if Shapley-driven weighting is most valuable when signal is weak.")
+        "would expect if Shapley-driven weighting is most valuable when signal is weak.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1407,7 +1458,7 @@ def main():
         "interaction data are weak. Together these results are evidence that the accuracy-diversity "
         "trade-off, often treated as structurally fixed, is in fact negotiable if attribution is handled "
         "as a first-class part of the learning objective. NDCG up, recall up, coverage up, diversity up: "
-        "that combination is the core empirical claim of the third contribution.")
+        "that combination is the core empirical claim of the third contribution.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1424,7 +1475,7 @@ def main():
         "to stress: both diversity metrics improve while NDCG and recall also improve \u2014 so we are "
         "not trading accuracy for diversity. The model surfaces more of the catalogue, recommends less "
         "redundant lists, and ranks better at the same time. That is the strongest evidence that "
-        "diversity is a genuine objective here, not a post-hoc re-ranking heuristic.")
+        "diversity is a genuine objective here, not a post-hoc re-ranking heuristic.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1445,7 +1496,7 @@ def main():
         "representational substrate on which Shapley weighting operates. Removing diversity costs five "
         "point eight percent. The same pattern holds on Amazon-Book, with context removal again largest. "
         "The four to six percent drop when Shapley is removed supports the argument that "
-        "marginal-contribution estimation is load-bearing rather than decorative.")
+        "marginal-contribution estimation is load-bearing rather than decorative.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1464,7 +1515,7 @@ def main():
         "one. The per-epoch cost scales with the number of layers, the embedding dimension and the Monte "
         "Carlo budget. On Shapley convergence, M equal to fifty gives ninety-nine percent accuracy, while "
         "M equal to one hundred gives ninety-nine point five with diminishing returns. So fifty is the "
-        "right operating point, balancing accuracy against cost.")
+        "right operating point, balancing accuracy against cost.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1483,7 +1534,7 @@ def main():
         "0.001. The effect sizes are large, and that matters: with six thousand users, even a trivially "
         "small difference can appear significant, so reporting effect size shows the improvement is not "
         "merely a large-sample artefact. I should be scrupulous about scope: these tabulated paired tests "
-        "apply only to MovieLens-1M; the Amazon-Book results remain descriptive.")
+        "apply only to MovieLens-1M; the Amazon-Book results remain descriptive.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1502,7 +1553,7 @@ def main():
         "recommendation into the same ranking, diversity, context and preference components used during "
         "training, so the explanation is structurally faithful rather than an external approximation. "
         "And Shapley measures marginal utility rather than raw frequency, so weak but informative "
-        "interactions retain influence, mitigating popularity bias.")
+        "interactions retain influence, mitigating popularity bias.", chip=2)
 
     contrib("Contribution III \u2014 DyHuCoG: A Dynamic Hypergraph Cooperative Game",
         ["Objectives", "Methodology", "Results", "Findings"],
@@ -1519,7 +1570,7 @@ def main():
         "meaningful context; Monte Carlo Shapley could be improved by variance reduction; the ablation is "
         "component-wise, so it does not test factorial interactions; and the baselines were finalised in "
         "early 2026, so I claim superiority only against the tested baselines. Within those bounds, the "
-        "claim stands.")
+        "claim stands.", chip=3)
 
     # ---- 21. SECTION: Conclusion ----
     section(SEC_CONCL, "Conclusion & Perspectives", active=7, note="Let me now bring everything together. I will present a synthesis of the three "
@@ -1542,7 +1593,7 @@ def main():
         "the learning dynamics of a recommender, using preference-aware Shapley as an in-training signal, "
         "so that accuracy, coverage and diversity improve together. The common thread is that cooperative "
         "attribution is a single mechanism used for explanation, for interpretation and for optimisation \u2014 "
-        "not three unrelated tools.")
+        "not three unrelated tools.", chip=0)
 
     contrib("Conclusion & Perspectives",
         ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
@@ -1560,7 +1611,7 @@ def main():
         "IJIES in 2026 and corresponds to Chapter seven. What the thesis adds on top of the three papers "
         "is the multi-level formalisation, the cross-chapter comparisons, and the explicit mapping to the "
         "five research questions. In other words, the thesis is a cumulative argument, not merely a "
-        "bound collection of three papers.")
+        "bound collection of three papers.", chip=0)
 
     contrib("Conclusion & Perspectives",
         ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
@@ -1579,7 +1630,7 @@ def main():
         "itself, I want to be precise. I am not claiming one fully unified framework that eliminates all "
         "tension between accuracy and interpretability; I am claiming a shared perspective, a common "
         "attribution language, coherent and productive across the three tasks. That is the honest "
-        "boundary of the thesis.")
+        "boundary of the thesis.", chip=1)
 
     contrib("Conclusion & Perspectives",
         ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
@@ -1598,7 +1649,7 @@ def main():
         "intervention quality, or perceived fairness \u2014 which is the natural test of the "
         "\"actionable\" part of my definition. Fourth, broader trustworthy-AI and fairness evaluation: "
         "exposure fairness, transparency requirements, and governance-oriented auditing, which connects "
-        "the work to the EU AI Act, the OECD principles and the GDPR.")
+        "the work to the EU AI Act, the OECD principles and the GDPR.", chip=2)
 
     contrib("Conclusion & Perspectives",
         ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
@@ -1620,7 +1671,7 @@ def main():
         "basis, this perspective is well aligned with the transparency and accountability requirements "
         "of emerging AI regulation. I believe this is the central claim worth defending: that "
         "explanation should be part of the modelling logic itself, not a by-product attached after "
-        "prediction.")
+        "prediction.", chip=3)
 
     # ---- 22. QUESTIONS ----
     s = clone_slide(prs, QUES_ARCH)
