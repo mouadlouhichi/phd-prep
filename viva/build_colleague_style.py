@@ -462,9 +462,12 @@ def add_figure(slide, path, x, y, w=None, h=None):
     pic = slide.shapes.add_picture(path, Inches(x), Inches(y), Inches(w), Inches(h))
     return pic
 
-def add_table(slide, x, y, w, h, headers, rows, font_size=14, col_ratios=None,
+def add_table(slide, x, y, w, h, headers, rows=None, font_size=14, col_ratios=None,
               header_bg=None, body_color=BODY, hl_rows=None, hl_bg=None,
               hl_color=WHITE, row_h=None):
+    if rows is None:  # tolerant form: a single 2D list was passed as `headers`
+        rows = list(headers[1:])
+        headers = headers[0]
     if header_bg is None: header_bg = ACCT
     if hl_bg is None: hl_bg = DEEP
     ncols = len(headers); nrows = len(rows) + 1
