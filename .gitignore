@@ -9,3 +9,6 @@ extracted/
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+
+# Colleague deck duplicate (rebuilt from origin/main by build scripts)
+viva/colleague_template.pptx
