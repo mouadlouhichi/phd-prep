@@ -19,6 +19,7 @@ from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
+from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "MOUAD_LOUHICHI_VIVA_40min.pptx")
@@ -554,9 +555,161 @@ def build_outline(prs, cards):
     return s
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Generated intro / metrics diagrams + genuine paper-figure extraction
+# (teal palette, matching the colleague-style deck chrome)
+# ---------------------------------------------------------------------------
+_PA = (0x0E, 0x7C, 0x7B); _PD = (0x0A, 0x5F, 0x5E); _PK = (0x22, 0x30, 0x3C)
+_PB = (0x2F, 0x3B, 0x49); _PM = (0xE8, 0xF1, 0xF0); _PWh = (255, 255, 255)
+_PR = (0xC4, 0x28, 0x28); _PLM = (0x2E, 0x5C, 0x8A)
+_FB = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+_FR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
+def _f(sz, b=False):
+    try:
+        return ImageFont.truetype(_FB if b else _FR, sz)
+    except Exception:
+        return ImageFont.load_default()
+
+def _parrow(d, p1, p2, color=_PA, width=4, head=10):
+    d.line([p1, p2], fill=color, width=width)
+    import math
+    ang = math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+    for da in (math.radians(150), math.radians(210)):
+        hx = p2[0] + head * math.cos(ang + da)
+        hy = p2[1] + head * math.sin(ang + da)
+        d.line([p2, (hx, hy)], fill=color, width=width)
+
+def _wrap(draw, text, font, maxw):
+    out = []
+    for raw in text.split("\n"):
+        words = raw.split(" ")
+        line = ""
+        for w in words:
+            if not line:
+                line = w
+            elif draw.textlength(line + " " + w, font=font) <= maxw:
+                line += " " + w
+            else:
+                out.append(line); line = w
+        out.append(line)
+    return out
+
+def _d_evolution(path):
+    W, H = 1240, 360
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    stages = [("Similarity\nmodels", "2003-09"), ("Matrix\nfactorisation", "2009-13"),
+              ("Neural CF", "2016-19"), ("Graph\nCNN", "2018-22"), ("Hypergraph\n2022+", "")]
+    n = len(stages); x0 = 30; y = 110; bw = 150; bh = 96; gap = (W - 2 * x0 - n * bw) / (n - 1)
+    for i, (t, sub) in enumerate(stages):
+        x = x0 + i * (bw + gap)
+        col = _PA if i < n - 1 else _PD
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=16, fill=col)
+        for li, ln in enumerate(t.split("\n")):
+            d.text((x + bw / 2, y + 30 + li * 24), ln, fill=_PWh, font=_f(17, True), anchor="mm")
+        d.text((x + bw / 2, y + bh - 16), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(13), anchor="mm")
+        if i < n - 1:
+            _parrow(d, (x + bw + 4, y + bh / 2), (x + bw + gap - 4, y + bh / 2), color=_PA)
+    d.line([(x0 + 40, y + bh + 34), (W - x0 - 40, y + bh + 34)], fill=_PR, width=5)
+    d.polygon([(W - x0 - 40, y + bh + 34), (W - x0 - 58, y + bh + 26), (W - x0 - 58, y + bh + 42)], fill=_PR)
+    d.text((W / 2, y + bh + 58), "Interpretability deficit grows: opaque embeddings, non-modifiable factors",
+           fill=_PR, font=_f(18, True), anchor="mm")
+    img.save(path); return path
+
+def _d_motivation(path):
+    W, H = 1240, 400
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    cards = [("Ubiquity", "Recommenders shape news, study, health, credit", "Market > $15B by 2029", _PA),
+             ("Black box", "Deep & graph models: opaque, non-auditable", "EU AI Act: high-risk -> explain", _PD),
+             ("Toward trust", "Accountable, auditable, modifiable insight", "Actionable, not just accurate", _PLM)]
+    n = 3; x0 = 30; y = 60; bw = (W - 2 * x0 - (n - 1) * 40) / n; bh = 280
+    for i, (t, b, sub, col) in enumerate(cards):
+        x = x0 + i * (bw + 40)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col, outline=_PWh, width=2)
+        d.text((x + bw / 2, y + 40), t, fill=_PWh, font=_f(26, True), anchor="mm")
+        ly = y + 96
+        for ln in _wrap(d, b, _f(17), bw - 36):
+            d.text((x + bw / 2, ly), ln, fill=_PWh, font=_f(17), anchor="mm"); ly += 24
+        d.text((x + bw / 2, y + bh - 30), sub, fill=(0xE8, 0xF1, 0xF0), font=_f(14, True), anchor="mm")
+    img.save(path); return path
+
+def _d_actionable(path):
+    W, H = 1240, 330
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    boxes = [("Modifiable\nfactor", 40, _PA), ("-> change in\nmodel output", 300, _PD),
+             ("is it\nactionable?", 560, _PK), ("prescriptive\nlever", 820, _PLM)]
+    bw, bh = 180, 120; y = 90
+    for t, x, col in boxes:
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=16, fill=col)
+        for li, ln in enumerate(t.split("\n")):
+            d.text((x + bw / 2, y + 40 + li * 24), ln, fill=_PWh, font=_f(17, True), anchor="mm")
+    for i in range(len(boxes) - 1):
+        _parrow(d, (boxes[i][1] + bw + 4, y + bh / 2), (boxes[i + 1][1] - 4, y + bh / 2), color=_PA)
+    _parrow(d, (boxes[3][1] + bw / 2, y + bh + 10), (boxes[3][1] + bw / 2, y + bh + 30), color=_PR)
+    _parrow(d, (boxes[3][1] + bw / 2, y + bh + 30), (boxes[0][1] + bw / 2, y + bh + 30), color=_PR)
+    _parrow(d, (boxes[0][1] + bw / 2, y + bh + 30), (boxes[0][1] + bw / 2, y + bh + 10), color=_PR)
+    d.text((W / 2, y + bh + 56), "Actionable = a real-world lever you can pull to change the outcome",
+           fill=_PR, font=_f(18, True), anchor="mm")
+    img.save(path); return path
+
+def _d_metrics(path):
+    W, H = 1240, 430
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+    groups = [("Ranking", ["NDCG@k", "Recall@k", "MAP@k", "HR@k"], _PA),
+              ("Beyond-accuracy", ["Coverage", "ILD", "Novelty", "Fairness"], _PD),
+              ("Clustering validity", ["Silhouette", "Davies-Bouldin", "Calinski-H", "Stability"], _PLM)]
+    n = 3; x0 = 30; y = 50; bw = (W - 2 * x0 - (n - 1) * 40) / n; bh = 320
+    for i, (t, items, col) in enumerate(groups):
+        x = x0 + i * (bw + 40)
+        d.rounded_rectangle([x, y, x + bw, y + bh], radius=18, fill=col, outline=_PWh, width=2)
+        d.text((x + bw / 2, y + 36), t, fill=_PWh, font=_f(22, True), anchor="mm")
+        ly = y + 84
+        for it in items:
+            d.text((x + bw / 2, ly), "\u2022 " + it, fill=_PWh, font=_f(18), anchor="mm"); ly += 40
+    img.save(path); return path
+
+def _gen_intro_figs(figdir):
+    _d_evolution(os.path.join(figdir, "evolution.png"))
+    _d_motivation(os.path.join(figdir, "motivation.png"))
+    _d_actionable(os.path.join(figdir, "actionable.png"))
+    _d_metrics(os.path.join(figdir, "metrics.png"))
+
+def _ensure_figs():
+    """Generate clean architecture diagrams, extract the genuine paper figures,
+    and render the intro/metrics diagrams into viva/_figs/."""
+    import importlib.util, pymupdf
+    FIGDIR = os.path.join(HERE, "_figs")
+    os.makedirs(FIGDIR, exist_ok=True)
+    ROOT = os.path.dirname(HERE)
+    # generated clean architecture illustrations (c1_pipeline / c2_hierarchy / c3_dyhucog)
+    try:
+        spec = importlib.util.spec_from_file_location("figures_mod", os.path.join(HERE, "figures.py"))
+        fm = importlib.util.module_from_spec(spec); spec.loader.exec_module(fm)
+        fm.fig_c1(); fm.fig_c2(); fm.fig_c3()
+    except Exception as e:
+        print("WARN: figures.py generation failed:", e)
+    # genuine paper figures (extracted from the source PDFs in repo root)
+    def grab(pdf, xref, dst):
+        try:
+            doc = pymupdf.open(os.path.join(ROOT, pdf))
+            data = doc.extract_image(xref)
+            with open(os.path.join(FIGDIR, dst), "wb") as fh:
+                fh.write(data["image"])
+            doc.close()
+        except Exception as e:
+            print("WARN: extract failed", pdf, xref, e)
+    grab("Game Theory Meets Explainable AI- An Enhanced Approach to Understanding Black Box Models Through Shapley Values.pdf",
+         53, "c1_pipeline_paper.png")
+    grab("DyHuCoG A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation.pdf",
+         38, "c3_architecture_paper.png")
+    # generated intro / metrics diagrams
+    _gen_intro_figs(FIGDIR)
+
+
 def main():
     global OUTLINE_ARCH
     _ensure_template()
+    _ensure_figs()
     prs = Presentation(SRC)
 
     TITLE_ARCH    = prs.slides[0]
@@ -686,11 +839,13 @@ def main():
     add_textbox(s, 0.3, 4.2, 12.7, 0.8,
                 ["Core tension: as models gain expressive power, they lose the transparency needed for trustworthy deployment."],
                 size=16, color=ACCT, bold=True, font=MONTS_M, align=PP_ALIGN.CENTER)
+    # intro image: the evolution of recommender paradigms
+    add_figure(s, os.path.join(HERE, '_figs', 'motivation.png'), 4.16, 5.05, w=5.0)
 
     # 5. Actionable insight
     content("Actionable Insight \u2014 the Definition",
         ["Motivation", "Actionable Insight", "Research Context"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
             ("Definition 1.1 (Actionable insight)", 0, True),
             ("An explanation is actionable when it identifies at least one modifiable factor whose change is associated with a specifiable change in model output\u2026", 1),
             ("\u2026 and that factor is expressible in the semantic vocabulary of the task domain.", 1),
@@ -698,7 +853,8 @@ def main():
             ("a physicochemical variable (wine), a pollution indicator (air quality), or a preference signal (recommendation).", 1),
             ("not an opaque latent code.", 1),
             ("Why: an explanation that identifies a modifiable driver supports intervention, not merely description.", 0, True),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'actionable.png'), 6.9, 2.2, w=5.7)],
         "We frame the whole thesis around actionable insight. An explanation is actionable when it "
         "identifies at least one modifiable factor whose change is associated with a specifiable change "
         "in model output, and when that factor is expressible in the semantic vocabulary of the task "
@@ -712,14 +868,16 @@ def main():
     # 6. Research context
     content("Research Context",
         ["Motivation", "Actionable Insight", "Research Context"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
             "Recommenders evolved from similarity filters to complex representation-learning systems on sparse, high-dimensional, dynamic data.",
             ("\u2192 MF \u2192 neural CF \u2192 graph CNNs \u2192 hypergraph: each step improved ranking but intensified the interpretability deficit.", 1),
             ("Why the deficit matters:", 0),
             ("Undermines user trust.", 1),
             ("Constrains debugging and scientific learning.", 1),
             ("Collides with regulatory expectations (EU AI Act, OECD principles, GDPR).", 1),
-        ])],
+            ("EU AI Act (Art. 13) requires high-risk systems to provide explanations in human-understandable terms.", 1),
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'evolution.png'), 6.9, 2.2, w=5.7)],
         "The context is the progression from simple to hypergraph recommenders. Matrix factorisation "
         "showed that latent factors could capture preferences, but those factors were immediately "
         "uninterpretable. Graph and graph-neural-network models improved ranking by exploiting "
@@ -876,6 +1034,22 @@ def main():
         "interaction data are weak.",
         chip=0)
 
+    # 14b. Dataset characteristics (data detail, like the example deck)
+    content("Dataset Characteristics & Why Each Was Chosen",
+        ["Datasets", "Metrics", "Hardware"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Wine Quality \u2013 11 interpretable physicochemical features; small, dense, chemically correlated \u2192 tests attribution in a trusted semantic space.", 0),
+            ("Beijing Air Quality \u2013 11 pollutant + meteorological variables, 383,585 hourly records \u2192 tests scale, noise and temporal/meteorological structure.", 0),
+            ("MovieLens-1M \u2013 ~1.0M interactions, density 0.0447 \u2192 benchmark-standard recommendation with established baselines.", 0),
+            ("Amazon-Book \u2013 ~3.0M interactions, density 0.0006 \u2192 deliberately sparse to stress-test Shapley weighting when signal is weak.", 0),
+            ("The 0.0447 vs 0.0006 density contrast is intentional: the claim is that gains are largest where data are weakest.", 0, True),
+        ])],
+        "Beyond scale, each dataset was chosen so that attribution lands in a vocabulary a domain expert can act on. Wine and "  
+        "Beijing give semantically interpretable features (chemistry, pollution); the two recommenders give a density contrast "  
+        "that isolates whether cooperative attribution helps most when interaction data are scarce. That is why the same "  
+        "explanatory logic can be validated across tabular clustering and recommendation without changing the mechanism.",
+        chip=0)
+
     # 15. Splitting & preprocessing
     content("Data Splitting & Preprocessing",
         ["Datasets", "Metrics", "Hardware"],
@@ -901,14 +1075,15 @@ def main():
     # 16. Baselines & metrics
     content("Baselines & Evaluation Metrics",
         ["Datasets", "Metrics", "Hardware"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
             ("Clustering benchmark: LIME-based surrogate explanation pipeline.", 0, True),
             ("Recommendation benchmarks: MF, NCF, LightGCN, RecDCL, HCCF, HPCF (strongest reference).", 0, True),
             ("Ranking: Precision@K, Recall@K, NDCG@20 (principal).", 0),
             ("System diversity: Catalogue Coverage = |\u22c3 R_u| / |I|.", 0),
             ("List diversity: Intra-List Diversity (ILD), built into the coalition utility.", 0),
             ("Clustering quality: Silhouette, Davies\u2013Bouldin.", 0),
-        ])],
+        ]),
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'metrics.png'), 6.9, 2.2, w=5.7)],
         "Baselines span classical, neural, graph and hypergraph methods, precisely so that I can "
         "isolate the contribution of cooperative attribution rather than a favourable model choice. For "
         "recommendation I compare against matrix factorisation, NCF, LightGCN, RecDCL, HCCF and HPCF, "
@@ -1023,7 +1198,7 @@ def main():
 
     contrib("Contribution I \u2014 Explainable Black-Box Clustering",
         ["Objectives", "Methodology", "Results", "Findings"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 6.3, 4.6, [
             ("Stage 1 \u2013 PCA: stabilise geometry + visual diagnostic. NOT the explanatory space.", 0),
             ("Stage 2 \u2013 K-Means++ with multi-criteria k selection (elbow, Silhouette, Davies\u2013Bouldin).", 0),
             ("Stage 3 \u2013 LightGBM surrogate trained on original features to predict cluster labels.", 0),
@@ -1031,7 +1206,7 @@ def main():
             ("Stage 5 \u2013 Aggregate into global importance, cluster-specific profiles, and local force plots.", 0),
             ("Complexity: dominated by PCA and repeated K-Means; TreeSHAP scales with tree count, not exponentially in features.", 1),
         ]),
-        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c1_pipeline.png'), 1.6, 3.75, w=10.1)],
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c1_pipeline_paper.png'), 7.0, 2.2, w=4.5)],
         "The pipeline has five stages. Stage one is feature standardisation. Stage two is PCA, which I "
         "want to stress is used only as a computational and visual diagnostic; it is deliberately not the "
         "explanatory space, because explaining principal components would defeat the purpose of "
@@ -1546,7 +1721,7 @@ def main():
             ("Attention gate: a_ui = \u03c3( W_a[ e_u, e_i, l_i ] ); y_ui = (1 + a_ui) \u27e8e_u, e_i\u27e9.", 1),
             ("Context-aware score: f(u,i,c) = y_ui + \u03bb_c \u27e8g(c_ui), e_cui\u27e9.", 1),
         ]),
-        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c3_dyhucog.png'), 1.6, 3.75, w=10.1)],
+        lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'c3_architecture_paper.png'), 1.6, 3.75, w=10.1)],
         "The architecture is the decisive move. The base propagation is standard hypergraph message "
         "passing; the Shapley-weighted version weights each message by a normalised Shapley coefficient, "
         "dividing by the sum of coefficients over the neighbourhood. I clip and exponentially smooth the "
@@ -1883,6 +2058,26 @@ def main():
         "of emerging AI regulation. I believe this is the central claim worth defending: that "
         "explanation should be part of the modelling logic itself, not a by-product attached after "
         "prediction.", chip=3)
+
+    # ---- 21b. REFERENCES ----
+    content("References",
+        ["References", "Key sources", "Citations"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.6, 4.7, [
+            ("[R1] Louhichi, M. & Lazaar, M. Shapley Values for Explaining the Black Box Nature of ML Model Clustering. Procedia Computer Science 220, 806\u2013811 (2023).", 0),
+            ("[R2] Louhichi, M. & Lazaar, M. Game Theory Meets Explainable AI: An Enhanced Approach to Understanding Black Box Models Through Shapley Values. IJACSA 16(7), 716\u2013725 (2025).", 0),
+            ("[R3] Louhichi, M. & Lazaar, M. DyHuCoG: A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation. IJIES 19(2), 887\u2013902 (2026).", 0),
+            ("[R4] Lundberg, S.M. & Lee, S.-I. A Unified Approach to Interpreting Model Predictions (SHAP). NeurIPS 30, 4765\u20134774 (2017).", 0),
+            ("[R5] Lundberg, S.M. et al. Consistent Individualized Feature Attribution for Tree Ensembles. KDD 2018, 2713\u20132723 (2018).", 0),
+            ("[R6] Shapley, L.S. A Value for n-Person Games. Contributions to the Theory of Games II, 307\u2013317 (1953).", 0),
+            ("[R7] Gramegna, A. & Giudici, P. SHAP-based Clustering Explanations. Stats 4(4), 938\u2013959 (2021).", 0),
+            ("[R8] Wang, X. et al. Hypergraph Learning: Methods and Practices. IEEE TPAMI 44(5), 2543\u20132563 (2022).", 0),
+            ("[R9] European Commission. Proposal for a Regulation on Artificial Intelligence (EU AI Act). COM(2021) 206 final (2021).", 0),
+        ], size=15)],
+        "These are the references underpinning the thesis: my three peer-reviewed papers (R1\u2013R3), the SHAP and Shapley "  
+        "foundations (R4\u2013R6), the closest clustering-explanation and hypergraph-learning literature (R7\u2013R8), and the "  
+        "regulation that motivates actionable explanation (R9). I kept the list short and solid rather than exhaustive, so each "  
+        "entry is one I can defend in discussion.",
+        chip=0)
 
     # ---- 22. QUESTIONS ----
     s = clone_slide(prs, QUES_ARCH)
