@@ -22,6 +22,10 @@ OUT = os.path.join(HERE, "MOUAD_LOUHICHI_VIVA_40min.pptx")
 
 MONTS = "Roca Two"   # font already applied throughout the template
 
+# body text box geometry for the current slide; content_slide rewrites it to the
+# template's own content-placeholder position so the deck follows the template layout.
+BODY_RECT = [0.7, 2.3, 11.9, 4.3]
+
 # ---- read the template's accent colour from its theme ----
 def _template_accent():
     with zipfile.ZipFile(SRC) as z:
@@ -159,13 +163,16 @@ def _find_title(shapes):
             bestsz, best = sz, sh
     return best
 
-def _title_size(t):
+def _title_size(t, original=None):
+    # preserve the template's own title size as much as possible, only shrinking
+    # long titles so they don't overflow the (template-designed) title box.
+    eff = original if (original and 20 <= original <= 70) else 40
+    eff = min(eff, 40)
     n = len(t)
-    if n <= 16: return 36
-    if n <= 28: return 30
-    if n <= 42: return 26
-    if n <= 60: return 22
-    return 18
+    if n > 60:   eff = min(eff, 28)
+    elif n > 45: eff = min(eff, 34)
+    elif n > 32: eff = min(eff, 40)
+    return max(eff, 22)
 
 def _set_title(tsh, title):
     if tsh is None or not tsh.has_text_frame:
@@ -173,12 +180,15 @@ def _set_title(tsh, title):
     tf = tsh.text_frame
     tf.word_wrap = True
     paras = list(tf.paragraphs)
+    orig = None
+    if paras and paras[0].runs and paras[0].runs[0].font.size:
+        orig = paras[0].runs[0].font.size.pt
     if paras and paras[0].runs:
         r = paras[0].runs[0]
         r.text = title
         for rr in paras[0].runs[1:]:
             rr.text = ""
-        r.font.size = Pt(_title_size(title))
+        r.font.size = Pt(_title_size(title, orig))
     else:
         tf.text = title
     for p in paras[1:]:
@@ -213,12 +223,25 @@ def _strip_except(slide, keep):
 # clone an archetype, find its title by largest font, rewrite it, drop all other
 # text/pictures, then let `builder` add content.
 def content_slide(prs, arch_idx, title_shape, title, builder, note=None):
+    global BODY_RECT
     s = clone_slide(prs, prs.slides[arch_idx])
     tsh = _find_title(s.shapes)
     _set_title(tsh, title)
     tsh_id = tsh.shape_id if tsh is not None else None
+    # Body goes in the template's LEFT content column (L~1.1, W~9.0), just below the
+    # title -- this matches the template's own layout (decoration stays on the right).
+    if tsh is not None:
+        try:
+            th = tsh.height.inches
+        except Exception:
+            th = 1.2
+        top = min(5.2, tsh.top.inches + th + 0.3)
+        BODY_RECT = [1.1, top, 9.0, 5.5]
+    else:
+        BODY_RECT = [1.1, 2.3, 9.0, 5.5]
+    # drop every other text shape (labels, Lorem, etc.); keep only the title.
     for sh in list(_walk(s.shapes)):
-        if tsh_id is not None and sh.shape_id == tsh_id:
+        if tsh is not None and sh.shape_id == tsh_id:
             continue
         if sh.has_text_frame and sh.text_frame.text.strip():
             sh._element.getparent().remove(sh._element)
@@ -229,6 +252,8 @@ def content_slide(prs, arch_idx, title_shape, title, builder, note=None):
     return s
 
 def section_slide(prs, title, note=None):
+    global BODY_RECT
+    BODY_RECT = [0.7, 2.3, 11.9, 4.3]
     s = clone_slide(prs, prs.slides[3])  # slide 3 = section divider
     tsh = _find_title(s.shapes)
     _set_title(tsh, title)
@@ -269,7 +294,7 @@ def main():
     ths = _find_title(s.shapes)
     _set_title(ths, "Abstract")
     _strip_except(s, [ths])
-    add_textbox(s, 0.7, 2.3, 11.9, 4.0, [
+    add_textbox(s, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         "Modern recommenders and clustering pipelines have grown remarkably accurate yet remain "
         "opaque, which collides with trust, debugging and regulation (EU AI Act, OECD, GDPR).",
         "This thesis proposes cooperative game theory \u2014 Shapley values \u2014 as a single, shared "
@@ -309,7 +334,7 @@ def main():
                   "for recommender systems, and what I mean by an actionable insight.")
 
     # Motivation
-    content_slide(prs, 7, "TextBox 2", "Motivation: Three Questions", lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+    content_slide(prs, 7, "TextBox 2", "Motivation: Three Questions", lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("Ubiquity \u2014 how do opaque AI systems shape what billions of users see, buy and watch every day?", 0, True),
         ("The Black Box \u2014 why do state-of-the-art recommenders and clustering pipelines remain opaque to users and designers?", 0, True),
         ("Toward Trust \u2014 how can transparency be built into the model, instead of being bolted on afterwards?", 0, True),
@@ -320,14 +345,14 @@ def main():
     # Actionable insight (two-column builder, defined just below)
     # Motivation already added; Actionable:
     def _actionable(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Definition 1.1 (Actionable insight)", 0, True),
             ("An explanation is actionable when it identifies at least one modifiable factor whose change is associated with a specifiable change in model output\u2026", 1),
             ("\u2026 and that factor is expressible in the semantic vocabulary of the task domain.", 1),
             ("Accessibility means the domain's own terms: a physicochemical variable, a pollution indicator, or a preference signal \u2014 not an opaque latent code.", 1),
             ("Why: an explanation that identifies a modifiable driver supports intervention, not merely description.", 0, True),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "actionable.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"actionable.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
 
     content_slide(prs, 4, "TextBox 25", "Actionable Insight \u2014 the Definition", _actionable,
                   note="We frame the whole thesis around actionable insight: an explanation that identifies a modifiable, "
@@ -335,20 +360,20 @@ def main():
 
     # Research context + evolution figure
     def _research(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Recommenders evolved from similarity filters to complex representation learning on sparse, high-dimensional, dynamic data.", 0),
             ("\u2192 MF \u2192 neural CF \u2192 graph CNNs \u2192 hypergraph: each step improved ranking but intensified the interpretability deficit.", 1),
             ("Undermines user trust; constrains debugging; collides with EU AI Act, OECD, GDPR.", 1),
             ("EU AI Act (Art. 13) requires high-risk systems to provide explanations in human-understandable terms.", 1, True),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "evolution.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"evolution.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 5, "TextBox 29", "Research Context", _research,
                   note="The context is the progression from simple to hypergraph recommenders; each step raised "
                   "expressiveness while lowering transparency, which regulation now penalises.")
 
     # AI recsys examples + figure
     def _examples(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("AI recommendation mediates what billions see, buy and listen to every day:", 0, True),
             ("Streaming & video: Netflix, Prime Video, YouTube.", 1),
             ("Music: Spotify, YouTube Music, Deezer.", 1),
@@ -357,7 +382,7 @@ def main():
             ("Maps, ads, search: Google Maps, Uber, Google Ads.", 1),
             ("Accurate yet opaque \u2014 the very gap our thesis targets.", 0, True),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "recsys_examples.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"recsys_examples.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 5, "TextBox 29", "AI-Powered Recommendation Systems Around Us", _examples,
                   note="Recommendation is infrastructure for everyday decisions; its ubiquity plus opacity is what "
                   "makes explainability a first-class requirement.")
@@ -369,21 +394,21 @@ def main():
 
     # Recommendation paradigms + content-based figure
     def _paradigms(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Collaborative filtering \u2013 users who behaved similarly will value similar items (user-/item-based).", 0),
             ("Content-based \u2013 recommends items sharing attributes with a user profile.", 0),
             ("Hybrid \u2013 combines collaborative and content signals.", 0),
             ("Matrix factorisation \u2013 R \u2248 PQ\u1d40: compact but opaque latent factors.", 0),
             ("Graph-based \u2013 interaction graph with neighbourhood propagation (LightGCN, hypergraph).", 0),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "content_based.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"content_based.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 5, "TextBox 29", "Recommendation & Clustering Paradigms", _paradigms,
                   note="Quick orientation: collaborative, content-based, hybrid, matrix factorisation, and graph/hypergraph "
                   "methods \u2014 each strengthens modelling but complicates interpretation in a specific way.")
 
     # Limitations
     content_slide(prs, 4, "TextBox 25", "Limitations of Classical Recommenders & Unsupervised Models",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("Data sparsity & scalability \u2014 the user\u2013item matrix is overwhelmingly empty.", 0),
         ("Cold-start \u2014 new users and items are structurally disadvantaged.", 0),
         ("Popularity bias & lack of diversity \u2014 exposure begets interaction, begets exposure.", 0),
@@ -395,7 +420,7 @@ def main():
 
     # Problem statement
     content_slide(prs, 4, "TextBox 25", "Three Structuring Limitations (Problem Statement)",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("1. Lack of explainability \u2014 complex models remain hard to interpret faithfully and actionably.", 0, True),
         ("2. Difficulty of scaling \u2014 local explanations do not transfer naturally to hierarchical structures or large datasets.", 0, True),
         ("3. Weak integration into learning \u2014 most explanations stay post-hoc and do not shape model dynamics or the accuracy\u2013diversity\u2013context trade-off.", 0, True),
@@ -406,7 +431,7 @@ def main():
 
     # Research questions
     content_slide(prs, 7, "TextBox 2", "Research Questions (RQ1\u2013RQ5) and Overall Aim",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("Aim: develop, justify and evaluate a cooperative-game-theoretic perspective for XAI in clustering and recommendation.", 0, True),
         ("RQ1 \u00b7 How can Shapley values explain black-box clustering faithfully at instance and cluster level?", 0),
         ("RQ2 \u00b7 How can this extend to large-scale, hierarchical clustering without losing tractability or consistency?", 0),
@@ -419,7 +444,7 @@ def main():
 
     # Contributions overview
     content_slide(prs, 7, "TextBox 2", "The Three Contributions",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("C1 \u2013 Explainable black-box clustering: PCA\u2013KMeans\u2013LightGBM\u2013TreeSHAP pipeline.", 0, True),
         ("\u2192 Wine Quality: faithful instance- and cluster-level feature attribution.", 1),
         ("C2 \u2013 Enhanced multi-level XAI for large-scale clustering with cross-level SHAP aggregation.", 0, True),
@@ -437,8 +462,8 @@ def main():
                   note="Before the contributions, the shared experimental setup: datasets, splitting, baselines, metrics, hardware.")
 
     # Datasets table
-    content_slide(prs, 12, "TextBox 6", "Datasets Used Throughout the Thesis",
-                  lambda sl: add_table(sl, 0.7, 2.3, 11.9, 3.9,
+    content_slide(prs, 7, "TextBox 2", "Datasets Used Throughout the Thesis",
+                  lambda sl: add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.92,
              [["Dataset", "Scale", "Type", "Role"],
               ["Wine Quality (vinho verde)", "4,898 \u00d7 11", "Tabular, numeric", "C1 \u2013 single-level clustering"],
               ["Beijing Multi-Site Air Quality", "383,585 \u00d7 11", "Tabular, pollutant + meteorology", "C2 \u2013 multi-level clustering"],
@@ -449,8 +474,8 @@ def main():
                   "vocabulary a domain expert can act on.")
 
     # Dataset characteristics
-    content_slide(prs, 12, "TextBox 6", "Dataset Characteristics & Why Each Was Chosen",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+    content_slide(prs, 7, "TextBox 2", "Dataset Characteristics & Why Each Was Chosen",
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("Wine Quality \u2013 11 interpretable physicochemical features; small, dense, chemically correlated \u2192 tests attribution in a trusted semantic space.", 0),
         ("Beijing Air Quality \u2013 11 pollutant + meteorological variables, 383,585 hourly records \u2192 tests scale, noise and temporal structure.", 0),
         ("MovieLens-1M \u2013 ~1.0M interactions, density 0.0447 \u2192 benchmark-standard recommendation with established baselines.", 0),
@@ -461,8 +486,8 @@ def main():
                   "contrast isolates whether cooperative attribution helps most when interaction data are scarce.")
 
     # Splitting
-    content_slide(prs, 12, "TextBox 6", "Data Splitting & Preprocessing",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+    content_slide(prs, 7, "TextBox 2", "Data Splitting & Preprocessing",
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("Clustering: five-fold cross-validation for surrogate/attribution stability.", 0),
         ("Recommendation: user-level, temporal split \u2014 70% train / 10% val / 20% test.", 0),
         ("Leave-one-out: the latest test positive per user is the target, ranked against negatives.", 0),
@@ -475,21 +500,21 @@ def main():
 
     # Baselines & metrics + figure
     def _metrics(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Clustering benchmark: LIME-based surrogate explanation pipeline.", 0, True),
             ("Recommendation benchmarks: MF, NCF, LightGCN, RecDCL, HCCF, HPCF (strongest reference).", 0, True),
             ("Ranking: Precision@K, Recall@K, NDCG@20 (principal).", 0),
             ("Beyond-accuracy: Coverage, ILD, Novelty, Fairness.", 0),
             ("Clustering quality: Silhouette, Davies\u2013Bouldin.", 0),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "metrics.png"), 7.1, 2.4, w=5.5)
-    content_slide(prs, 12, "TextBox 6", "Baselines & Evaluation Metrics", _metrics,
+        add_figure(sl, os.path.join(HERE, "_figs", r"metrics.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
+    content_slide(prs, 7, "TextBox 2", "Baselines & Evaluation Metrics", _metrics,
                   note="Baselines span classical, neural, graph and hypergraph methods; metrics cover ranking, beyond-accuracy "
                   "and clustering validity. ILD is built into the DyHuCoG coalition utility.")
 
     # Hardware
-    content_slide(prs, 12, "TextBox 6", "Hardware & Software",
-                  lambda sl: add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+    content_slide(prs, 7, "TextBox 2", "Hardware & Software",
+                  lambda sl: add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
         ("CPU: Intel Core i9-14900K, 24 cores \u2014 clustering, preprocessing, data loading.", 0),
         ("GPU: NVIDIA GeForce RTX 4090, 24 GB \u2014 DyHuCoG training & inference.", 0),
         ("RAM: 48 GB; Storage: 2 TB SSD.", 0),
@@ -504,7 +529,7 @@ def main():
                   "objectives, methodology, results, findings.")
 
     def c1_obj(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Gap: Shapley explanation is dominant in supervised tasks, but clustering remains comparatively under-explained.", 0, True),
             ("Existing clustering-interpretability methods privilege local or global explanation, not both.", 1),
             ("They often fail to scale or preserve coherence across clusters.", 1),
@@ -516,7 +541,7 @@ def main():
                   "own structure. Objectives: cluster-level + feature-level explanation, in the original semantics, justified vs LIME.")
 
     def c1_rq(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("RQ1 \u00b7 How can Shapley values explain black-box clustering faithfully at instance and cluster level?", 0, True),
             ("Objective O1 \u00b7 A pipeline that yields cluster-level explanation while keeping feature-level attribution.", 1),
             ("Objective O2 \u00b7 Preserve the semantics of the original feature space, not a reduced latent space.", 1),
@@ -526,7 +551,7 @@ def main():
                   note="RQ1 and its three objectives: pipeline, semantics, and a justificatory argument for Shapley over LIME.")
 
     def c1_vf(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Player set N = F \u2014 each feature is a player.", 0, True),
             ("Value function v(S) = Silhouette( KMeans(X_S, k*) ) \u2014 how well data cluster using only features in S.", 0),
             ("A feature's Shapley value = its expected marginal contribution to clustering quality over all coalition orders.", 0),
@@ -538,32 +563,32 @@ def main():
                   "A feature's Shapley value is its expected marginal contribution, but evaluating every subset is intractable.")
 
     def c1_sur(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Once K-Means produces cluster labels, train a LightGBM multiclass surrogate to predict them from original features.", 0, True),
             ("Apply TreeSHAP to the surrogate \u2014 fast, exact tree-based attribution in the original semantic feature space.", 0),
             ("Direct TreeSHAP on K-Means is impossible (it explains tree models, not centroids).", 1),
             ("Validity condition: surrogate fidelity is high (macro-F1 \u2248 0.82).", 1, True),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "c1_pipeline_paper.png"), 7.1, 2.4, w=5.4)
+        add_figure(sl, os.path.join(HERE, "_figs", r"c1_pipeline_paper.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 4, "TextBox 25", "Contribution I \u2014 Surrogate + TreeSHAP", c1_sur,
                   note="The bridge: a LightGBM surrogate predicts cluster labels from original features, then TreeSHAP attributes "
                   "in the original semantic space. Fidelity (macro-F1 ~0.82) is the validity condition.")
 
     def c1_pipe(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Stage 1 \u2013 PCA: stabilise geometry + visual diagnostic (NOT the explanatory space).", 0),
             ("Stage 2 \u2013 K-Means++ with multi-criteria k selection (elbow, Silhouette, Davies\u2013Bouldin).", 0),
             ("Stage 3 \u2013 LightGBM surrogate trained on original features to predict cluster labels.", 0),
             ("Stage 4 \u2013 TreeSHAP attribution in the original feature space.", 0),
             ("Stage 5 \u2013 Global importance, cluster-specific profiles, local force plots.", 0),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "c1_pipeline_paper.png"), 7.1, 2.4, w=5.4)
+        add_figure(sl, os.path.join(HERE, "_figs", r"c1_pipeline_paper.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 4, "TextBox 25", "Contribution I \u2014 Pipeline (5 stages)", c1_pipe,
                   note="Five stages; PCA is only a visual/computational diagnostic, not the explanatory space. TreeSHAP scales "
                   "with tree count, not exponentially in features.")
 
     def c1_k(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Multi-criteria evaluation across k \u2208 {2..10} using elbow, Silhouette, Davies\u2013Bouldin.", 0),
             ("We select k* = 3 \u2014 even though it is NOT geometrically optimal:", 0, True),
             ("k = 2: Silhouette 0.214, Davies\u2013Bouldin 1.775 (better separation).", 1),
@@ -576,7 +601,7 @@ def main():
                   "distinct chemically meaningful narratives \u2014 far more actionable.")
 
     def c1_global(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Global SHAP ranking (high \u2192 low):", 0, True),
             ("density \u2192 pH \u2192 fixed acidity \u2192 sulfur-dioxide \u2192 alcohol", 1),
             ("Dominant drivers relate to structure, preservation, and sensory balance.", 1),
@@ -587,7 +612,7 @@ def main():
                   "variables an oenologist would point to. This is the strongest evidence the pipeline is faithful.")
 
     def c1_prof(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Three clusters show distinct explanatory signatures.", 0, True),
             ("Cluster 0 \u2013 density + sulfur-dioxide-related variables.", 1),
             ("Cluster 1 \u2013 acidity and pH-related effects.", 1),
@@ -607,12 +632,12 @@ def main():
               ["Stability", "Higher when surrogate faithful", "Sensitive to perturbation design"],
               ["Cluster comparison", "Strong", "Limited"]],
              col_ratios=[3, 4.4, 4.4], header_bg=ACCENT)
-    content_slide(prs, 12, "TextBox 6", "Contribution I \u2014 SHAP vs LIME", c1_tbl,
+    content_slide(prs, 7, "TextBox 2", "Contribution I \u2014 SHAP vs LIME", c1_tbl,
                   note="SHAP grounds attribution in a cooperative-game allocation rule satisfying efficiency, symmetry, null-player "
                   "and additivity; LIME has no equivalent guarantee and is sensitive to perturbation design.")
 
     def c1_ans(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Answers to the questions and objectives", 0, True),
             ("RQ1 answered in the affirmative \u2014 faithful, coherent cluster-level explanation from Shapley values.", 1),
             ("O1 met \u00b7 cluster-level explanation while preserving feature-level attribution.", 1),
@@ -624,7 +649,7 @@ def main():
                   "why surrogate fidelity is the critical validity condition.")
 
     def c1_find(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Key findings", 0, True),
             ("Cluster-level explanation anchored to individual feature contributions.", 1),
             ("Explanations returned to the original chemical variables, not a latent space.", 1),
@@ -636,7 +661,7 @@ def main():
                   "chemical variables, grounded in axioms.")
 
     def c1_lim(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Limitations", 0, True),
             ("Fidelity depends on the LightGBM surrogate \u2014 not a direct mechanism of the K-Means geometry.", 1),
             ("Confined to tabular data; no structured, graph, or image input.", 1),
@@ -647,7 +672,7 @@ def main():
                   note="C1 is single-level and surrogate-dependent; these limits define the departure to Contribution II.")
 
     def c1_take(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Takeaways", 0, True),
             ("Shapley attribution is a single, principled lens for explaining an unsupervised partition.", 1),
             ("Keeping attribution in the original feature space is what makes it actionable.", 1),
@@ -663,7 +688,7 @@ def main():
                   "the central concern is multi-granularity, not merely scale.")
 
     def c2_obj(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Gap: once clustering is multi-level, feature importance must stay interpretable within a cluster, across sub-clusters, and across the hierarchy.", 0, True),
             ("Large-scale data make exact explanation computationally burdensome.", 1),
             ("Flat explanation may be true yet incomplete \u2014 it cannot show how importance changes inside a cluster.", 1),
@@ -674,7 +699,7 @@ def main():
                   "cross-level consistency argument, and validation on Beijing air quality.")
 
     def c2_rq(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("RQ2 \u00b7 How can this extend to large-scale, hierarchical clustering without losing tractability or consistency?", 0, True),
             ("Objective O1 \u00b7 A genuinely multi-level workflow, not a rerun of the single-level pipeline.", 1),
             ("Objective O2 \u00b7 A formal cross-level consistency argument (Proposition 6.1).", 1),
@@ -684,20 +709,20 @@ def main():
                   note="RQ2 and its three objectives: multi-level workflow, Proposition 6.1, and a generality check on Beijing.")
 
     def c2_arch(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Recursive/nested: coarse clustering on the full dataset, then subdivide each cluster.", 0, True),
             ("For each level, train a level-specific surrogate and compute SHAP in the SAME original feature space.", 0),
             ("Cross-level aggregation is NOT a naive average \u2014 it respects cluster size and nesting structure.", 0, True),
             ("Parent-level attribution = an expectation over the explanatory structure of its descendants.", 1),
             ("The hierarchy is a pragmatic analytical device, not a claim of true ontological hierarchy.", 1),
         ], size=18)
-        add_figure(sl, os.path.join(HERE, "_figs", "c2_hierarchy.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"c2_hierarchy.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 4, "TextBox 25", "Contribution II \u2014 Multi-Level Architecture", c2_arch,
                   note="Recursive coarse-to-fine clustering; per-level surrogate + SHAP; cross-level aggregation respects size and "
                   "nesting. Proposition 6.1 makes differences interpretable, not inconsistent.")
 
     def c2_prop(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Let \u03a6^(l,c)_j = E_{x~c}[|\u03c6_j^(l)(x)|] be expected absolute SHAP importance of feature j at level l in cluster c.", 0),
             ("Let w_c' = |c'| / |c| be the relative size of child c' within parent c.", 0),
             ("For a strict nested hierarchy on a consistent feature space:", 0, True),
@@ -710,7 +735,7 @@ def main():
                   "residual from surrogate mismatch. It makes hierarchical explanation self-consistent and auditable.")
 
     def c2_conv(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Full dataset, k = 3 (strong convergence on multi-criteria evaluation).", 0, True),
             ("Silhouette \u2248 0.63 \u2014 materially stronger separation than wine.", 1),
             ("Davies\u2013Bouldin \u2248 0.55 \u2014 low between-cluster ambiguity.", 1),
@@ -722,7 +747,7 @@ def main():
                   "figure belongs \u2014 not the wine partition.")
 
     def c2_global(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Global SHAP ranking (high \u2192 low):", 0, True),
             ("temperature \u2192 dew point \u2192 pressure \u2192 CO \u2192 NO2 \u2192 PM10 \u2192 PM2.5", 1),
             ("It is NOT simply pollutant concentrations that matter \u2014 meteorological variables play a structurally central role.", 1),
@@ -734,7 +759,7 @@ def main():
                   "Attribution in the original variable space reveals this.")
 
     def c2_regime(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Regime A \u2013 warm photochemical: ozone, temperature, dew point prominent (summer photochemical smog).", 0),
             ("Regime B \u2013 wintertime smog: CO, SO2, PM dominate; low wind speed suppresses dispersion.", 0),
             ("Regime C \u2013 comparatively clean air: favourable meteorology, weak pollutant pushes.", 0),
@@ -745,7 +770,7 @@ def main():
                   "for an air-quality analyst.")
 
     def c2_hier(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("At the coarse level, temperature and dew point dominate \u2014 they differentiate broad atmospheric regimes.", 0),
             ("Within individual clusters, CO, SO2, PM10, wind speed, pressure, or ozone become more discriminative.", 0),
             ("This change is NOT contradictory \u2014 it is exactly what a multi-level explanation should reveal.", 0, True),
@@ -757,7 +782,7 @@ def main():
                   "Proposition 6.1 lets us interpret these shifts as meaningful structure, not noise.")
 
     def c2_gen(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Wine: small, dense, chemically correlated. Beijing: large, noisy, temporally and meteorologically variable.", 0),
             ("The same explanatory logic remains productive in both \u2192 not tied to one domain-specific peculiarity.", 0, True),
             ("vs SHAP-based clustering literature: Beijing Silhouette \u2248 0.63 vs Gramegna & Giudici credit-risk 0.37.", 1),
@@ -768,7 +793,7 @@ def main():
                   "literature, Beijing's Silhouette ~0.63 beats credit-risk ~0.37.")
 
     def c2_ans(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Answers to the questions and objectives", 0, True),
             ("RQ2 answered in the affirmative, with bounds \u2014 coherence retained under scale and hierarchy.", 1),
             ("O1 met \u00b7 a multi-granular explanation that does not collapse into a single flat summary.", 1),
@@ -780,7 +805,7 @@ def main():
                   "pre-computed partition, not yet influencing learning \u2014 the bridge to C3.")
 
     def c2_find(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Key findings", 0, True),
             ("Scalable, multi-granular explanation that does not collapse into a single flat summary.", 1),
             ("Formal cross-level consistency argument (Proposition 6.1).", 1),
@@ -791,7 +816,7 @@ def main():
                   note="C2 answers RQ2: scalable, coherent, multi-granular explanation, formalised by Proposition 6.1.")
 
     def c2_lim(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Limitations", 0, True),
             ("Clustering remains static, even though the Beijing data are temporal.", 1),
             ("Surrogate-based SHAP plus representative-instance reporting compress observation-level variation.", 1),
@@ -802,7 +827,7 @@ def main():
                   note="C2 is still static and post-hoc; that motivates Contribution III.")
 
     def c2_take(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Takeaways", 0, True),
             ("Shapley attribution stays coherent across granularity \u2014 when the hierarchy is explicit.", 1),
             ("Explanations become interpretable against scale, not just against a single flat partition.", 1),
@@ -818,7 +843,7 @@ def main():
                   "becomes an in-training signal. It answers RQ3 and RQ4.")
 
     def c3_obj(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Gap: graph and hypergraph recommenders treat message importance as uniform or attention-weighted, without a principled marginal-contribution account.", 0, True),
             ("Diversity is often a secondary objective or a re-ranking heuristic.", 1),
             ("Interpretability is added after prediction, not integrated into the learning objective.", 1),
@@ -829,7 +854,7 @@ def main():
                   "improve ranking, coverage and diversity jointly.")
 
     def c3_rq(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("RQ3 \u00b7 Can cooperative attribution move beyond post-hoc and enter the learning dynamics of graph recommenders?", 0, True),
             ("RQ4 \u00b7 Can a recommender jointly optimise ranking accuracy, context and diversity when importance is estimated by a cooperative-game utility?", 1),
             ("Objective O1 \u00b7 Formulate recommendation as a cooperative game with users, items and contexts as players.", 1),
@@ -841,7 +866,7 @@ def main():
                   "diversity improve together.")
 
     def c3_play(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Player set N = U \u222a I \u222a C (users, items, contexts).", 0, True),
             ("Hypergraph H = (V, E, W); V = U \u222a I \u222a C; W = dynamic edge weights from Shapley estimates.", 0),
             ("Coalition S \u2286 N represents entities participating in a recommendation episode.", 0),
@@ -853,7 +878,7 @@ def main():
                   "the coalition value measures recommendation quality. The parallelism with clustering is deliberate.")
 
     def c3_util(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("v(S) = \u03b1 \u00b7 NDCG@20(S) + \u03b2 \u00b7 Diversity(S) + \u03b3 \u00b7 ContextScore(S), with \u03b1 + \u03b2 + \u03b3 = 1.", 0, True),
             ("The same trade-off the recommender must satisfy is the trade-off from which attribution is computed \u2014 explanatory game and predictive objective aligned by design.", 1),
             ("Preference-weighted: v_pref(S) = v(S) + \u03bb_pref \u00b7 \u03a3_{(u,i)\u2208S} sim(u,i).", 0, True),
@@ -865,7 +890,7 @@ def main():
                   "optimises and from which attribution is computed, so explanation and objective are aligned by design.")
 
     def c3_mc(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Exact Shapley is combinatorial and infeasible for realistic systems.", 0),
             ("Monte Carlo estimator: \u03c6\u0302_j = (1/M) \u03a3_m [ v(S_m \u222a {j}) \u2212 v(S_m) ].", 0, True),
             ("Preference-aware: \u03c6\u0302_j^pref = (1/M) \u03a3_m [ v_pref(S_m \u222a {j}) \u2212 v_pref(S_m) ].", 0, True),
@@ -878,7 +903,7 @@ def main():
                   "~99% accuracy, refreshed every 10 batches.")
 
     def c3_arch(sl):
-        add_bullets(sl, 0.7, 2.3, 6.3, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2]*0.52, BODY_RECT[3], [
             ("Base propagation: e^(l+1) = \u03c3( D^-1/2 A D^-1/2 e^(l) ).", 0),
             ("Shapley-weighted: e_j^(l+1) = \u03c3( W^(l) e_j^(l) + \u03a3_{k\u2208N(j)} w_jk e_k^(l) ).", 0, True),
             ("Normalised weights: w_jk = \u03c6\u0302_jk / \u03a3_{k'\u2208N(j)} \u03c6\u0302_jk'.", 0, True),
@@ -886,13 +911,13 @@ def main():
             ("Attention gate: a_ui = \u03c3( W_a[ e_u, e_i, l_i ] ); y_ui = (1 + a_ui) \u27e8e_u, e_i\u27e9.", 1),
             ("Context-aware score: f(u,i,c) = y_ui + \u03bb_c \u27e8g(c_ui), e_cui\u27e9.", 1),
         ], size=17)
-        add_figure(sl, os.path.join(HERE, "_figs", "c3_architecture_paper.png"), 7.1, 2.4, w=5.5)
+        add_figure(sl, os.path.join(HERE, "_figs", r"c3_architecture_paper.png"), BODY_RECT[0]+BODY_RECT[2]*0.54, BODY_RECT[1], w=BODY_RECT[2]*0.44)
     content_slide(prs, 5, "TextBox 29", "Contribution III \u2014 DyHuCoG Architecture", c3_arch,
                   note="The decisive move: Shapley-weighted message passing, normalised and smoothed, plus an attention gate and a "
                   "context-aware score. Attribution directly governs how information propagates.")
 
     def c3_loss(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("L = L_rec + \u03bb_div L_div + \u03bb_ctx L_ctx + \u03bb_reg L_reg.", 0, True),
             ("L_rec \u2013 Bayesian Personalised Ranking (pairwise, implicit feedback).", 1),
             ("L_div \u2013 Intra-List Diversity regulariser: penalises redundant ranked lists.", 1),
@@ -905,31 +930,31 @@ def main():
                   "value are aligned, so the explanation is a direct read-out of what the model optimises.")
 
     def c3_tab1(sl):
-        add_table(sl, 0.7, 2.3, 11.9, 3.9,
+        add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.92,
              [["Dataset", "Model", "NDCG@20", "Recall@20", "Coverage", "Diversity"],
               ["MovieLens-1M", "HPCF", "0.2528", "0.2098", "0.342", "0.461"],
               ["MovieLens-1M", "DyHuCoG", "0.2775", "0.2362", "0.397", "0.516"],
               ["Amazon-Book", "HPCF", "0.0270", "0.0359", "0.259", "0.535"],
               ["Amazon-Book", "DyHuCoG", "0.0306", "0.0417", "0.336", "0.602"]],
              col_ratios=[3.2, 2, 2.2, 2.2, 2.2, 2.2], header_bg=ACCENT, hl_rows=[1, 3])
-    content_slide(prs, 12, "TextBox 6", "Contribution III \u2014 Headline Results", c3_tab1,
+    content_slide(prs, 7, "TextBox 2", "Contribution III \u2014 Headline Results", c3_tab1,
                   note="DyHuCoG improves NDCG, recall, coverage and diversity together vs the strongest baseline HPCF. The sparser "
                   "the data, the larger the gain \u2014 Shapley-driven weighting helps most when signal is weak.")
 
     def c3_tab2(sl):
-        add_table(sl, 0.7, 2.3, 11.8, 3.6,
+        add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.85,
              [["Metric", "MovieLens-1M", "Amazon-Book"],
               ["NDCG@20", "+9.77%", "+13.33%"],
               ["Recall@20", "+12.58%", "+16.16%"],
               ["Coverage", "+16.1%", "+29.7%"],
               ["Intra-List Diversity", "+11.9%", "+12.5%"]],
              col_ratios=[4, 3.2, 3.2], header_bg=ACCENT)
-    content_slide(prs, 12, "TextBox 6", "Contribution III \u2014 Relative Gains", c3_tab2,
+    content_slide(prs, 7, "TextBox 2", "Contribution III \u2014 Relative Gains", c3_tab2,
                   note="DyHuCoG improves ranking accuracy, coverage and diversity simultaneously \u2014 it does not sacrifice one for "
                   "the others. The largest gains appear on the sparser Amazon-Book.")
 
     def c3_div(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("MovieLens-1M: Coverage 0.342 \u2192 0.397 (+16.1%); ILD 0.461 \u2192 0.516 (+11.9%).", 0, True),
             ("Amazon-Book: Coverage 0.259 \u2192 0.336 (+29.7%); ILD 0.535 \u2192 0.602 (+12.5%).", 0, True),
             ("Reduced filter-bubble effect and greater discovery opportunity \u2014 while NDCG/Recall also improve.", 1),
@@ -939,7 +964,7 @@ def main():
                   "diversity. The model surfaces more of the catalogue and recommends less redundant lists.")
 
     def c3_ab(sl):
-        add_table(sl, 0.7, 2.3, 11.9, 3.9,
+        add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.92,
              [["Variant", "ML-1M NDCG@20", "% Drop", "Amazon NDCG@20", "% Drop"],
               ["Full DyHuCoG", "0.2775", "\u2013", "0.0306", "\u2013"],
               ["w/o Shapley Value", "0.2647", "4.6%", "0.0287", "6.1%"],
@@ -948,12 +973,12 @@ def main():
               ["w/o Context", "0.2547", "8.2%", "0.0272", "11.0%"],
               ["w/o Diversity", "0.2614", "5.8%", "0.0288", "5.8%"]],
              col_ratios=[3.6, 2.4, 1.8, 2.4, 1.8], header_bg=ACCENT, hl_rows=[1, 5])
-    content_slide(prs, 12, "TextBox 6", "Contribution III \u2014 Ablation", c3_ab,
+    content_slide(prs, 7, "TextBox 2", "Contribution III \u2014 Ablation", c3_ab,
                   note="Every component contributes. Removing Shapley drops NDCG by 4.6% (ML-1M) / 6.1% (Amazon); context removal "
                   "causes the largest single loss. Shapley weighting is load-bearing, not decorative.")
 
     def c3_cost(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Training: DyHuCoG ~2000 s vs HPCF ~1125 s on MovieLens-1M (\u2248 1.78\u00d7).", 0),
             ("Inference: 1.84 ms/query (ML-1M), 8.52 ms (Amazon) \u2014 suitable for real-time deployment.", 0),
             ("Memory: 4.4 vs 4.1 GB (ML-1M); 17.9 vs 16.8 GB (Amazon).", 0),
@@ -965,7 +990,7 @@ def main():
                   "right operating point.")
 
     def c3_sig(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Paired t-tests on per-user NDCG@20 (n = 6,040 users; df = 6,039).", 0),
             ("DyHuCoG outperforms every baseline with extremely small p-values after Holm\u2013Bonferroni correction.", 0),
             ("vs HPCF: t = 46.38, Cohen\u2019s d_z = 1.3345, p = 1.81\u00d710\u207b\u00b2\u2077\u2070.", 1, True),
@@ -977,7 +1002,7 @@ def main():
                   "large-sample artefact. Tabulated paired tests apply to MovieLens-1M; Amazon remains descriptive.")
 
     def c3_cold(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Cold-start (5 or fewer interactions): NDCG@20 \u2248 0.061 (user) and 0.057 (item), improving over HPCF by ~10%.", 0),
             ("Cross-dataset: MovieLens +9.9%, Amazon +14.8%, Yelp2018 +11.8%.", 0),
             ("Interpretability: a SHAP waterfall decomposes a recommendation into ranking, diversity, context and preference contributions.", 0, True),
@@ -988,7 +1013,7 @@ def main():
                   "same components used during training \u2014 structurally faithful, not an external approximation.")
 
     def c3_ans(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Answers to the questions and objectives", 0, True),
             ("RQ3 answered in the affirmative \u2014 attribution becomes an in-training signal, not a post-hoc diagnostic.", 1),
             ("RQ4 answered in the affirmative \u2014 ranking, coverage and diversity improve together.", 1),
@@ -1001,7 +1026,7 @@ def main():
                   "together. The strongest claim is that the explanation is structurally faithful.")
 
     def c3_find(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Key findings", 0, True),
             ("Cooperative attribution used as an in-training signal \u2014 a stronger claim than the clustering chapters.", 1),
             ("The accuracy\u2013diversity\u2013context trade-off is not structurally fixed.", 1),
@@ -1013,7 +1038,7 @@ def main():
                   "the accuracy\u2013diversity trade-off is negotiable.")
 
     def c3_lim(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Limitations", 0, True),
             ("Measurable computational overhead \u2014 roughly 1.78\u00d7 training time over HPCF.", 1),
             ("Depends on availability of meaningful context.", 1),
@@ -1025,7 +1050,7 @@ def main():
                   note="Limitations are honest: computational overhead, dependence on context, and component-wise ablation.")
 
     def c3_take(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Takeaways", 0, True),
             ("Attribution is a first-class part of the learning objective, not a post-hoc diagnostic.", 1),
             ("The explanation is a direct read-out of the objective the model already optimises.", 1),
@@ -1042,29 +1067,29 @@ def main():
                   "limitations, the future directions, and a clear statement of the thesis answer.")
 
     def synth(sl):
-        add_table(sl, 0.7, 2.3, 11.9, 3.9,
+        add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.92,
              [["Contribution", "Main idea", "Achievement", "Key finding"],
               ["C1", "Explain black-box clustering via Shapley", "PCA\u2013KMeans\u2013LightGBM\u2013TreeSHAP pipeline", "Faithful, chemistry-consistent cluster attribution (wine)"],
               ["C2", "Multi-level, large-scale clustering XAI", "Cross-level SHAP aggregation + Prop. 6.1", "Coherent under hierarchy; interprets differences"],
               ["C3", "DyHuCoG hypergraph cooperative game", "Preference-aware Shapley as in-training signal", "Accuracy + coverage + diversity improve together"]],
              col_ratios=[1.6, 4.2, 4.2, 5.0], header_bg=ACCENT)
-    content_slide(prs, 12, "TextBox 6", "Conclusion \u2014 Synthesis", synth,
+    content_slide(prs, 7, "TextBox 2", "Conclusion \u2014 Synthesis", synth,
                   note="Three contributions, one thread: C1 makes hidden structure intelligible; C2 keeps explanation coherent under "
                   "scale and hierarchy; C3 carries the same logic inside the learning dynamics. A shared attribution perspective.")
 
     def papers(sl):
-        add_table(sl, 0.7, 2.3, 11.9, 3.9,
+        add_table(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3]*0.92,
              [["No.", "Title", "Venue", "Status"],
               ["I", "Shapley Values for Explaining the Black Box Nature of ML Model Clustering", "Procedia Computer Science 220, 806\u2013811", "Published, 2023"],
               ["II", "Game Theory Meets Explainable AI: An Enhanced Approach to Understanding Black Box Models Through Shapley Values", "IJACSA 16(7), 716\u2013725", "Published, 2025"],
               ["III", "DyHuCoG: A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation", "IJIES 19(2), 887\u2013902", "Published, 2026"]],
              col_ratios=[1, 6.5, 3.2, 2], header_bg=ACCENT)
-    content_slide(prs, 12, "TextBox 6", "Conclusion \u2014 Publications", papers,
+    content_slide(prs, 7, "TextBox 2", "Conclusion \u2014 Publications", papers,
                   note="The thesis synthesises three peer-reviewed publications, mapped to the chapters. What it adds is the "
                   "multi-level formalisation, cross-chapter comparisons, and the explicit mapping to the five research questions.")
 
     def concl_lim(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Computational \u2013 exact Shapley is intractable; every contribution relies on approximation, surrogates, or restricted reporting.", 0),
             ("Methodological \u2013 clustering depends on surrogate fidelity; recommendation depends on stable approximate contributions and adequate context.", 0),
             ("Empirical \u2013 tabular clustering + benchmark recommendation; no multimodal, sequential, or online deployment; no dedicated human-subject actionability study.", 0),
@@ -1075,7 +1100,7 @@ def main():
                   "coherent perspective rather than one framework eliminating all tension.")
 
     def persp(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Scalable cooperative attribution \u2013 lower-variance Shapley, learned proposal distributions, adaptive refresh policies.", 0),
             ("Online / streaming recommendation \u2013 truly incremental settings with evolving graphs and delayed feedback.", 0),
             ("Richer human-centred evaluation \u2013 do explanations measurably improve analyst judgement, user trust, intervention quality, or perceived fairness?", 0),
@@ -1086,7 +1111,7 @@ def main():
                   "evaluation, and broader trustworthy-AI/fairness evaluation.")
 
     def answer(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("Thesis answer: cooperative game theory can function as a shared methodological perspective for actionable explanation across clustering and recommendation.", 0, True),
             ("Shapley attribution as a common formal language for feature, interaction, and context importance allocation.", 1),
             ("Faithful clustering explanation, hierarchical explanatory coherence, and contribution-aware recommendation learning.", 1),
@@ -1098,7 +1123,7 @@ def main():
                   "explanation moves from commentary to method, aligned with trustworthy-AI regulation.")
 
     def refs(sl):
-        add_bullets(sl, 0.7, 2.3, 11.9, 4.3, [
+        add_bullets(sl, BODY_RECT[0], BODY_RECT[1], BODY_RECT[2], BODY_RECT[3], [
             ("[R1] Louhichi, M. & Lazaar, M. Shapley Values for Explaining the Black Box Nature of ML Model Clustering. Procedia Computer Science 220, 806\u2013811 (2023).", 0),
             ("[R2] Louhichi, M. & Lazaar, M. Game Theory Meets Explainable AI. IJACSA 16(7), 716\u2013725 (2025).", 0),
             ("[R3] Louhichi, M. & Lazaar, M. DyHuCoG. IJIES 19(2), 887\u2013902 (2026).", 0),
@@ -1107,7 +1132,7 @@ def main():
             ("[R6] Wang, X. et al. Hypergraph Learning: Methods and Practices. IEEE TPAMI 44(5) (2022).", 0),
             ("[R7] European Commission. Proposal for a Regulation on Artificial Intelligence (EU AI Act). COM(2021) 206 final (2021).", 0),
         ], size=15, space=8)
-    content_slide(prs, 12, "TextBox 6", "References", refs,
+    content_slide(prs, 7, "TextBox 2", "References", refs,
                   note="References underpinning the thesis: my three peer-reviewed papers, the SHAP and Shapley foundations, the "
                   "hypergraph-learning literature, and the regulation that motivates actionable explanation.")
 
