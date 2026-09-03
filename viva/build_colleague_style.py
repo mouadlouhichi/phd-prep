@@ -13,7 +13,7 @@ the colleague's body shapes and inserting our own.
 
 Output: viva/MOUAD_LOUHICHI_VIVA_40min.pptx
 """
-import copy, os, subprocess, sys
+import copy, hashlib, io, os, subprocess, sys
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -49,13 +49,33 @@ RT_IMAGE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/
 
 MONTS   = "Montserrat"
 MONTS_M = "Montserrat Medium"
-ACCT    = RGBColor(0x44, 0x72, 0xC4)   # theme accent1
+# ENSIAS brand red (accent). Replaces the colleague's theme accent1 blue #4472C4.
+# White text on #D2222A = 5.25:1 contrast (WCAG AA). Do NOT use #B81B24 (dim brick).
+ENSIAS_RED = RGBColor(0xD2, 0x22, 0x2A)
+ACCT    = ENSIAS_RED               # generated accents (chips, bullets, tables, strips)
 DARK    = RGBColor(0x1F, 0x2A, 0x44)
 BODY    = RGBColor(0x33, 0x3F, 0x50)
 GREY    = RGBColor(0x6B, 0x72, 0x80)
 WHITE   = RGBColor(0xFF, 0xFF, 0xFF)
 LTBLUE  = RGBColor(0xEA, 0xF0, 0xF9)
 HDRBG   = RGBColor(0xE9, 0xEE, 0xF6)
+
+# Authoritative md5-prefix(PNG) -> digit map for the colleague's corner pager icons
+# (bottom-right, top > 6.9", absolute 1-based slide number). These are the SOLID
+# digits (the top 7-tab row uses OUTLINED digits -- left untouched).
+SOLID_DIGIT = {
+    'ebf64fb6': '1', '2a787842': '2', '3513e8dc': '3', '6ce466f5': '4',
+    '3844ae35': '5', 'dac0f9a2': '6', 'fd8131e6': '7', '51c5fe8c': '8',
+    '7d2fba37': '9', 'fa3a5ada': '0',
+}
+OUTLINE_DIGIT = {  # top 7-tab row glyphs -- read-only reference, never rewritten
+    'b51c2b4c': '1', '403a7a78': '2', '8ddc531b': '4', '6635d9f4': '5',
+    '0b4905c7': '6', '7ded1579': '7',
+}
+PAGER_TOP = 7.0            # pager pictures top (inches)
+PAGER_SIZE = 0.42          # pager picture square edge (inches)
+PAGER_TENS_X = 12.502      # tens digit picture left (inches)
+PAGER_UNITS_X = 12.806     # units digit picture left (inches)
 
 FOOTER_TEXT = ("PhD Viva \u2013 Mouad LOUHICHI \u2013 Cooperative Game Theory & "
                "Shapley for XAI in Recommendation Systems")
@@ -136,6 +156,117 @@ def clone_slide(prs, source):
                 blip.set(qn('r:embed'), new_rid)
     return dest
 
+
+# ---------------------------------------------------------------------------
+# corner pager (absolute 1-based slide number)
+# ---------------------------------------------------------------------------
+def _is_pager_picture(sh):
+    """True for the bottom-right pager digit pictures (top>6.9", x in 12.4–12.95")."""
+    if sh.shape_type != 13:
+        return False
+    return (sh.top / 914400 > 6.9 and 12.4 < sh.left / 914400 < 12.95)
+
+def collect_digit_blobs(prs):
+    """Return {digit_char: PNG blob} for every solid pager glyph in the source deck."""
+    blobs = {}
+    for slide in prs.slides:
+        for sh in slide.shapes:
+            if not _is_pager_picture(sh):
+                continue
+            h = hashlib.md5(sh.image.blob).hexdigest()[:8]
+            d = SOLID_DIGIT.get(h)
+            if d is not None and d not in blobs:
+                blobs[d] = sh.image.blob
+    return blobs
+
+def remap_pager(prs, digit_blobs):
+    """Rewrite every bottom-right pager to show the slide's true 1-based number."""
+    for i, slide in enumerate(prs.slides):
+        number = i + 1
+        pics = [sh for sh in slide.shapes if _is_pager_picture(sh)]
+        if not pics:
+            continue
+        # remove the frozen glyphs inherited from the archetype clone
+        for sh in pics:
+            sh._element.getparent().remove(sh._element)
+        digits = [int(c) for c in str(number)]
+        if len(digits) == 1:
+            _add_pager_pic(slide, digits[0], PAGER_UNITS_X, digit_blobs)
+        else:
+            _add_pager_pic(slide, digits[0], PAGER_TENS_X, digit_blobs)
+            _add_pager_pic(slide, digits[1], PAGER_UNITS_X, digit_blobs)
+
+def _add_pager_pic(slide, digit, x_in, digit_blobs):
+    blob = digit_blobs.get(str(digit))
+    if blob is None:
+        return
+    pic = slide.shapes.add_picture(io.BytesIO(blob), Inches(x_in), Inches(PAGER_TOP),
+                                   Inches(PAGER_SIZE), Inches(PAGER_SIZE))
+    return pic
+
+
+# ---------------------------------------------------------------------------
+# ENSIAS red accent conversion
+# ---------------------------------------------------------------------------
+def recolor_accent_red(slide):
+    """Convert the colleague's accent1-blue chrome fills to ENSIAS red.
+
+    Colleague shapes express the accent via <p:style><a:fillRef><a:schemeClr
+    val="accent1"/></a:fillRef>.  Rewrite that reference to a literal #D2222A, and
+    also swap any a:solidFill srgbClr 4472C4 runs to the ENSIAS red.  Text colour
+    (fontRef) is left untouched -- it resolves to white for high contrast.
+    """
+    for sh in slide.shapes:
+        el = sh._element
+        # <a:fillRef><a:schemeClr val="accent1"/> -> srgbClr D2222A
+        for fr in el.iter(qn('a:fillRef')):
+            sc = fr.find(qn('a:schemeClr'))
+            if sc is not None and sc.get('val') == 'accent1':
+                srgb = sc.makeelement(qn('a:srgbClr'), {'val': 'D2222A'})
+                fr.replace(sc, srgb)
+        # explicit solidFill 4472C4 -> D2222A
+        for c in el.iter(qn('a:srgbClr')):
+            if c.get('val') == '4472C4':
+                c.set('val', 'D2222A')
+        # vestigial green default run-colour (endParaRPr) -> red, for a consistent palette
+        for c in el.iter(qn('a:srgbClr')):
+            if c.get('val') == '98ECB7':
+                c.set('val', 'D2222A')
+        # text that sits directly on a red fill must be white for high contrast
+        if _effective_fill_is_red(sh):
+            for rp in el.iter(qn('a:rPr')):
+                sf = rp.find(qn('a:solidFill'))
+                if sf is None:
+                    continue
+                sc = sf.find(qn('a:schemeClr'))
+                if sc is not None and sc.get('val') in ('tx1', 'dk1'):
+                    sc.set('val', 'bg1')
+                s = sf.find(qn('a:srgbClr'))
+                if s is not None and s.get('val') in ('000000', '1F2A44', '333F50'):
+                    s.set('val', 'FFFFFF')
+
+def _effective_fill_is_red(sh):
+    spPr = sh._element.find(qn('p:spPr'))
+    if spPr is not None:
+        for c in spPr:
+            if c.tag == qn('a:solidFill'):
+                s = c.find(qn('a:srgbClr'))
+                if s is not None:
+                    return s.get('val').upper() == 'D2222A'
+                return False
+            if c.tag == qn('a:noFill'):
+                return False
+    for sty in sh._element.iter(qn('p:style')):
+        fr = sty.find(qn('a:fillRef'))
+        if fr is not None:
+            s = fr.find(qn('a:srgbClr'))
+            if s is not None:
+                return s.get('val').upper() == 'D2222A'
+            sc = fr.find(qn('a:schemeClr'))
+            if sc is not None:
+                return sc.get('val') == 'accent1'
+    return False
+
 # ---------------------------------------------------------------------------
 # fresh content shapes (colleague visual language)
 # ---------------------------------------------------------------------------
@@ -193,7 +324,7 @@ def add_table(slide, x, y, w, h, headers, rows, font_size=12, col_ratios=None,
               header_bg=None, body_color=BODY, hl_rows=None, hl_bg=None,
               hl_color=WHITE, row_h=None):
     if header_bg is None: header_bg = ACCT
-    if hl_bg is None: hl_bg = RGBColor(0x2E, 0x5A, 0x9E)
+    if hl_bg is None: hl_bg = RGBColor(0x9E, 0x14, 0x1E)
     ncols = len(headers); nrows = len(rows) + 1
     shape = slide.shapes.add_table(nrows, ncols, Inches(x), Inches(y), Inches(w), Inches(h))
     table = shape.table
@@ -1394,6 +1525,12 @@ def main():
         rId = sid.get(qn('r:id'))
         prs.part.drop_rel(rId)
         prs.slides._sldIdLst.remove(sid)
+
+    # ---- ENSIAS red accent chrome + high-contrast pager ----
+    for slide in prs.slides:
+        recolor_accent_red(slide)
+    digit_blobs = collect_digit_blobs(prs)
+    remap_pager(prs, digit_blobs)
 
     prs.save(OUT)
     print(f"Saved {len(prs.slides)} slides -> {OUT}")
