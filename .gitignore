@@ -16,3 +16,7 @@ viva/colleague_template.pptx
 # Regenerated figure / glyph artifacts (rebuilt by viva/figures.py)
 viva/_figs/
 viva/_glyphs/
+
+# Regenerated paper-figure cache and generated diagram assets (built by viva/build_presentation.py)
+viva/paper_figs/
+viva/assets/

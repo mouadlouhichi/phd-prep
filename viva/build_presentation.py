@@ -9,7 +9,8 @@ Output: viva/MOUAD_LOUHICHI_VIVA.pptx  (16:9, with speaker notes on every slide)
 Run:
     ./.venv/bin/python3 viva/build_presentation.py
 """
-import os
+import os, shutil, glob
+from PIL import Image, ImageDraw, ImageFont
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -128,6 +129,7 @@ def _header(slide, title, subtitle=None):
     if subtitle:
         _tb(slide, Inches(0.55), Inches(0.80), Inches(12), Inches(0.30),
             subtitle, size=13, color=RGBColor(0xC9, 0xD9, 0xEA))
+    _topnav(slide, title)
 
 # ----------------------------------------------------------------------------
 # Slide constructors
@@ -168,16 +170,24 @@ def section_slide(big, small, notes=None):
     return s
 
 def content_slide(title, bullets, notes, subtitle=None, num=None, two_col=None,
-                  layout="bullets"):
+                  layout="bullets", image=None):
     s = prs.slides.add_slide(BLANK)
     _bg(s, WHITE)
     _header(s, title, subtitle)
     if layout == "bullets":
-        _bullets(s, Inches(0.7), Inches(1.45), Inches(11.9), Inches(5.0), bullets, size=19)
+        _bullets(s, Inches(0.7), Inches(1.95), Inches(11.9), Inches(4.9), bullets, size=19)
     elif layout == "two_col":
         left, right = bullets
-        _bullets(s, Inches(0.7), Inches(1.45), Inches(6.0), Inches(5.0), left, size=17)
-        _bullets(s, Inches(6.9), Inches(1.45), Inches(5.9), Inches(5.0), right, size=17)
+        _bullets(s, Inches(0.7), Inches(1.95), Inches(6.0), Inches(4.9), left, size=17)
+        _bullets(s, Inches(6.9), Inches(1.95), Inches(5.9), Inches(4.9), right, size=17)
+    elif layout == "image_right":
+        _bullets(s, Inches(0.7), Inches(1.95), Inches(6.0), Inches(4.9), bullets, size=18)
+        if image:
+            _pic_fit(s, image, Inches(7.0), Inches(1.95), Inches(5.7), Inches(4.9), align="center")
+    elif layout == "image_left":
+        if image:
+            _pic_fit(s, image, Inches(0.7), Inches(1.95), Inches(5.7), Inches(4.9), align="center")
+        _bullets(s, Inches(7.0), Inches(1.95), Inches(6.0), Inches(4.9), bullets, size=18)
     if num:
         _footer(s, num)
     _notes(s, notes)
@@ -191,7 +201,7 @@ def table_slide(title, headers, rows, notes, subtitle=None, num=None, col_widths
     ncols = len(headers)
     nrows = len(rows) + 1
     left = Inches(0.7)
-    top = Inches(1.55)
+    top = Inches(1.95)
     width = Inches(11.9)
     height = Inches(0.42)
     shape = s.shapes.add_table(nrows, ncols, left, top, width, height * nrows)
@@ -247,7 +257,7 @@ def result_card_slide(title, cards, notes, subtitle=None, num=None):
     total_w = Inches(11.9)
     cw = Emu(int((total_w - gap * (n - 1)) / n))
     x = Inches(0.7)
-    top = Inches(2.0)
+    top = Inches(2.2)
     ch = Inches(3.2)
     for big, label, sub in cards:
         card = _rect(s, x, top, cw, ch, BG)
@@ -264,6 +274,282 @@ def result_card_slide(title, cards, notes, subtitle=None, num=None):
         _footer(s, num)
     _notes(s, notes)
     return s
+
+# ----------------------------------------------------------------------------
+# Assets: copy extracted paper figures + generate clean diagrams (PIL)
+# ----------------------------------------------------------------------------
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.makedirs(ASSETS, exist_ok=True)
+
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+
+# PIL colour tuples
+_P_NAVY = (11, 44, 74); _P_BLUE = (31, 111, 178); _P_TEAL = (14, 124, 123)
+_P_GREY = (68, 68, 68); _P_LGREY = (154, 154, 154); _P_WHITE = (255, 255, 255)
+_P_LIGHT = (238, 242, 247); _P_ACCENT = (13, 80, 160); _P_RED = (196, 40, 40)
+
+def _pf(sz, bold=False):
+    return ImageFont.truetype(FONT_BOLD if bold else FONT_PATH, sz)
+
+def _wrap(draw, text, font, maxw):
+    out = []
+    for para in text.split("\n"):
+        words = para.split(" ")
+        line = ""
+        for w in words:
+            t = (line + " " + w).strip()
+            if draw.textlength(t, font=font) <= maxw or not line:
+                line = t
+            else:
+                out.append(line); line = w
+        out.append(line)
+    return out
+
+def _pbox(d, xy, fill, outline=None, text="", tcolor=_P_WHITE, tsize=20, bold=False,
+          radius=14, sub=None, scolor=None, ssize=15):
+    d.rounded_rectangle(xy, radius=radius, fill=fill,
+                        outline=outline if outline else fill, width=3 if outline else 0)
+    fnt = _pf(tsize, bold)
+    if text:
+        lines = text.split("\n")
+        ascent, descent = fnt.getmetrics()
+        lh = ascent + descent
+        total = lh * len(lines)
+        cx = (xy[0] + xy[2]) / 2
+        y = (xy[1] + xy[3]) / 2 - total / 2 - (lh * 0.35 if sub else 0)
+        for ln in lines:
+            bb = d.textbbox((0, 0), ln, font=fnt)
+            w = bb[2] - bb[0]
+            d.text((cx - w / 2, y), ln, font=fnt, fill=tcolor)
+            y += lh
+    if sub:
+        sf = _pf(ssize, False)
+        for i, ln in enumerate(_wrap(d, sub, sf, (xy[2] - xy[0]) - 24)):
+            bb = d.textbbox((0, 0), ln, font=sf)
+            w = bb[2] - bb[0]
+            cx = (xy[0] + xy[2]) / 2
+            yy = xy[3] - 14 - (ssize + 6) * (len(_wrap(d, sub, sf, (xy[2]-xy[0])-24)) - i)
+            d.text((cx - w / 2, yy), ln, font=sf, fill=scolor or _P_GREY)
+
+def _parrow(d, p1, p2, color=_P_GREY, width=4, head=10):
+    d.line([p1, p2], fill=color, width=width)
+    import math
+    ang = math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+    for da in (math.pi * 5 / 6, -math.pi * 5 / 6):
+        a = ang + da
+        d.polygon([p2,
+                   (p2[0] - head * math.cos(a), p2[1] - head * math.sin(a)),
+                   (p2[0] - head * 0.6 * math.cos(a - 0.4), p2[1] - head * 0.6 * math.sin(a - 0.4))],
+                  fill=color)
+
+def _extract(pdf_name, xref, dst):
+    """Extract an embedded raster figure (by xref) directly from a source PDF."""
+    try:
+        import pymupdf
+    except Exception:
+        return False
+    path = os.path.join(ROOT, pdf_name)
+    if not os.path.exists(path):
+        return False
+    try:
+        doc = pymupdf.open(path)
+        d = doc.extract_image(xref)
+        doc.close()
+    except Exception:
+        return False
+    with open(os.path.join(ASSETS, dst), "wb") as f:
+        f.write(d["image"])
+    return True
+
+def _d_evolution(path):
+    W, H = 1240, 360
+    img = Image.new("RGB", (W, H), _P_WHITE); d = ImageDraw.Draw(img)
+    boxes = ["Similarity\nfilters", "Matrix\nFactorisation", "Neural CF",
+             "Graph CNN\n(LightGCN)", "Hypergraph\nrecommender"]
+    bw, bh, gap, x0, y = 218, 86, 26, 24, 60
+    for i, b in enumerate(boxes):
+        x = x0 + i * (bw + gap)
+        fill = _P_NAVY if i == 0 else (_P_TEAL if i == len(boxes) - 1 else _P_ACCENT)
+        _pbox(d, (x, y, x + bw, y + bh), fill, text=b, tsize=19, bold=True)
+        if i < len(boxes) - 1:
+            _parrow(d, (x + bw + 3, y + bh / 2), (x + bw + gap - 3, y + bh / 2),
+                    color=_P_BLUE, width=4)
+    # interpretability deficit arrow (red, downward, on the right)
+    rx = x0 + len(boxes) * (bw + gap) - bw + bw / 2
+    _parrow(d, (rx, y + bh + 24), (rx, H - 56), color=_P_RED, width=5, head=12)
+    d.text((rx - 70, H - 50), "Interpretability deficit \u2193", fill=_P_RED,
+           font=_pf(18, True))
+    img.save(path)
+
+def _d_motivation(path):
+    W, H = 1240, 400
+    img = Image.new("RGB", (W, H), _P_WHITE); d = ImageDraw.Draw(img)
+    cards = [("Ubiquity", "Opaque AI mediates what billions see, buy and watch every day."),
+             ("Black box", "Top recommenders & clustering pipelines stay opaque to users and designers."),
+             ("Toward trust", "Transparency & accountability built into the model, not bolted on.")]
+    cw, ch, gap, x0, y = 386, 250, 36, 18, 30
+    for i, (t, sub) in enumerate(cards):
+        x = x0 + i * (cw + gap)
+        _pbox(d, (x, y, x + cw, y + ch), _P_LIGHT, outline=_P_BLUE, text=t,
+              tcolor=_P_NAVY, tsize=26, bold=True, sub=sub, scolor=_P_GREY, ssize=16)
+    img.save(path)
+
+def _d_actionable(path):
+    W, H = 1240, 330
+    img = Image.new("RGB", (W, H), _P_WHITE); d = ImageDraw.Draw(img)
+    boxes = [("Modifiable factor", "expressed in the\ndomain vocabulary"),
+             ("\u0394 model output", "specifiable change\nin prediction"),
+             ("Actionable insight", "supports intervention,\nnot just description")]
+    bw, bh, gap, x0, y = 300, 110, 70, 30, 60
+    for i, (t, sub) in enumerate(boxes):
+        x = x0 + i * (bw + gap)
+        _pbox(d, (x, y, x + bw, y + bh), _P_BLUE, text=t, tsize=21, bold=True,
+              sub=sub, scolor=_P_WHITE, ssize=15)
+        if i < len(boxes) - 1:
+            _parrow(d, (x + bw + 6, y + bh / 2), (x + bw + gap - 6, y + bh / 2),
+                    color=_P_NAVY, width=4)
+    # return loop: analyst intervenes
+    _parrow(d, (x0 + 2 * (bw + gap) + bw / 2, y + bh + 26),
+            (x0 + bw / 2, y + bh + 26), color=_P_TEAL, width=4)
+    d.text((W / 2 - 90, y + bh + 34), "analyst intervenes \u2192", fill=_P_TEAL,
+           font=_pf(17, True))
+    img.save(path)
+
+def _d_c2(path):
+    W, H = 1240, 470
+    img = Image.new("RGB", (W, H), _P_WHITE); d = ImageDraw.Draw(img)
+    # top coarse partition
+    _pbox(d, (W / 2 - 230, 20, W / 2 + 230, 96), _P_NAVY,
+          text="Full dataset  \u2192  coarse partition (k*)", tsize=20, bold=True)
+    kids = ["Cluster A", "Cluster B", "Cluster C"]
+    kw, kh, gap, y = 250, 70, 60, 150
+    total = len(kids) * kw + (len(kids) - 1) * gap
+    x0 = (W - total) / 2
+    for i, k in enumerate(kids):
+        x = x0 + i * (kw + gap)
+        _parrow(d, (W / 2, 96 + 14), (x + kw / 2, y - 14), color=_P_BLUE, width=3)
+        _pbox(d, (x, y, x + kw, y + kh), _P_ACCENT, text=k, tsize=18, bold=True)
+        # sub-clusters
+        subs = ["sub-1", "sub-2"] if i < 2 else ["sub-1", "sub-2", "sub-3"]
+        sw = 105; sgap = 14; sy = y + kh + 26
+        stot = len(subs) * sw + (len(subs) - 1) * sgap
+        sx0 = x + (kw - stot) / 2
+        for j, s in enumerate(subs):
+            sx = sx0 + j * (sw + sgap)
+            _parrow(d, (x + kw / 2, y + kh + 8), (sx + sw / 2, sy - 8), color=_P_LGREY, width=2)
+            _pbox(d, (sx, sy, sx + sw, sy + 46), _P_LIGHT, outline=_P_BLUE,
+                  text=s, tcolor=_P_NAVY, tsize=14, bold=True)
+    # aggregation label
+    d.text((W / 2 - 250, H - 70),
+           "Cross-level SHAP aggregation (Prop. 6.1):  parent importance =\nsize-weighted average of children  (up to surrogate residual)",
+           fill=_P_TEAL, font=_pf(17, True))
+    img.save(path)
+
+def _d_metrics(path):
+    W, H = 1240, 430
+    img = Image.new("RGB", (W, H), _P_WHITE); d = ImageDraw.Draw(img)
+    groups = [("Ranking quality", ["Precision@K", "Recall@K", "NDCG@20  (principal)"], _P_BLUE),
+              ("Diversity", ["Coverage = |\u222a R|/|I|", "Intra-List Div. (ILD)", "built into utility"], _P_TEAL),
+              ("Clustering", ["Silhouette", "Davies\u2013Bouldin", "k-selection (elbow)"], _P_ACCENT)]
+    cw, gap, x0, y, ch = 380, 40, 25, 30, 320
+    for i, (h, items, col) in enumerate(groups):
+        x = x0 + i * (cw + gap)
+        _pbox(d, (x, y, x + cw, y + 54), col, text=h, tsize=20, bold=True)
+        iy = y + 76
+        for it in items:
+            _pbox(d, (x + 14, iy, x + cw - 14, iy + 52), _P_LIGHT, outline=col,
+                  text=it, tcolor=_P_NAVY, tsize=16, bold=False)
+            iy += 64
+    img.save(path)
+
+def generate_assets():
+    # extract genuine paper figures (architecture / workflows) directly from the source PDFs
+    _extract("DyHuCoG A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation.pdf", 38, "dyhucog_workflow.png")
+    _extract("DyHuCoG A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation.pdf", 52, "dyhucog_results.png")
+    _extract("DyHuCoG A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation.pdf", 62, "dyhucog_covdiv.png")
+    _extract("DyHuCoG A Dynamic Hypergraph Cooperative Game for Preference-aware Recommendation.pdf", 67, "dyhucog_waterfall.png")
+    _extract("Game Theory Meets Explainable AI- An Enhanced Approach to Understanding Black Box Models Through Shapley Values.pdf", 53, "gamexai_workflow.png")
+    _extract("Shapley Values for Explaining the Black Box Nature of Machine Learning Model Clustering.pdf", 136, "shapcluster_summary.png")
+    _extract("Shapley Values for Explaining the Black Box Nature of Machine Learning Model Clustering.pdf", 137, "shapcluster_clusters.png")
+    # generated diagrams
+    _d_evolution(os.path.join(ASSETS, "evolution.png"))
+    _d_motivation(os.path.join(ASSETS, "motivation.png"))
+    _d_actionable(os.path.join(ASSETS, "actionable.png"))
+    _d_c2(os.path.join(ASSETS, "c2_multilevel.png"))
+    _d_metrics(os.path.join(ASSETS, "metrics.png"))
+
+def _pic_fit(slide, path, x, y, maxw, maxh, align="center"):
+    iw, ih = Image.open(path).size
+    ar = iw / ih
+    w, h = maxw, maxw / ar
+    if h > maxh:
+        h, w = maxh, maxh * ar
+    if align == "center":
+        px = x + (maxw - w) / 2
+    elif align == "left":
+        px = x
+    else:
+        px = x + (maxw - w)
+    py = y + (maxh - h) / 2
+    slide.shapes.add_picture(path, Inches(px), Inches(py), Inches(w), Inches(h))
+
+# ----------------------------------------------------------------------------
+# Top navigation bar (mirrors the example deck's tabbed nav)
+# ----------------------------------------------------------------------------
+def _section_of(title):
+    t = title
+    if "C1" in t: return ("Contributions", "C1")
+    if "C2" in t: return ("Contributions", "C2")
+    if "C3" in t: return ("Contributions", "C3")
+    if any(k in t for k in ("Motivation", "Actionable", "Research Context")):
+        return ("Introduction", None)
+    if any(k in t for k in ("Recommendation & Clustering", "Limitations",
+                            "Three Structuring", "Research Questions", "Three Contributions")):
+        return ("Context & Problematic", None)
+    if any(k in t for k in ("Datasets", "Data Splitting", "Baselines", "Hardware")):
+        return ("Experimental Protocol", None)
+    if any(k in t for k in ("Thesis", "Published", "Future", "Questions")):
+        return ("Conclusion & Perspectives", None)
+    return ("Conclusion & Perspectives", None)
+
+def _topnav(slide, title):
+    parts = ["Introduction", "Context & Problematic", "Experimental Protocol",
+             "Contributions", "Conclusion & Perspectives"]
+    active_main, active_sub = _section_of(title)
+    by = 1.05
+    _rect(slide, 0, Inches(by), SW, Inches(0.42), RGBColor(0xEE, 0xF2, 0xF7))
+    _rect(slide, 0, Inches(by + 0.42), SW, Pt(1.2), BORDER)
+    n = len(parts); gap = 0.16
+    tw = (13.333 - gap * (n + 1)) / n
+    x = gap
+    for p in parts:
+        active = (p == active_main)
+        if active:
+            _rect(slide, Inches(x), Inches(by + 0.03), Inches(tw), Inches(0.36), BLUE)
+        _tb(slide, Inches(x), Inches(by + 0.03), Inches(tw), Inches(0.36), p,
+            size=12.5, color=WHITE if active else GREY, bold=active,
+            align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+        x += tw + gap
+    if active_main == "Contributions":
+        sy = 1.49
+        _rect(slide, 0, Inches(sy), SW, Inches(0.32), RGBColor(0xF2, 0xF5, 0xF9))
+        sx = 0.55
+        for s in ["C1", "C2", "C3"]:
+            act = (s == active_sub)
+            w = 1.15
+            if act:
+                _rect(slide, Inches(sx), Inches(sy + 0.03), Inches(w), Inches(0.26), NAVY)
+            else:
+                _rect(slide, Inches(sx), Inches(sy + 0.03), Inches(w), Inches(0.26),
+                      RGBColor(0xDD, 0xE6, 0xF0))
+            _tb(slide, Inches(sx), Inches(sy + 0.03), Inches(w), Inches(0.26), s,
+                size=11, color=WHITE if act else BLUE, bold=True,
+                align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+            sx += w + 0.2
+
+generate_assets()
 
 # ============================================================================
 # BUILD THE DECK
@@ -312,7 +598,8 @@ content_slide(
     "clustering pipelines are hard to interrogate. Third, trust: transparency should be built into "
     "the modelling logic rather than added post-hoc. The core tension is that predictive power and "
     "interpretability tend to trade off.",
-    subtitle="Where the thesis begins", num=N())
+    subtitle="Where the thesis begins", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "motivation.png"))
 
 content_slide(
     "Actionable Insight \u2014 the Definition We Use",
@@ -325,21 +612,24 @@ content_slide(
     "We frame the whole thesis around the notion of actionable insight. An explanation is actionable "
     "when it points to a modifiable driver expressed in the language of the domain. This matters "
     "because we want explanations that support intervention, not merely describe what happened.",
-    subtitle="Actionability, not just plausibility", num=N())
+    subtitle="Actionability, not just plausibility", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "actionable.png"))
 
 content_slide(
     "Research Context",
     [("Recommender systems evolved from similarity filters to complex representation-learning systems operating on sparse, high-dimensional, dynamic data.", 0),
      ("Matrix factorisation, neural CF, graph CNNs, then hypergraph recommenders \u2014 each step improved ranking but intensified the interpretability deficit.", 0),
      ("Why that deficit matters:", 0, True),
-     ("Undermines user trust", 1),
-     ("Constrains debugging and scientific learning", 1),
-     ("Collides with emerging regulatory expectations (EU AI Act, OECD principles, GDPR)", 1)],
+     ("Undermines user trust in the items they are shown", 1),
+     ("Constrains debugging and scientific learning about the model", 1),
+     ("Collides with emerging regulation: EU AI Act (2024), OECD AI Principles, GDPR [R1]", 1),
+     ("Consequence: explanation becomes an accountability mechanism, not a usability add-on.", 0)],
     "The context is the progression from simple recommenders to hypergraph models: each step raised "
     "expressiveness while lowering transparency. That deficit matters for three reasons: user trust, "
     "debugging, and regulatory expectations. In these settings explanation is an accountability "
     "mechanism, not a usability add-on.",
-    subtitle="From similarity filters to hypergraph recommenders", num=N())
+    subtitle="From similarity filters to hypergraph recommenders", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "evolution.png"))
 
 # --- 4. SECTION: CONTEXT & PROBLEMATIC -------------------------------------
 section_slide("Context & Problematic", "Three structuring limitations \u00b7 The research gap",
@@ -429,6 +719,20 @@ table_slide(
     subtitle="Four datasets, two regimes", num=N())
 
 content_slide(
+    "Dataset Characteristics & Statistics",
+    [("Wine Quality (vinho verde) - 4,898 rows x 11 physico-chemical features (acidity, sugar, pH, alcohol, sulphur); quality 3-9.", 0),
+     ("Beijing Air Quality - 383,585 hourly records x 11 pollutants + meteorology across 12 sites; strong temporal structure.", 0),
+     ("MovieLens-1M - 6,040 users / 3,706 items / 1,000,209 implicit ratings; density 4.47%; evaluated at K in {5,10,20}.", 0),
+     ("Amazon-Book - 52,643 users / 91,599 items / 2,984,108 interactions; density 0.06% (very sparse).", 0),
+     ("Why these: clustering sets have semantically interpretable features (actionable attribution); rec sets are standard benchmarks with established baselines [R6,R7,R8].", 0, True),
+     ("Preprocessing: ratings > 3 as positive; popularity-aware negative sampling q(i) propto f_i^eta; five fixed seeds for reproducibility.", 1)],
+    "The four datasets span two regimes. The two clustering datasets are chosen so attribution is "
+    "expressed in a meaningful domain vocabulary; the two recommendation datasets are standard benchmarks. "
+    "Density differs by two orders of magnitude (MovieLens-1M 4.47% vs Amazon-Book 0.06%), which is why "
+    "sparsity is a first-class experimental axis.",
+    subtitle="What each dataset brings", num=N())
+
+content_slide(
     "Data Splitting & Preprocessing",
     [("Clustering: five-fold cross-validation for surrogate/attribution stability.", 0),
      ("Recommendation: user-level, temporal split \u2014 70% train / 10% validation / 20% test.", 0),
@@ -455,7 +759,8 @@ content_slide(
     "cooperative attribution. Metrics capture ranking quality plus coverage and intra-list diversity "
     "for the recommendation side, and Silhouette and Davies-Bouldin for the clustering side. ILD is "
     "not decorative: it is part of the DyHuCoG coalition utility.",
-    subtitle="Comparing under one evaluative frame", num=N())
+    subtitle="Comparing under one evaluative frame", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "metrics.png"))
 
 content_slide(
     "Hardware & Software",
@@ -482,6 +787,10 @@ content_slide(
      ("", 0),
      ("Objectives:", 0, True),
      ("Build a pipeline yielding cluster-level explanation from an unsupervised partition while preserving feature-level attribution.", 1),
+     ("", 0),
+     ("Research Questions (RQ1):", 0, True),
+     ("RQ1a - Can Shapley values attribute cluster membership faithfully at instance and cluster level? [R2]", 1),
+     ("RQ1b - Is Shapley attribution more stable and coherent than LIME across clusters? [R5]", 1),
      ("Preserve the semantics of the original feature space even though clustering uses a reduced dimensionality.", 1),
      ("Justify, on theoretical and literature grounds, why Shapley-based attribution is better than LIME for stable cluster explanation.", 1)],
     "Clustering is a natural starting point because it strips the explanatory problem to essentials: "
@@ -494,7 +803,7 @@ content_slide(
     "C1 \u00b7 Cooperative-Game Formulation for Clustering",
     [("Player set: N = F \u2014 each feature is a player.", 0, True),
      ("Value function: v(S) = Silhouette( KMeans(X_S, k*) ) \u2014 how well data cluster using only features in S.", 0),
-     ("A feature's Shapley value = its expected marginal contribution to clustering quality over all coalition orders.", 0),
+     ("A feature's Shapley value = its expected marginal contribution to clustering quality over all coalition orders [R2].", 0),
      ("", 0),
      ("Why Silhouette: bounded, normalised, semantically intuitive.", 0),
      ("Alternatives (Davies\u2013Bouldin, Calinski\u2013Harabasz) possible but Silhouette is the interpretable choice.", 1),
@@ -507,7 +816,7 @@ content_slide(
 
 content_slide(
     "C1 \u00b7 The LightGBM Bridge for Tractable Attribution",
-    [("Once K-Means produces cluster labels, train a LightGBM multiclass surrogate to predict those labels from the original features.", 0),
+    [("Once K-Means produces cluster labels, train a LightGBM multiclass surrogate to predict those labels from the original features [R4].", 0),
      ("Apply TreeSHAP to the surrogate \u2014 exact, fast tree-based attribution in the original semantic feature space.", 0),
      ("Why this bridge matters:", 0, True),
      ("Direct TreeSHAP on K-Means is impossible (it explains tree models, not centroids).", 1),
@@ -533,7 +842,8 @@ content_slide(
     "space. K-Means defines the partition, the surrogate restores tractable supervised prediction, and "
     "TreeSHAP returns explanation to the original variables. This sequence is explicit because each "
     "stage serves a distinct purpose.",
-    subtitle="Five stages", num=N())
+    subtitle="Five stages", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "gamexai_workflow.png"))
 
 content_slide(
     "C1 \u00b7 Optimal Cluster Selection \u2014 a Deliberate Choice",
@@ -562,7 +872,8 @@ content_slide(
     "fixed acidity, sulfur dioxide, alcohol. This is important because it matches oenological "
     "knowledge, showing the surrogate-based pipeline recovers a chemically interpretable feature "
     "hierarchy rather than fitting arbitrary artefacts.",
-    subtitle="A chemistry-consistent hierarchy", num=N())
+    subtitle="A chemistry-consistent hierarchy", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "shapcluster_summary.png"))
 
 content_slide(
     "C1 \u00b7 Cluster-Specific Profiles (Three Signatures)",
@@ -577,12 +888,13 @@ content_slide(
     "but internally differentiated. Each cluster has its own chemical signature \u2014 sulfur and density "
     "for one, acidity and pH for another, a different acid-alcohol balance for the third. This is "
     "exactly the kind of actionable insight the thesis seeks.",
-    subtitle="Cluster-level heterogeneity", num=N())
+    subtitle="Cluster-level heterogeneity", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "shapcluster_clusters.png"))
 
 content_slide(
     "C1 \u00b7 SHAP vs. LIME \u2014 Why Cooperative Attribution",
     [("SHAP grounds attribution in a cooperative-game allocation rule; LIME fits a local surrogate.", 0),
-     ("Stability: SHAP is more stable when the surrogate is faithful; LIME depends on perturbation design.", 0),
+     ("Stability: SHAP is more stable when the surrogate is faithful; LIME depends on perturbation design [R5].", 0),
      ("Theoretical guarantees: SHAP satisfies efficiency, symmetry, null player, additivity \u2014 LIME has no equivalent.", 0),
      ("Local/global coherence: SHAP supports both; LIME is primarily local.", 0),
      ("Cluster comparison: SHAP is strong; LIME limited.", 0),
@@ -624,6 +936,10 @@ content_slide(
      ("", 0),
      ("Objectives:", 0, True),
      ("A genuinely multi-level explanatory workflow (not a rerun of the C1 pipeline).", 1),
+     ("", 0),
+     ("Research Questions (RQ2):", 0, True),
+     ("RQ2a - Can cross-level SHAP aggregation stay consistent as the hierarchy deepens? [R2]", 1),
+     ("RQ2b - Does the explanation remain tractable and coherent at large scale? [R9]", 1),
      ("A formal cross-level consistency argument (Proposition 6.1).", 1),
      ("Validation on a structurally different, large-scale dataset (Beijing).", 1)],
     "C2 asks whether the C1 logic survives scale and hierarchy. Large real-world data contain "
@@ -643,7 +959,8 @@ content_slide(
     "cluster is subdivided. Each level gets its own surrogate and SHAP values in the same feature space. "
     "The aggregation respects size and nesting structure. Importantly, we treat the hierarchy as an "
     "analytical device, not a metaphysical claim \u2014 this prevents overclaiming.",
-    subtitle="Nested clustering as an analytical tool", num=N())
+    subtitle="Nested clustering as an analytical tool", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "c2_multilevel.png"))
 
 content_slide(
     "C2 \u00b7 Formal Result: Hierarchical Attribution Consistency (Proposition 6.1)",
@@ -724,7 +1041,7 @@ content_slide(
      ("The same explanatory logic remains productive in both \u2192 the contribution is not tied to one domain-specific peculiarity.", 0, True),
      ("Comparison with SHAP-based clustering literature:", 1),
      ("Beijing Silhouette \u2248 0.63 vs Gramegna & Giudici credit-risk SHAP-space 0.37 \u2014 comparatively well separated.", 1),
-     ("LIME comparator: weaker structural coherence, less stable local narratives for hierarchical reasoning.", 1)],
+     ("LIME comparator: weaker structural coherence, less stable local narratives for hierarchical reasoning [R9].", 1)],
     "The fact that the same logic works on both a small chemical dataset and a large noisy "
     "environmental one supports generality. Compared with prior SHAP-based clustering work, our Beijing "
     "partition is comparatively well separated, and our claim about LIME is that its local-surrogate "
@@ -762,7 +1079,11 @@ content_slide(
      ("Objectives:", 0, True),
      ("Formulate recommendation as a cooperative game over users, items, and contexts.", 1),
      ("Embed preference-aware Monte Carlo Shapley into hypergraph message passing.", 1),
-     ("Improve ranking quality, coverage, and intra-list diversity jointly.", 1)],
+     ("Improve ranking quality, coverage, and intra-list diversity jointly.", 1),
+     ("", 0),
+     ("Research Questions (RQ3 & RQ4):", 0, True),
+     ("RQ3 - Can cooperative attribution move beyond post-hoc into the learning dynamics? [R6]", 1),
+     ("RQ4 - Can a recommender jointly optimise ranking, context and diversity via a cooperative utility? [R7]", 1)],
     "C3 is the flagship. The gap: existing hypergraph recommenders assume importance is implicit in "
     "propagation, diversity is secondary, and interpretability is bolted on. Our objectives: formulate "
     "recommendation as a cooperative game, inject preference-aware Shapley into message passing, and "
@@ -775,7 +1096,7 @@ content_slide(
      ("Hypergraph H = (V, E, W); V = U \u222a I \u222a C; W = dynamic edge weights from Shapley estimates.", 0),
      ("Coalition S \u2286 N represents entities participating in a recommendation episode.", 0),
      ("Coalition value v(S) measures the quality of the recommendation outcome achievable by S.", 0),
-     ("Top-N task: produce a ranked list L_u balancing relevance, diversity, and contextual fit.", 0)],
+     ("Top-N task: produce a ranked list L_u balancing relevance, diversity, and contextual fit [R6].", 0)],
     "We model recommendation as a cooperative game whose players are users, items, and contexts. The "
     "hypergraph encodes user-item-context interactions as hyperedges. A coalition value measures how "
     "good the recommendation is for that episode. This parallels the clustering formulation but with a "
@@ -822,7 +1143,8 @@ content_slide(
     "messages are weighted by normalised Shapley coefficients, so the model is told not only who is "
     "connected to whom but how much each coalition is worth. An attention gate interpolates between "
     "Shapley-weighted and uniform propagation as a stabiliser, and the final score is context-aware.",
-    subtitle="Relational structure filtered through cooperative importance", num=N())
+    subtitle="Relational structure filtered through cooperative importance", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "dyhucog_workflow.png"))
 
 content_slide(
     "C3 \u00b7 Multi-Objective Training",
@@ -876,7 +1198,8 @@ content_slide(
     "across users, and the items within a list are less redundant. Because ranking quality also "
     "improves, we are not trading accuracy for diversity \u2014 the cooperative utility lets the model learn "
     "a balance where relevance, coverage, and diversity improve together.",
-    subtitle="Both system- and list-level diversity improve", num=N())
+    subtitle="Both system- and list-level diversity improve", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "dyhucog_covdiv.png"))
 
 table_slide(
     "C3 \u00b7 Ablation Study (Component-wise)",
@@ -933,7 +1256,8 @@ content_slide(
     "direct: a waterfall plot decomposes a recommendation into the same utility components used during "
     "training, so the explanation is structurally faithful. Because Shapley values measure marginal "
     "utility rather than raw frequency, they help de-concentrate popularity.",
-    subtitle="Robust in sparse regimes, and interpretable", num=N())
+    subtitle="Robust in sparse regimes, and interpretable", num=N(),
+    layout="image_right", image=os.path.join(ASSETS, "dyhucog_waterfall.png"))
 
 content_slide(
     "C3 \u00b7 Findings & Limitations",
@@ -1020,6 +1344,23 @@ content_slide(
     subtitle="The central claim, stated", num=N())
 
 # --- 10. Q&A + CLOSING ------------------------------------------------------
+content_slide(
+    "References",
+    [("R1  EU AI Act (Reg. 2024/1689) - transparency and explainability duties for high-risk AI.", 0),
+     ("R2  Shapley, L.S. (1953). A value for n-person games. Annals of Mathematics Studies 28.", 0),
+     ("R3  Lundberg & Lee (2017). A Unified Approach to Interpreting Model Predictions (SHAP / TreeSHAP). NeurIPS.", 0),
+     ("R4  Ke et al. (2017). LightGBM: A Highly Efficient Gradient Boosting Decision Tree. NeurIPS.", 0),
+     ("R5  Ribeiro et al. (2016). Why Should I Trust You? (LIME). ACM SIGKDD.", 0),
+     ("R6  He et al. (2020). LightGCN. SIGIR.   R7  Xia et al. (2021) HCCF; Yu et al. (2021) HPCF. SIGIR/AAAI.", 0),
+     ("R8  He et al. (2017). Neural Collaborative Filtering (NCF). WWW.", 0),
+     ("R9  Gramegna & Giudici (2022). Shapley-value regression for credit-risk clustering.", 0),
+     ("Own: Louhichi (2023, 2025, 2026) - the three published papers behind C1, C2, C3 (see Published Research Papers).", 0, True)],
+    "A small set of the most load-bearing references. Shapley (1953) is the cooperative-game foundation; "
+    "Lundberg & Lee (2017) the TreeSHAP engine used in C1; He (2020) LightGCN and the hypergraph baselines "
+    "HCCF/HPCF (2021) are the recommendation comparators; Gramegna & Giudici (2022) the SHAP-clustering "
+    "comparator for C2.",
+    subtitle="Key sources", num=N())
+
 content_slide(
     "Questions & Discussion",
     [("Thank you for your attention.", 0, True),
