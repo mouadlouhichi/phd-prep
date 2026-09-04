@@ -176,7 +176,154 @@ def fig_c3(out="c3_dyhucog.png"):
     return os.path.join(FIGDIR, out)
 
 
+# ---------------------------------------------------------------------------
+# Figure 4 -- Intro: Coalition view of the Shapley value (Model -> attribution)
+# ---------------------------------------------------------------------------
+def fig_coalition(out="intro_coalition.png"):
+    W, H = 1600, 240
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    cy = H / 2 + 6
+    # Inputs on the left (feature values)
+    feats = ["Density = 0.8", "pH = 3.2", "Alcohol = 12.5", "Sulphates = 0.5"]
+    inx = 40
+    top_feat = 40
+    for i, name in enumerate(feats):
+        y = top_feat + i * 42
+        _text(d, (inx + 130, y), name, fill=DARK, font=_font(FONT_R, 18))
+        d.line([(inx + 265, y), (inx + 305, y)], fill=ACCENT, width=4)
+        d.polygon([(inx + 305, y - 7), (inx + 319, y), (inx + 305, y + 7)], fill=ACCENT)
+    # Model box (centred vertically)
+    mbox = (inx + 325, 30, inx + 325 + 200, 30 + 170)
+    rounded_box(d, mbox, DARK, radius=18)
+    _text(d, (mbox[0] + 100, mbox[1] + 85), "Model", fill=WHITE, font=_font(FONT_B, 26))
+    # base rate arrow (bottom)
+    brx = mbox[0] + 100
+    _text(d, (brx, mbox[3] + 18), "Base rate = 0.1", fill=BODY, font=_font(FONT_R, 16))
+    d.line([(brx, mbox[3]), (brx, mbox[3] + 12)], fill=ACCENT, width=4)
+    d.polygon([(brx - 7, mbox[3] + 12), (brx, mbox[3] + 24), (brx + 7, mbox[3] + 12)], fill=ACCENT)
+    # output arrow up
+    oyx = mbox[0] + 100
+    _text(d, (oyx, mbox[1] - 20), "Output = 0.4", fill=DARK, font=_font(FONT_B, 16))
+    d.line([(oyx, mbox[1]), (oyx, mbox[1] - 12)], fill=ACCENT, width=4)
+    d.polygon([(oyx - 7, mbox[1] - 12), (oyx, mbox[1] - 24), (oyx + 7, mbox[1] - 12)], fill=ACCENT)
+    # Explanation arrow
+    ex1, ex2 = mbox[2] + 24, mbox[2] + 140
+    ey = cy
+    d.line([(ex1, ey), (ex2 - 12, ey)], fill=ACCENT, width=4)
+    d.polygon([(ex2 - 12, ey - 9), (ex2, ey), (ex2 - 12, ey + 9)], fill=ACCENT)
+    _text(d, ((ex1 + ex2) / 2, ey - 24), "Explanation", fill=BODY, font=_font(FONT_R, 16))
+    # Output attribution box
+    obox = (ex2 + 18, 30, ex2 + 18 + 330, 30 + 170)
+    rounded_box(d, obox, MINT, outline=ACCENT, radius=18, width=3)
+    attrs = [("+0.4", 0x0E7C7B, "Density"), ("-0.3", 0xD58A5A, "pH"),
+             ("+0.2", 0x0A5F5E, "Alcohol"), ("+0.1", 0x2F3B49, "Sulphates")]
+    for i, (lab, color, name) in enumerate(attrs):
+        bw = 82
+        bx = obox[0] + 30
+        by = obox[1] + 16 + i * 36
+        rounded_box(d, (bx, by, bx + bw, by + 26), color, radius=8)
+        _text(d, (bx + 24, by + 13), lab, fill=WHITE, font=_font(FONT_B, 14))
+        _text(d, (bx + bw + 12, by + 12), name, fill=DARK, font=_font(FONT_R, 16))
+    img.save(os.path.join(FIGDIR, out))
+    return os.path.join(FIGDIR, out)
+
+
+# ---------------------------------------------------------------------------
+# Figure 5 -- Intro / Context: recommender evolution timeline
+# ---------------------------------------------------------------------------
+def fig_evolution(out="intro_evolution.png"):
+    W, H = 1500, 260
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    steps = [
+        ("Similarity", "user-based / item-based CF", MINT2),
+        ("MF", "latent factors", ACCENT),
+        ("Neural CF", "embedding bias", DEEP),
+        ("Graph GNN", "LightGCN propagation", ACCENT),
+        ("Hypergraph", "higher-order relations", DARK),
+    ]
+    n = len(steps); margin = 28
+    boxw = (W - 2 * margin - (n - 1) * 46) / n
+    boxh = 130; cy = H / 2 - 16
+    for i, (title, sub, color) in enumerate(steps):
+        x = margin + i * (boxw + 46)
+        box = (x, cy - boxh / 2, x + boxw, cy + boxh / 2)
+        rounded_box(d, box, color, radius=16)
+        textc = WHITE if color in (ACCENT, DEEP, DARK) else DARK
+        _text(d, (x + boxw / 2, cy - 26), title, fill=textc, font=_font(FONT_B, 20))
+        _text(d, (x + boxw / 2, cy + 12), sub, fill=(0xE8, 0xF1, 0xF0) if color != MINT2 else BODY, font=_font(FONT_R, 14))
+        if i < n - 1:
+            arrow(d, x + boxw + 2, cy, x + boxw + 44, cy)
+    # label below: interpretability deficit
+    rounded_box(d, (W / 2 - 340, H - 52, W / 2 + 340, H - 14), MINT, outline=ACCENT, radius=12, width=2)
+    _text(d, (W / 2, H - 33), "Each step raises expressiveness while lowering transparency (the interpretability deficit).",
+          fill=BODY, font=_font(FONT_R, 16))
+    img.save(os.path.join(FIGDIR, out))
+    return os.path.join(FIGDIR, out)
+
+
+# ---------------------------------------------------------------------------
+# Figure 6 -- Context: graph versus hypergraph representation
+# ---------------------------------------------------------------------------
+def fig_graph_hypergraph(out="intro_graph_hypergraph.png"):
+    W, H = 1500, 460
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    # LEFT: graph + adjacency matrix
+    lx = 60
+    _text(d, (lx + 150, 44), "Graph (pairwise)", fill=DARK, font=_font(FONT_B, 22))
+    nodes = [(lx + 70, 160), (lx + 170, 120), (lx + 260, 160), (lx + 120, 240), (lx + 230, 240), (lx + 170, 300)]
+    for nx, ny in nodes:
+        d.ellipse([nx - 20, ny - 20, nx + 20, ny + 20], fill=WHITE, outline=ACCENT, width=4)
+        _text(d, (nx, ny), "n%d" % (nodes.index((nx, ny)) + 1), fill=DARK, font=_font(FONT_R, 15))
+    for a in range(len(nodes)):
+        for b in range(a + 1, len(nodes)):
+            if (a + b) % 2 == 0:
+                d.line([nodes[a], nodes[b]], fill=MINT2, width=3)
+    # adjacency matrix
+    mat = (lx + 330, 110, lx + 330 + 220, 110 + 220)
+    rounded_box(d, mat, MINT, outline=ACCENT, radius=12, width=2)
+    _text(d, (mat[0] + 110, mat[1] - 24), "Adjacency W (7×7)", fill=BODY, font=_font(FONT_R, 15))
+    import random
+    random.seed(1)
+    for r in range(7):
+        for c in range(7):
+            rx = mat[0] + 12 + c * 28; ry = mat[1] + 12 + r * 28
+            val = "1" if (r != c and r < 7 and (r + c) % 2 == 0) else "0"
+            d.rectangle([rx, ry, rx + 24, ry + 24], fill=WHITE, outline=MINT2, width=1)
+            _text(d, (rx + 12, ry + 12), val, fill=DARK, font=_font(FONT_R, 13))
+    # RIGHT: hypergraph
+    rx0 = 760
+    _text(d, (rx0 + 150, 44), "Hypergraph (multi-way)", fill=DARK, font=_font(FONT_B, 22))
+    hnums = [(rx0 + 60, 150), (rx0 + 150, 110), (rx0 + 240, 150), (rx0 + 110, 230), (rx0 + 220, 230), (rx0 + 160, 290), (rx0 + 70, 290)]
+    for nx, ny in hnums:
+        d.ellipse([nx - 18, ny - 18, nx + 18, ny + 18], fill=WHITE, outline=DEEP, width=4)
+        _text(d, (nx, ny), "n%d" % (hnums.index((nx, ny)) + 1), fill=DARK, font=_font(FONT_R, 14))
+    # hyperedges (ellipses grouping nodes)
+    d.ellipse([rx0 + 40, 90, rx0 + 280, 220], outline=DEEP, width=3)
+    d.ellipse([rx0 + 90, 200, rx0 + 320, 330], outline=DEEP, width=3)
+    _text(d, (rx0 + 160, 330), "Hyperedges", fill=DEEP, font=_font(FONT_B, 16))
+    # incidence matrix hint
+    hm = (rx0 + 380, 110, rx0 + 380 + 240, 110 + 220)
+    rounded_box(d, hm, MINT, outline=DEEP, radius=12, width=2)
+    _text(d, (hm[0] + 120, hm[1] - 24), "Incidence H", fill=BODY, font=_font(FONT_R, 15))
+    for r in range(6):
+        for c in range(4):
+            rx = hm[0] + 12 + c * 32; ry = hm[1] + 12 + r * 32
+            val = "1" if (r % 2 == 0 and c % 2 == 0) else "0"
+            d.rectangle([rx, ry, rx + 28, ry + 28], fill=WHITE, outline=MINT2, width=1)
+            _text(d, (rx + 14, ry + 14), val, fill=DEEP, font=_font(FONT_R, 12))
+    # arrow between
+    arrow(d, lx + 300 + 300, H / 2, rx0 - 20, H / 2)
+    img.save(os.path.join(FIGDIR, out))
+    return os.path.join(FIGDIR, out)
+
+
 if __name__ == "__main__":
     print(fig_c1())
     print(fig_c2())
     print(fig_c3())
+    print(fig_coalition())
+    print(fig_evolution())
+    print(fig_graph_hypergraph())

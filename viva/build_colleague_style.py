@@ -321,6 +321,52 @@ def set_chip_active(shape, active):
         if sc is not None:
             sc.set('val', 'lt1' if active else 'dk1')
 
+def _add_intro_chip(slide, label):
+    """Add a third sub-nav chip to the Introduction CARDS slide.
+
+    The CARDS archetype only has two wide chip rectangles (Rectangle 28 /
+    Rectangle 29).  Clone one of them, reflow all three into the colleague's
+    three-chip row (left 0.21 / 4.85 / 9.35, width 3.88, height 0.42) and label
+    the new one `label`.  This keeps the intro sub-nav (Motivation / Actionable
+    Insight / Research Context) consistent with the content slides that follow.
+    """
+    from copy import deepcopy
+    src = _find(slide.shapes, 'Rectangle 29') or _find(slide.shapes, 'Rectangle 28')
+    if src is None:
+        return
+    # clone the template chip element (Rectangle 29) under a new name
+    new_el = deepcopy(src._element)
+    for nm in new_el.iter(qn('p:cNvPr')):
+        nm.set('name', 'Rectangle 30')
+    def _set_geometry(el, left, top, w, h):
+        for off in el.iter(qn('a:off')):
+            off.set('x', str(int(left * 914400)))
+            off.set('y', str(int(top * 914400)))
+        for ext in el.iter(qn('a:ext')):
+            ext.set('cx', str(int(w * 914400)))
+            ext.set('cy', str(int(h * 914400)))
+    # reflow existing rect 29 -> left 0.21, rect 28 -> left 4.85, new -> left 9.35
+    r29 = _find(slide.shapes, 'Rectangle 29')._element
+    r28 = _find(slide.shapes, 'Rectangle 28')._element
+    _set_geometry(r29, 0.21, 0.76, 3.88, 0.42)
+    _set_geometry(r28, 4.85, 0.76, 3.88, 0.42)
+    _set_geometry(new_el, 9.35, 0.76, 3.88, 0.42)
+    for tx in new_el.iter(qn('a:t')):
+        tx.text = label
+    # the third chip is always INACTIVE on the Motivation card slide (active=0),
+    # so force lt1 fill / dk1 text directly on the XML clone.
+    for fr in new_el.iter(qn('a:fillRef')):
+        sc = fr.find(qn('a:schemeClr'))
+        if sc is not None and sc.get('val') == 'accent1':
+            sc.set('val', 'lt1')
+    for nt in new_el.iter(qn('a:fontRef')):
+        sc = nt.find(qn('a:schemeClr'))
+        if sc is not None and sc.get('val') == 'lt1':
+            sc.set('val', 'dk1')
+    slide.shapes._spTree.append(new_el)
+    return new_el
+
+
 def apply_chip_states(slide, chip_names, active_idx):
     """Highlight the chip at `active_idx` (0-based) in `chip_names`; outline the rest."""
     for i, nm in enumerate(chip_names):
@@ -667,7 +713,9 @@ def main():
     set_lines(s, 'Rectangle 29', ["Motivation"])
     if _find(s.shapes, 'Rectangle 28'):
         set_lines(s, 'Rectangle 28', ["Actionable Insight"])
-    apply_chip_states(s, ('Rectangle 29', 'Rectangle 28'), 0)
+    # add the third chip ('Research Context') so the intro sub-nav is consistent
+    _add_intro_chip(s, "Research Context")
+    apply_chip_states(s, ('Rectangle 29', 'Rectangle 28', 'Rectangle 30'), 0)
     set_lines(s, 'Rectangle 47', ["Ubiquity", "How do opaque AI systems shape what billions of users see, buy and watch every day?"])
     set_lines(s, 'Rectangle 48', ["The Black Box", "Why do state-of-the-art recommenders and clustering pipelines remain opaque to users and designers?"])
     set_lines(s, 'Rectangle 49', ["Toward Trust", "How can transparency be built as part of the model, instead of being bolted on afterwards?"])
@@ -686,6 +734,9 @@ def main():
     add_textbox(s, 0.3, 4.2, 12.7, 0.8,
                 ["Core tension: as models gain expressive power, they lose the transparency needed for trustworthy deployment."],
                 size=16, color=ACCT, bold=True, font=MONTS_M, align=PP_ALIGN.CENTER)
+    # meaningful intro figure: coalition view of the Shapley value (Model -> attribution)
+    add_figure(s, os.path.join(HERE, '_figs', 'intro_coalition.png'),
+               0.55, 4.95, w=12.3)
 
     # 5. Actionable insight
     content("Actionable Insight \u2014 the Definition",
@@ -712,14 +763,15 @@ def main():
     # 6. Research context
     content("Research Context",
         ["Motivation", "Actionable Insight", "Research Context"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 2.5, [
             "Recommenders evolved from similarity filters to complex representation-learning systems on sparse, high-dimensional, dynamic data.",
             ("\u2192 MF \u2192 neural CF \u2192 graph CNNs \u2192 hypergraph: each step improved ranking but intensified the interpretability deficit.", 1),
             ("Why the deficit matters:", 0),
             ("Undermines user trust.", 1),
             ("Constrains debugging and scientific learning.", 1),
             ("Collides with regulatory expectations (EU AI Act, OECD principles, GDPR).", 1),
-        ])],
+        ]),
+         lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'intro_evolution.png'), 0.55, 4.35, w=12.3)],
         "The context is the progression from simple to hypergraph recommenders. Matrix factorisation "
         "showed that latent factors could capture preferences, but those factors were immediately "
         "uninterpretable. Graph and graph-neural-network models improved ranking by exploiting "
@@ -739,13 +791,15 @@ def main():
     # 8. Recommendation paradigms
     content("Recommendation & Clustering Paradigms",
         ["Paradigms", "Problematic", "Contributions"],
-        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 3.0, [
             ("Collaborative filtering \u2013 users who behaved similarly will value similar items (user-/item-based).", 0),
             ("Content-based \u2013 recommends items sharing attributes with a user profile.", 0),
             ("Hybrid \u2013 combines collaborative and content signals.", 0),
             ("Matrix factorisation \u2013 R \u2248 PQ\u1d40: compact but opaque latent factors.", 0),
             ("Graph-based \u2013 interaction graph with neighbourhood propagation (LightGCN, hypergraph).", 0),
-        ])],
+        ]),
+         lambda sl: add_figure(sl, os.path.join(HERE, '_figs', 'intro_graph_hypergraph.png'),
+                                (12.9 - 8.2) / 2, 4.15, w=8.2)],
         "Quick orientation across the paradigms we build on. Collaborative filtering recommends on the "
         "principle that similar users will value similar items, computed from the user side or the item "
         "side. Content-based filtering recommends items sharing attributes with a profile, while hybrid "
@@ -857,13 +911,17 @@ def main():
     # 14. Datasets
     content("Datasets Used Throughout the Thesis",
         ["Datasets", "Metrics", "Hardware"],
-        [lambda sl: add_table(sl, 0.4, 1.9, 12.6, 3.9,
-             ["Dataset", "Scale", "Type", "Role"],
-             [["Wine Quality (vinho verde)", "4,898 \u00d7 11", "Tabular, numeric", "C1 \u2013 single-level clustering"],
-              ["Beijing Multi-Site Air Quality", "383,585 \u00d7 11", "Tabular, pollutant + meteorology", "C2 \u2013 multi-level clustering"],
-              ["MovieLens-1M", "6,040 u / 3,706 i / 1.0M int", "Implicit feedback (0.0447)", "C3 \u2013 DyHuCoG"],
-              ["Amazon-Book", "52,643 u / 91,599 i / 3.0M int", "Implicit feedback (0.0006)", "C3 \u2013 DyHuCoG"]],
-             col_ratios=[4, 2.6, 2.8, 3.4])],
+        [lambda sl: add_table(sl, 0.4, 1.9, 12.6, 3.5,
+             ["Dataset", "Scale", "Density / Var.", "Type & Role"],
+             [["Wine Quality (Vinho Verde, Portugal)", "4,898 \u00d7 11", "dense, chemically correlated", "tabular \u00b7 C1 single-level clustering \u00b7 11 physicochemical features"],
+              ["Beijing Multi-Site Air Quality", "383,585 \u00d7 11", "large, noisy, 2013\u20132017", "tabular \u00b7 C2 multi-level clustering \u00b7 PM2.5/PM10/NO2/SO2/CO/O3 + meteorology"],
+              ["MovieLens-1M", "6,040 u \u00d7 3,706 i", "0.0447 · 1.0M ratings", "implicit feedback \u00b7 C3 DyHuCoG \u00b7 ratings > 3 binarised positive"],
+              ["Amazon-Book", "52,643 u \u00d7 91,599 i", "0.0006 · 3.0M ratings", "implicit feedback \u00b7 C3 DyHuCoG \u00b7 sparse real-world e-commerce"]],
+             col_ratios=[3.6, 2.6, 2.6, 4.2]),
+         lambda sl: add_textbox(sl, 0.4, 5.45, 12.6, 1.2, [
+            "Selection criterion: clustering datasets have semantically interpretable features (the whole point is to return attribution to the original variables); ",
+            "recommendation datasets are benchmark-standard with established baselines. Sources: Cortez et al. (2009) \u00b7 Liang et al. (2015) \u00b7 Harper & Konstan (2016) \u00b7 He & McAuley (2016).",
+         ], size=12, color=GREY, italic=True)],
         "Two clustering datasets and two recommendation datasets. For clustering I deliberately picked "
         "datasets with semantically interpretable features, because the whole point of the method is to "
         "return attribution to the original variables. Wine Quality is a small, dense, chemically "
@@ -903,22 +961,25 @@ def main():
         ["Datasets", "Metrics", "Hardware"],
         [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
             ("Clustering benchmark: LIME-based surrogate explanation pipeline.", 0, True),
-            ("Recommendation benchmarks: MF, NCF, LightGCN, RecDCL, HCCF, HPCF (strongest reference).", 0, True),
-            ("Ranking: Precision@K, Recall@K, NDCG@20 (principal).", 0),
+            ("Recommendation benchmarks \u2014 classical to hypergraph: MF, NCF, LightGCN, RecDCL, HCCF, HPCF (strongest reference).", 0, True),
+            ("Ranking: Precision@K, Recall@K, NDCG@20 (principal; DCG = \u03a3 (2^rel\u22121)/log\u2082(i+1)).", 0),
             ("System diversity: Catalogue Coverage = |\u22c3 R_u| / |I|.", 0),
-            ("List diversity: Intra-List Diversity (ILD), built into the coalition utility.", 0),
-            ("Clustering quality: Silhouette, Davies\u2013Bouldin.", 0),
+            ("List diversity: ILD(R_u) = 2/(K(K\u22121)) \u03a3_{a<b} [1 \u2212 sim(i_a, i_b)] in the learned item space.", 0),
+            ("Clustering quality: Silhouette s = (b\u2212a)/max(a,b); Davies\u2013Bouldin; Calinski\u2013Harabasz.", 0),
+            ("Statistical validation: paired t-test per-user NDCG@20, Holm\u2013Bonferroni, Wilcoxon signed-rank, Cohen\u2019s d_z.", 0, True),
         ])],
         "Baselines span classical, neural, graph and hypergraph methods, precisely so that I can "
         "isolate the contribution of cooperative attribution rather than a favourable model choice. For "
         "recommendation I compare against matrix factorisation, NCF, LightGCN, RecDCL, HCCF and HPCF, "
         "treating HPCF as the strongest reference. For clustering interpretability I compare against a "
         "LIME-based surrogate pipeline. Ranking is measured with Precision at K, Recall at K and NDCG at "
-        "twenty as the principal measure. On the diversity side I measure system-level catalogue "
-        "coverage, and list-level intra-list diversity, defined as the average pairwise dissimilarity "
-        "inside a ranked list. I want to emphasise that ILD is not decorative: it is deliberately built "
-        "into the DyHuCoG coalition utility. Clustering quality is measured with Silhouette and "
-        "Davies-Bouldin.",
+        "twenty as the principal measure, where DCG discounts by the log of rank. On the diversity side "
+        "I measure system-level catalogue coverage, and list-level intra-list diversity, defined as the "
+        "average pairwise dissimilarity inside a ranked list. I want to emphasise that ILD is not "
+        "decorative: it is deliberately built into the DyHuCoG coalition utility. Clustering quality is "
+        "measured with Silhouette and Davies-Bouldin. Finally, every headline comparison is backed by "
+        "statistical validation: a paired t-test on per-user NDCG at twenty, Holm-Bonferroni correction, "
+        "Wilcoxon signed-rank as a non-parametric check, and Cohen's d as an effect size.",
         chip=1)
 
     # 17. Hardware & software
@@ -1883,6 +1944,56 @@ def main():
         "of emerging AI regulation. I believe this is the central claim worth defending: that "
         "explanation should be part of the modelling logic itself, not a by-product attached after "
         "prediction.", chip=3)
+
+    # ---- 21b. References (key sources) ----
+    contrib("References",
+        ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Foundations of attribution (axiomatic, normative)", 0, True),
+            ("Shapley, L. S. (1953). A value for n-person games. In Contributions to the Theory of Games, II. Princeton Univ. Press.", 1),
+            ("Lundberg, S. M., & Lee, S.-I. (2017). A unified approach to interpreting model predictions. NeurIPS 30.", 1),
+            ("Lundberg et al. (2020). From local explanations to global understanding with explainable AI for trees. Nature Machine Intelligence, 2(1), 56\u201367.", 1),
+            ("Sundararajan, M., & Najmi, A. (2020). The many Shapley values for model explanation. ICML.", 1),
+            ("Interpretability & XAI frameworks", 0),
+            ("Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). \u201cWhy should I trust you?\u201d Explaining the predictions of any classifier. KDD.", 1),
+            ("Arrieta, A. B. et al. (2020). Explainable AI: Concepts, taxonomies, opportunities and challenges toward responsible AI. Information Fusion, 58, 82\u2013115.", 1),
+            ("Doshi-Velez, F., & Kim, B. (2017). Towards a rigorous science of interpretable ML. arXiv:1702.08608.", 1),
+            ("Rudin, C. (2019). Stop explaining black-box models for high-stakes decisions. Nature Machine Intelligence, 1(5), 206\u2013215.", 1),
+        ])],
+        "These are the core methodological references that ground the cooperative-attribution argument. "
+        "The Shapley value is the original axiomatic allocation rule; Lundberg and Lee unified feature "
+        "attribution into the SHAP framework; Lundberg et al. made it exact and fast for trees, which is "
+        "what makes our surrogate pipeline tractable. Sundararajan and Najmi clarify the design choices "
+        "among the many Shapley variants. On the interpretability side, Ribeiro et al. give the local "
+        "surrogate (LIME) we compare against; Arrieta et al. and Doshi-Velez and Kim provide the "
+        "taxonomy and evaluation framework; and Rudin argues for interpretable models in high-stakes "
+        "settings, which motivates our insistence on faithfulness.",
+        chip=3)
+
+    contrib("References",
+        ["Synthesis", "Limitations", "Perspectives", "Conclusion"],
+        [lambda sl: add_bullets(sl, 0.4, 1.9, 12.5, 4.6, [
+            ("Recommender systems & graph/hypergraph models", 0, True),
+            ("He, X. et al. (2017). Neural collaborative filtering. WWW, 173\u2013182.", 1),
+            ("He, X. et al. (2020). LightGCN: Simplifying and powering graph convolution for recommendation. SIGIR, 639\u2013648.", 1),
+            ("Xia, L. et al. (2022). Hypergraph contrastive collaborative filtering. SIGIR, 70\u201379.", 1),
+            ("Adomavicius, G., & Tuzhilin, A. (2005). Toward the next generation of recommender systems. IEEE TKDE, 17(6), 734\u2013749.", 1),
+            ("Koren, Y., Bell, R., & Volinsky, C. (2009). Matrix factorization techniques for recommender systems. Computer, 42(8), 30\u201337.", 1),
+            ("Datasets & evaluation", 0),
+            ("Cortez, P. et al. (2009). Modeling wine preferences by data mining from physicochemical properties. Decision Support Systems, 47(4), 547\u2013553.", 1),
+            ("Harper, F. M., & Konstan, J. A. (2016). The MovieLens datasets: History and context. ACM TiiS, 5(4), 1\u201319.", 1),
+            ("Hurley, N., & Zhang, M. (2011). Novelty and diversity in top-N recommendation. ACM TOIT, 10(4), 14.", 1),
+            ("European Union (2024). Regulation (EU) 2024/1689 \u2014 Artificial Intelligence Act. OJ L 2024/1689.", 1),
+        ])],
+        "These ground the recommendation side of the thesis. He et al. define neural collaborative "
+        "filtering; He et al. simplify GCN into LightGCN, showing that structural propagation matters "
+        "more than neural complexity; Xia et al. introduce hypergraph contrastive collaborative "
+        "filtering, the immediate ancestor of our hypergraph backbone. Adomavicius and Tuzhilin and "
+        "Koren et al. establish the collaborative-filtering and matrix-factorisation baselines. On "
+        "evaluation, Cortez et al. supply the wine data, Harper and Konstan the MovieLens data, and "
+        "Hurley and Zhang formalise novelty and diversity in top-N recommendation. Finally, the EU AI Act "
+        "is the regulatory anchor for why faithful explanation is a first-class requirement.",
+        chip=3)
 
     # ---- 22. QUESTIONS ----
     s = clone_slide(prs, QUES_ARCH)
