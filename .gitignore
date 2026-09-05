@@ -1,0 +1,18 @@
+# Python virtual environment / tooling
+.venv/
+venv/
+
+# Generated PDF-text extraction artifacts (see GROUNDING_NOTES.md source PDFs in repo root)
+extracted/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Colleague deck duplicate (rebuilt from origin/main by build scripts)
+viva/colleague_template.pptx
+
+# Regenerated figure / glyph artifacts (rebuilt by viva/figures.py)
+viva/_figs/
+viva/_glyphs/
