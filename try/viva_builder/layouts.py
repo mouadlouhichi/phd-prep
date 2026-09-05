@@ -27,6 +27,7 @@ class Ctx:
         self.deck = deck
         self.n = 0
         self.acc = 0
+        self.section = None
 
     def next_accent(self):
         k = ACCENT_CYCLE[self.acc % len(ACCENT_CYCLE)]
@@ -153,23 +154,57 @@ def eq_width(tex, size):
 # --------------------------------------------------------------------------
 # Chrome
 # --------------------------------------------------------------------------
-def chrome(slide, n, dark=False):
+FOOTER_LOGO = None      # optional path to a small logo drawn at the left of the footer (set by the builder)
+SECTION_COUNT = 7
+
+
+def chrome(slide, n, dark=False, footer=None):
+    """Header (university / viva), footer (logo + running title or numbered references + page number)."""
     col = WHITE if dark else INK
     textbox(slide, L, HEADER_Y, emu(8), emu(0.4), [Para([Run(UNI, font="bold", size=20, color=col, spc=-1.1)], lnspc=28)])
     textbox(slide, R - emu(8), HEADER_Y, emu(8), emu(0.4), [Para([Run(VIVA, font="bold", size=20, color=col, spc=-1.1)], align="r", lnspc=28)])
-    # footer
-    textbox(slide, L, emu(10.66), emu(14), emu(0.3), [Para([Run(SHORT_TITLE, font="bold", size=13, color=MUTED if not dark else "CFDAD6")], lnspc=16)])
+    fx = L
+    if FOOTER_LOGO and os.path.exists(FOOTER_LOGO):
+        picture(slide, FOOTER_LOGO, L, emu(10.58), h=emu(0.42))
+        fx = L + emu(0.6)
+    if footer:
+        # example-deck style: the numbered references replace the running title on this slide
+        fw = R - emu(1.3) - fx
+        paras = [Para([Run(footer, font="body", size=10, color=MUTED if not dark else "CFDAD6")], lnspc=12)]
+        fitted, _ = shrink_to_fit(paras, fw, emu(0.56), min_scale=0.8)
+        textbox(slide, fx, emu(10.5), fw, emu(0.62), fitted, anchor="ctr")
+    else:
+        textbox(slide, fx, emu(10.66), emu(14), emu(0.3), [Para([Run(SHORT_TITLE, font="bold", size=13, color=MUTED if not dark else "CFDAD6")], lnspc=16)])
     textbox(slide, R - emu(1.2), emu(10.6), emu(1.2), emu(0.36), [Para([Run(f"{n:02d}", font="xbold", size=18, color=col)], align="r", lnspc=22)])
 
 
-def title_block(ctx, slide, headline, eyebrow=None, tabs=None, active=None, accent_key=None):
-    """Eyebrow (section), Roca headline, optional tab pills. Returns content-top y."""
+def tracker(slide, current, x, y, d=emu(0.36), gap=emu(0.08), count=None):
+    """Example-deck style 1..7 section tracker: small squares, the current section filled."""
+    count = count or SECTION_COUNT
+    for i in range(1, count + 1):
+        on = (i == current)
+        bx = x + (i - 1) * (d + gap)
+        rrect(slide, bx, y, d, d, fill=GREEN if on else WHITE, line=GREEN if on else RULE, line_w=1.25, radius=emu(0.06))
+        textbox(slide, bx, y, d, d, [Para([Run(str(i), font="xbold", size=13, color=WHITE if on else MUTED)], align="ctr", lnspc=15)], anchor="ctr")
+    return x + count * (d + gap)
+
+
+def footnote(slide, text, size=11):
+    """Small reference line just above the footer (example-deck style numbered references)."""
+    textbox(slide, L, emu(10.28), W, emu(0.34), [Para([Run(text, font="body", size=size, color=MUTED)], lnspc=size * 1.2)], anchor="b")
+
+
+def title_block(ctx, slide, headline, eyebrow=None, tabs=None, active=None, accent_key=None, section=None):
+    """Eyebrow (section), Roca headline, optional tab pills, optional 1..7 tracker. Returns content-top y."""
     y = emu(1.52)
     if eyebrow:
-        textbox(slide, L, y, W, emu(0.36), [Para([Run(eyebrow.upper(), font="xbold", size=15, color=ORANGE, spc=1.6)], lnspc=20)])
+        textbox(slide, L, y, W - emu(3.6), emu(0.36), [Para([Run(eyebrow.upper(), font="xbold", size=15, color=ORANGE, spc=1.6)], lnspc=20)])
         y += emu(0.36)
     else:
         y += emu(0.1)
+    if section:
+        tw = SECTION_COUNT * (emu(0.36) + emu(0.08)) - emu(0.08)
+        tracker(slide, section, R - tw, emu(1.5))
     # headline: auto-shrink to one line within ~W - accent space
     size = 46
     max_w = (W - emu(1.0)) / IN * 72
@@ -189,11 +224,11 @@ def title_block(ctx, slide, headline, eyebrow=None, tabs=None, active=None, acce
     return y
 
 
-def content_slide(ctx, headline, eyebrow=None, tabs=None, active=None, notes=None):
+def content_slide(ctx, headline, eyebrow=None, tabs=None, active=None, notes=None, section=None, refs=None):
     ctx.n += 1
     s = ctx.deck.new_slide()
-    chrome(s, ctx.n)
-    top = title_block(ctx, s, headline, eyebrow=eyebrow, tabs=tabs, active=active)
+    chrome(s, ctx.n, footer=refs)
+    top = title_block(ctx, s, headline, eyebrow=eyebrow, tabs=tabs, active=active, section=section or getattr(ctx, "section", None))
     set_notes(s, notes)
     return s, top + emu(0.42)
 
@@ -208,6 +243,10 @@ def set_notes(slide, notes):
 # --------------------------------------------------------------------------
 def section_slide(ctx, number, title, subtitle, columns, accent_key="arrow_black", notes=None):
     ctx.n += 1
+    try:
+        ctx.section = int(number)
+    except ValueError:
+        pass
     s = ctx.deck.new_slide()
     chrome(s, ctx.n)
     # title
@@ -314,3 +353,18 @@ def grid(n, cols, x, y, w, h, gap=GUTTER, vgap=None):
         r, c = divmod(i, cols)
         cells.append((x + c * (cw + gap), y + r * (ch + vgap), cw, ch))
     return cells
+
+
+# --------------------------------------------------------------------------
+# Statement box (example-deck "Research Gap" / "Takeaway" / "Thesis Answer" style)
+# --------------------------------------------------------------------------
+def statement(slide, x, y, w, h, label, text, fill=ORANGE, body_fill=None, size=21, label_size=14, text_color=INK, radius=None):
+    """A labelled statement box: coloured tab with `label`, tinted body with `text` (markdown bold allowed)."""
+    body_fill = body_fill or TINT
+    box = rrect(slide, x, y, w, h, fill=body_fill, line=fill, line_w=2.0, radius=radius if radius is not None else emu(0.22))
+    lh = emu(0.42)
+    pill(slide, x + emu(0.35), y - lh / 2, label.upper(), active=True, h=lh, size=label_size, pad=0.3,
+         fill=fill, text_color=WHITE, line_color=fill)
+    fit_textbox(slide, x + emu(0.4), y + emu(0.3), w - emu(0.8), h - emu(0.45),
+                [P(text, size=size, color=text_color)], anchor="ctr", min_scale=0.7)
+    return box

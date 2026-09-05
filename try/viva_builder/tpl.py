@@ -527,6 +527,22 @@ def _cell_border(cell, color=RULE, w_pt=1.0, sides="LRTB"):
         tcPr.insert(idx, ln)
         idx += 1
 
+_CELL_SS = re.compile(r"(\^\{[^}]*\}|_\{[^}]*\})")
+
+
+def _cell_runs(text, **kw):
+    out = []
+    for part in _CELL_SS.split(text):
+        if not part:
+            continue
+        if part.startswith("^{") and part.endswith("}"):
+            out.append(Run(part[2:-1], baseline=30000, **kw))
+        elif part.startswith("_{") and part.endswith("}"):
+            out.append(Run(part[2:-1], baseline=-25000, **kw))
+        else:
+            out.append(Run(part, **kw))
+    return out
+
 
 def table(slide, x, y, w, rows, col_widths=None, header=True, size=17, row_h=None, head_fill=GREEN, head_color=WHITE, band=(WHITE, TINT), align=None, first_col_bold=True, pad=0.09, line_pitch=None, head_size=None, header_align=None):
     """rows: list of lists of str (or Para lists). Returns (graphicFrame, total_height_emu)."""
@@ -546,7 +562,7 @@ def table(slide, x, y, w, rows, col_widths=None, header=True, size=17, row_h=Non
         sz = head_size if is_head else size
         maxlines = 1
         for ci, val in enumerate(row):
-            txt = val if isinstance(val, str) else "".join(p.text for p in val)
+            txt = _CELL_SS.sub(lambda m: m.group(0)[2:-1], val.replace("**", "")) if isinstance(val, str) else "".join(p.text for p in val)
             key = "bold" if (is_head or (first_col_bold and ci == 0)) else "body"
             avail = (col_widths[ci] - 2 * emu(pad)) / IN * 72
             n = 1
@@ -598,7 +614,14 @@ def table(slide, x, y, w, rows, col_widths=None, header=True, size=17, row_h=Non
             if is_head and header_align:
                 al = header_align[ci]
             if isinstance(val, str):
-                paras = [Para([Run(part, font=key, size=sz, color=color)], align=al, lnspc=sz * 1.3) for part in val.split("\n")]
+                paras = []
+                for part in val.split("\n"):
+                    runs, bold = [], False
+                    for seg in part.split("**"):
+                        if seg:
+                            runs += _cell_runs(seg, font=("bold" if (bold or key == "bold") else key), size=sz, color=color)
+                        bold = not bold
+                    paras.append(Para(runs, align=al, lnspc=sz * 1.3))
             else:
                 paras = val
             fill_text_frame(cell._tc.get_or_add_txBody(), paras, anchor="ctr", insets=(0, 0, 0, 0))

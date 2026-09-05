@@ -61,3 +61,48 @@ NDCG, Proposition 6.1, regime, ...). No em dashes ("—") are used anywhere: tit
 (*Choosing k: Interpretability over Geometry*), footers and labels use a middle dot (·), sentences use
 a comma, a colon or a full stop. En dashes remain only inside compound names and numeric ranges
 (Davies–Bouldin, Holm–Bonferroni, 2003–09, pages 806–811).
+
+## Version VII (`build_v7.py` → `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx`)
+
+Version VII keeps the Beige Green look and every v6 constraint (native OMML equations, plain wording,
+no em dashes, speaker notes on every slide) and restructures the deck along the lines of the reference
+viva deck (R. Nesmaoui). 95 slides: 90 in the main flow + a closing title slide (jury, for the Q&A) +
+4 backup slides.
+
+What is new, per area:
+
+* **Chrome**: 1…7 section tracker in the header, ENSIAS logo in the footer, numbered reference
+  footnotes (`cite(...)` + `REFS`, 28 entries listed on two References slides).
+* **Title**: real jury table (9 members, same jury as the reference deck) under the presenter /
+  supervisor cards; duplicated at the end for the discussion.
+* **Context**: one slide per approach (content-based, collaborative, hybrid + MF, graph / hypergraph),
+  each with a diagram and a "Limitation" box; brand-logo slide (falls back to text chips when
+  `$VIVA_THESIS_FIG_DIR/logos/{netflix,spotify,yelp,amazon}.png` are absent).
+* **Protocol**: four dataset cards (spec table + sample rows + why), baselines table, metrics table with
+  the formulas (native equations), hardware table by contribution.
+* **Per contribution** (same order every time): Research Gap (bullets + statement box) → RQ → Objectives
+  table → methodology → Evaluation Protocol → results (bullets left, table right, best row bold; C3 main
+  results split ML-1M / Amazon-Book, ablation per dataset) → Answer to RQ (+ objectives status table) →
+  Key Findings → Limitations → Takeaway statement box.
+* **Technical deep dive** (3 slides at the start of Contribution I): a cooperative game in one picture
+  (three-piece band example, characteristic function table), the Shapley value as the average marginal
+  contribution (all 6 arrival orders, formula, four axioms), and the same game three times in the thesis.
+* **Thesis figures** (cropped from the thesis PDF into `$VIVA_THESIS_FIG_DIR`): Fig. 5.1, 5.2, 6.1, 6.2,
+  6.3, 7.2, 7.3, 7.4.
+* **Conclusion**: "Takeaway · Thesis" box under the synthesis, publications table with the correct author
+  lists / journal / DOI / status, "Thesis answer" statement box + key outcomes.
+* **Backup**: Table 7.1 with ± std, Table 7.6 paired tests, Tables 7.3 / 7.4 cost and convergence.
+
+Speaker notes live in `notes_v7.json` (numeric keys = v6 notes, string keys = the new slides).
+
+```bash
+# thesis figure crops (pymupdf): page / clip rectangles in PDF points, zoom 4
+#   fig5_1 p86 (113,83,468,301)   fig5_2 p86 (69,642,512,697)   fig6_1 p96 (135,83,446,293)
+#   fig6_2 p96 (69,575,512,763)   fig6_3 p97 (83,157,526,260)   fig7_2 p113 (92,636,518,763)
+#   fig7_3 p114 (108,83,473,239)  fig7_4 p118 (157,147,424,264)
+VIVA_FONT_DIR=/tmp/viva_build/fonts VIVA_ASSET_DIR=/tmp/viva_build/assets VIVA_FIG_DIR=/tmp/viva_build/figs \
+VIVA_THESIS_FIG_DIR=/tmp/viva_build/thesis \
+python3 build_v7.py "../Beige Green Modern Illustrative Playful Thesis Defense Presentation (1).pptx" ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx
+```
+
+`tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
