@@ -3,6 +3,7 @@ import copy
 import re
 
 from tpl import *  # noqa
+import mathkit
 
 UNI = "Mohammed V University in Rabat  ·  ENSIAS"
 VIVA = "PhD Viva  ·  Mouad LOUHICHI"
@@ -86,8 +87,9 @@ def bullets(items, size=22, color=INK, c0=ORANGE, c1=None, gap0=9, gap1=3, font=
     for it in items:
         lvl, text = (0, it) if isinstance(it, str) else it
         sz = size if lvl == 0 else size - 2
+        auto_pitch = sz * (1.48 if _SS.search(text) else 1.40)     # extra leading for sub/superscripts
         para = Para(md_runs(text, size=sz, color=color, font=font), align="l",
-                    lnspc=pitch or sz * 1.34, spcbef=0 if first else (gap0 if lvl == 0 else gap1),
+                    lnspc=pitch or auto_pitch, spcbef=0 if first else (gap0 if lvl == 0 else gap1),
                     level=lvl, bullet="•" if lvl == 0 else "–", bullet_color=c0 if lvl == 0 else c1)
         out.append(para)
         first = False
@@ -124,6 +126,28 @@ def fit_textbox(slide, x, y, w, h, paras, anchor="t", insets=(0, 0, 0, 0), min_s
         FIT_REPORT.append((len(slide.part.package.presentation_part.presentation.slides._sldIdLst), round(f, 2), (paras[0].text[:40] if paras else "")))
     tb = textbox(slide, x, y, w, h, fitted, anchor=anchor, insets=insets, name=name)
     return tb, f
+
+
+# --------------------------------------------------------------------------
+# Equations (native PowerPoint math, see mathkit.py)
+# --------------------------------------------------------------------------
+def equation(slide, x, y, w, h, tex, size=24, color=INK, align="ctr", anchor="ctr", name="Equation"):
+    """Typeset `tex` as a real PowerPoint equation centred in the (x, y, w, h) EMU box.
+    The font size is reduced (never below 11 pt) until the equation fits the box with
+    comfortable leading above and below."""
+    fitted = mathkit.fit_size(tex, size, w / mathkit.PT, h / mathkit.PT, min_size=11)
+    if fitted < size * 0.8:
+        FIT_REPORT.append((len(slide.part.package.presentation_part.presentation.slides._sldIdLst), round(fitted / size, 2), "EQ " + tex[:40]))
+    return mathkit.add_equation(slide, x, y, w, h, tex, size_pt=fitted, color=color, align=align, anchor=anchor, name=name)
+
+
+def eq_height(tex, size):
+    """Comfortable box height (EMU) for an equation at `size` pt."""
+    return emu(mathkit.box_size(tex, size)[1] / 72.0)
+
+
+def eq_width(tex, size):
+    return emu(mathkit.box_size(tex, size)[0] / 72.0)
 
 
 # --------------------------------------------------------------------------

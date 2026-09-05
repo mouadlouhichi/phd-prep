@@ -160,7 +160,7 @@ class Para:
             runs = [runs]
         self.runs = runs
         self.align = align
-        self.lnspc = lnspc          # points (exact) ; None -> 1.36 x size
+        self.lnspc = lnspc          # points (exact) ; None -> 1.40 x size
         self.spcbef = spcbef        # points
         self.level = level
         self.bullet = bullet        # bullet char or None
@@ -177,7 +177,7 @@ class Para:
         return "".join(r.text for r in self.runs)
 
     def line_pitch(self):
-        return self.lnspc if self.lnspc else self.size * 1.36
+        return self.lnspc if self.lnspc else self.size * 1.40
 
 
 NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"

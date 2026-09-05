@@ -450,7 +450,7 @@ def build(template, out):
                   "**Recommendation:** MF, NCF, LightGCN, RecDCL, HCCF, **HPCF (strongest reference)** — classical, neural, graph and hypergraph families, to isolate the effect of cooperative attribution rather than a favourable model choice."], size=20, gap0=8),
         H("Metrics", size=24, color=GREEN, spcbef=16),
         *bullets(["**Ranking:** Precision@K, Recall@K, **NDCG@20 (principal)**, K ∈ {5, 10, 20}.",
-                  "**System diversity:** Catalogue Coverage = |⋃ R_u| / |I|.",
+                  "**System diversity:** Catalogue Coverage = |⋃_{u} R_{u}| / |I|.",
                   "**List diversity:** Intra-List Diversity (ILD) — deliberately **built into the coalition utility**.",
                   "**Clustering quality:** Silhouette, Davies–Bouldin."], size=20, gap0=8),
     ], min_scale=0.68)
@@ -496,7 +496,7 @@ def build(template, out):
     section_slide(ctx, "04", "Contribution I", "Explainable black-box clustering with Shapley values  ·  answers RQ1",
                   [("Objectives", "Cluster-level explanation that preserves feature-level attribution in the original semantic space; justify Shapley over LIME."),
                    ("Methodology", "Features are players; Silhouette is the value function; a LightGBM surrogate bridges K-Means to exact TreeSHAP."),
-                   ("Results", "Wine Quality: k* = 3 chosen on interpretability grounds; density → pH → acidity → SO₂ → alcohol recovered as a chemically meaningful hierarchy.")],
+                   ("Results", "Wine Quality: k^{*} = 3 chosen on interpretability grounds; density → pH → acidity → SO₂ → alcohol recovered as a chemically meaningful hierarchy.")],
                   notes=N(21))
 
     # --- C1 objectives -------------------------------------------------------
@@ -526,26 +526,33 @@ def build(template, out):
     lw = emu(8.4)
     fit_textbox(s, L, top, lw, CB - top - emu(0.2), bullets([
         "**Player set N = F** — each feature is a player.",
-        "**Value function v(S) = Silhouette( KMeans(X_S, k*) )** — how well data cluster using only the features in S.",
+        "**Value function v(S) = Silhouette( KMeans(X_{S}, k^{*}) )** — how well data cluster using only the features in S.",
         "A feature's Shapley value = its **expected marginal contribution to clustering quality** over all coalition orders.",
         "**Why Silhouette:** bounded, normalised, semantically intuitive (Davies–Bouldin or Calinski–Harabasz would also be defensible).",
         "Direct evaluation for every coalition is **intractable** → we need a bridge.",
     ], size=21, gap0=12), min_scale=0.7)
     dx = L + lw + emu(0.6)
     dw = R - dx
-    box = rrect(s, dx, top, dw, emu(2.6), fill=GREEN, radius=emu(0.3))
-    shape_text(box, [Para([Run("SHAPLEY VALUE OF FEATURE j", font="xbold", size=14, color=YELLOW, spc=1.6)], align="ctr", lnspc=18),
-                     Para(md_runs("φ_{j} = Σ_{S ⊆ N∖j}  |S|! (n−|S|−1)! / n!  ·  [ v(S ∪ {j}) − v(S) ]", size=22, color=WHITE, font="bold"), align="ctr", lnspc=30, spcbef=14),
-                     Para([Run("expected marginal contribution over all orders of arrival", font="body", size=16, color="DCE7E3")], align="ctr", lnspc=20, spcbef=8)],
-               anchor="ctr", insets=(emu(0.3), emu(0.2), emu(0.3), emu(0.2)))
-    ax = [("Efficiency", "attributions sum to v(N) − v(∅)"), ("Symmetry", "equal contributors get equal credit"),
+    bh = emu(3.2)
+    box = rrect(s, dx, top, dw, bh, fill=GREEN, radius=emu(0.3))
+    textbox(s, dx, top + emu(0.22), dw, emu(0.3), [Para([Run("SHAPLEY VALUE OF FEATURE j", font="xbold", size=14, color=YELLOW, spc=1.6)], align="ctr", lnspc=18)])
+    equation(s, dx + emu(0.2), top + emu(0.55), dw - emu(0.4), emu(1.95),
+             r"\varphi_j = \sum_{S \subseteq N \setminus \{j\}} \dfrac{|S|!\,(n-|S|-1)!}{n!}\,\left[\, v(S \cup \{j\}) - v(S) \,\right]", size=24, color=WHITE)
+    textbox(s, dx, top + bh - emu(0.6), dw, emu(0.4), [Para([Run("expected marginal contribution over all orders of arrival", font="body", size=16, color="DCE7E3")], align="ctr", lnspc=20)])
+    ax = [("Efficiency", r"{\sum}_{j}\, \varphi_j = v(N) - v(\varnothing)"), ("Symmetry", "equal contributors get equal credit"),
           ("Null player", "no marginal effect → zero"), ("Additivity", "linear across games")]
-    cells = grid(4, 2, dx, top + emu(2.9), dw, emu(2.6), gap=emu(0.25), vgap=emu(0.25))
-    for (h1, sub), (x, y, w, h) in zip(ax, cells):
-        chip(s, x, y, w, h, h1, fill=TINT, color=INK, size=19, sub=sub, sub_size=15, sub_color=MUTED, radius=emu(0.2))
-    ny = top + emu(5.75)
+    cells = grid(4, 2, dx, top + bh + emu(0.3), dw, emu(2.2), gap=emu(0.25), vgap=emu(0.25))
+    for i, ((h1, sub), (x, y, w, h)) in enumerate(zip(ax, cells)):
+        if i == 0:
+            tile = chip(s, x, y, w, h, h1, fill=TINT, color=INK, size=19, radius=emu(0.2))
+            # label anchored to the top of the tile, the axiom set as an equation below it
+            shape_text(tile, [Para([Run(h1, font="bold", size=19, color=INK)], align="ctr", lnspc=22)], anchor="t", insets=(emu(0.1), emu(0.22), emu(0.1), emu(0.05)))
+            equation(s, x + emu(0.1), y + emu(0.5), w - emu(0.2), h - emu(0.55), sub, size=15, color=MUTED)
+        else:
+            chip(s, x, y, w, h, h1, fill=TINT, color=INK, size=19, sub=sub, sub_size=15, sub_color=MUTED, radius=emu(0.2))
+    ny = top + bh + emu(0.3) + emu(2.2) + emu(0.3)
     bar = rrect(s, dx, ny, dw, CB - ny - emu(0.2), fill=None, line=ORANGE, line_w=2.5, radius=emu(0.25))
-    shape_text(bar, [Para(md_runs("**2^{|F|} coalitions** — for 11 wine features that is 2,048 K-Means runs per evaluation; for large data, infeasible.", size=17, color=INK), align="ctr", lnspc=22)],
+    shape_text(bar, [Para(md_runs("**2^{|F|} coalitions** — for 11 wine features that is 2,048 K-Means runs per evaluation; for large data, infeasible.", size=17, color=INK), align="ctr", lnspc=23)],
                anchor="ctr", insets=(emu(0.3), emu(0.1), emu(0.3), emu(0.1)))
 
     # --- C1 surrogate bridge -------------------------------------------------
@@ -615,7 +622,7 @@ def build(template, out):
     lw = emu(8.6)
     fit_textbox(s, L, top, lw, CB - top - emu(0.2), [
         *bullets(["Multi-criteria evaluation across **k ∈ {2 … 10}** using elbow, Silhouette and Davies–Bouldin.",
-                  "We select **k* = 3 — even though it is NOT geometrically optimal**.",
+                  "We select **k^{*} = 3 — even though it is NOT geometrically optimal**.",
                   (1, "k = 2: Silhouette 0.214, Davies–Bouldin 1.775 (better separation)."),
                   (1, "k = 3: Silhouette 0.144, Davies–Bouldin 2.097 (weaker separation)."),
                   "**Why:** three clusters give a semantically richer oenological partition → **more actionable**.",
@@ -630,7 +637,7 @@ def build(template, out):
     ky = top + th + emu(0.4)
     kh = CB - ky - emu(0.2)
     cells = grid(2, 2, dx, ky, dw, kh, gap=emu(0.3))
-    kpi(s, *cells[0], "k* = 3", "chosen on **interpretability** grounds", fill=GREEN)
+    kpi(s, *cells[0], "k^{*} = 3", "chosen on **interpretability** grounds", fill=GREEN)
     kpi(s, *cells[1], "0.82", "surrogate **macro-F1** — fidelity floor met", fill=ORANGE, vcolor=WHITE)
 
     # --- C1 results: global ranking -----------------------------------------
@@ -774,29 +781,44 @@ def build(template, out):
         chip(s, x, y, w, h, h1, fill=f, size=19, sub=sub, sub_size=14, radius=emu(0.2))
         arrow(s, dx + dw / 2, top + emu(1.0), x + w / 2, y - emu(0.05), color=GREEN, w=2)
         # level-2 children
-        c2 = grid(2, 2, x, y + h + emu(0.55), w, emu(0.75), gap=emu(0.12))
+        c2 = grid(2, 2, x, y + h + emu(0.5), w, emu(0.7), gap=emu(0.12))
         for j, (cx, cy2, cw2, ch2) in enumerate(c2):
             chip(s, cx, cy2, cw2, ch2, f"sub {j+1}", fill=TINT, color=INK, size=14, radius=emu(0.12))
             arrow(s, x + w / 2, y + h + emu(0.03), cx + cw2 / 2, cy2 - emu(0.04), color=GREEN, w=1.5)
-    fy = top + emu(4.5)
-    box = rrect(s, dx, fy, dw, CB - fy - emu(0.2), fill=GREEN, radius=emu(0.25))
-    shape_text(box, [Para([Run("PROPOSITION 6.1 — CROSS-LEVEL CONSISTENCY", font="xbold", size=13, color=YELLOW, spc=1.5)], align="ctr", lnspc=17),
-                     Para(md_runs("Φ_{j}^{(l,c)}  =  Σ_{c′ ∈ child(c)}  w_{c′} · Φ_{j}^{(l+1,c′)}  +  ε_{j}", size=21, color=WHITE, font="bold"), align="ctr", lnspc=28, spcbef=10),
-                     Para(md_runs("w_{c′} = |c′| / |c|   ·   ε_{j} → 0 under perfect surrogate fidelity", size=15, color="DCE7E3"), align="ctr", lnspc=19, spcbef=6)],
-               anchor="ctr", insets=(emu(0.3), emu(0.15), emu(0.3), emu(0.15)))
+    fy = top + emu(4.35)
+    bh = CB - fy - emu(0.2)
+    box = rrect(s, dx, fy, dw, bh, fill=GREEN, radius=emu(0.25))
+    textbox(s, dx, fy + emu(0.16), dw, emu(0.3), [Para([Run("PROPOSITION 6.1 — CROSS-LEVEL CONSISTENCY", font="xbold", size=13, color=YELLOW, spc=1.5)], align="ctr", lnspc=17)])
+    equation(s, dx + emu(0.2), fy + emu(0.46), dw - emu(0.4), emu(1.05),
+             r"\Phi_j^{(l,c)} = {\sum}_{c' \in \mathrm{child}(c)}\; w_{c'}\, \Phi_j^{(l+1,\,c')} + \varepsilon_j", size=22, color=WHITE)
+    equation(s, dx + emu(0.2), fy + emu(1.5), dw - emu(0.4), emu(0.5),
+             r"w_{c'} = |c'| \,/\, |c|, \qquad \varepsilon_j \to 0 \ \text{ under perfect surrogate fidelity}", size=14, color="DCE7E3")
 
     # --- C2 proposition ------------------------------------------------------
     s, top = content_slide(ctx, "Proposition 6.1 — Cross-Level Consistency", eyebrow=C2, tabs=C1TABS, active="Methodology", notes=N(39))
     lw = emu(9.0)
-    fit_textbox(s, L, top, lw, CB - top - emu(0.2), [
-        *bullets(["Let **Φ_{j}^{(l,c)} = E_{x∼c}[ |φ_{j}^{(l)}(x)| ]** be the expected absolute SHAP importance of feature j at level l in cluster c.",
-                  "Let **w_{c′} = |c′| / |c|** be the relative size of child c′ within parent c.",
-                  "For a **strict nested hierarchy** on a consistent feature space:"], size=21, gap0=10),
-        Para(md_runs("Φ_{j}^{(l,c)} = Σ_{c′∈child(c)} w_{c′} · Φ_{j}^{(l+1,c′)} + ε_{j}", size=24, color=GREEN, font="bold"), align="ctr", lnspc=32, spcbef=14),
-        *bullets(["**ε_{j}** is a residual from surrogate mismatch, vanishing under perfect fidelity.",
-                  "Derived via the **law of total expectation** (children partition the parent).",
-                  "Does **NOT** imply explanations are identical across levels — it implies differences can be **interpreted**, not dismissed as inconsistency."], size=21, gap0=10),
-    ], min_scale=0.66)
+    # definitions (equations) → statement → consequences: laid out block by block with generous leading
+    yy = top
+    defs = [(r"\Phi_j^{(l,c)} = \mathbb{E}_{x \in c}\left[\, \left|\varphi_j^{(l)}(x)\right| \,\right]", "expected absolute SHAP importance of feature j at level l in cluster c"),
+            (r"w_{c'} = |c'| \,/\, |c|", "relative size of child c′ within parent c")]
+    ew = emu(4.2)
+    for tex, desc in defs:
+        eh = emu(0.72)
+        badge(s, L, yy + (eh - emu(0.3)) / 2, emu(0.3), "", fill=ORANGE)
+        equation(s, L + emu(0.45), yy, ew, eh, tex, size=21, color=GREEN, align="l")
+        textbox(s, L + emu(0.45) + ew + emu(0.2), yy, lw - emu(0.65) - ew, eh, [P(desc, size=17, color=INK, lnspc=21)], anchor="ctr")
+        yy += eh + emu(0.08)
+    yy += emu(0.12)
+    textbox(s, L, yy, lw, emu(0.4), [P("For a **strict nested hierarchy** on a consistent feature space:", size=21, lnspc=27)])
+    yy += emu(0.5)
+    eb = rrect(s, L, yy, lw, emu(1.65), fill=GREEN_SOFT, radius=emu(0.2))
+    equation(s, L + emu(0.2), yy, lw - emu(0.4), emu(1.65),
+             r"\Phi_j^{(l,c)} = \sum_{c' \in \mathrm{child}(c)} w_{c'}\, \Phi_j^{(l+1,\,c')} + \varepsilon_j", size=26, color=GREEN)
+    yy += emu(1.65) + emu(0.25)
+    fit_textbox(s, L, yy, lw, CB - yy - emu(0.2), bullets([
+        "**ε_{j}** is a residual from surrogate mismatch, vanishing under perfect fidelity.",
+        "Derived via the **law of total expectation** (children partition the parent).",
+        "Does **NOT** imply explanations are identical across levels — it implies differences can be **interpreted**, not dismissed as inconsistency."], size=20, gap0=10), min_scale=0.7)
     dx = L + lw + emu(0.6)
     dw = R - dx
     card(s, dx, top + emu(0.25), dw, emu(3.3), label="Why it matters",
@@ -981,7 +1003,7 @@ def build(template, out):
         "**Hypergraph H = (V, E, W)**; V = U ∪ I ∪ C; **W = dynamic edge weights** from Shapley estimates.",
         "A **coalition S ⊆ N** represents the entities participating in a recommendation episode.",
         "**Coalition value v(S)** measures the quality of the recommendation outcome achievable by S.",
-        "**Top-N task:** produce a ranked list L_u balancing relevance, diversity and contextual fit.",
+        "**Top-N task:** produce a ranked list L_{u} balancing relevance, diversity and contextual fit.",
     ], size=21, gap0=12), min_scale=0.7)
     dx = L + lw + emu(0.6)
     dw = R - dx
@@ -999,23 +1021,33 @@ def build(template, out):
         shape_text(e, [Para([Run(sym, font="title", size=34, color=WHITE)], align="ctr", lnspc=38),
                        Para([Run(h1, font="bold", size=15, color="F7F2EA")], align="ctr", lnspc=18, spcbef=2)], anchor="ctr", insets=(0, 0, 0, 0))
     vy = hy + hh + emu(0.35)
-    box = rrect(s, dx, vy, dw, CB - vy - emu(0.2), fill=GREEN, radius=emu(0.25))
-    shape_text(box, [Para([Run("v(S)  →  quality of the recommendation outcome achievable by S", font="bold", size=19, color=WHITE)], align="ctr", lnspc=25),
-                     Para(md_runs("φ̂_{j}  →  marginal contribution of player j  →  dynamic edge weight w_{jk}", size=19, color=YELLOW, font="bold"), align="ctr", lnspc=25, spcbef=8)],
-               anchor="ctr", insets=(emu(0.3), emu(0.15), emu(0.3), emu(0.15)))
+    bh = CB - vy - emu(0.2)
+    box = rrect(s, dx, vy, dw, bh, fill=GREEN, radius=emu(0.25))
+    rh = bh / 2
+    ew = emu(2.0)
+    equation(s, dx + emu(0.3), vy + emu(0.05), ew, rh, r"v(S)", size=22, color=WHITE)
+    textbox(s, dx + emu(0.4) + ew, vy + emu(0.05), dw - emu(0.7) - ew, rh, [Para([Run("quality of the recommendation outcome achievable by coalition S", font="bold", size=17, color=WHITE)], lnspc=21)], anchor="ctr")
+    equation(s, dx + emu(0.3), vy + rh - emu(0.05), ew, rh, r"\hat{\varphi}_j \;\to\; w_{jk}", size=22, color=YELLOW)
+    textbox(s, dx + emu(0.4) + ew, vy + rh - emu(0.05), dw - emu(0.7) - ew, rh, [Para([Run("marginal contribution of player j → dynamic hyperedge weight", font="bold", size=17, color=YELLOW)], lnspc=21)], anchor="ctr")
 
     # --- C3 value function ---------------------------------------------------
     s, top = content_slide(ctx, "Coalition Value Aligned with the Objective", eyebrow=C3, tabs=C1TABS, active="Methodology", notes=N(53))
-    box = rrect(s, L, top, W, emu(1.45), fill=GREEN, radius=emu(0.3))
-    shape_text(box, [Para([Run("v(S) = α · NDCG@20(S) + β · Diversity(S) + γ · ContextScore(S),   with α + β + γ = 1", font="bold", size=26, color=WHITE)], align="ctr", lnspc=34),
-                     Para(md_runs("v_{pref}(S) = v(S) + λ_{pref} · Σ_{(u,i)∈S} sim(u,i)", size=22, color=YELLOW, font="bold"), align="ctr", lnspc=28, spcbef=8)],
-               anchor="ctr", insets=(emu(0.4), emu(0.1), emu(0.4), emu(0.1)))
-    py = top + emu(1.85)
-    params = [("α = 0.60", "ranking accuracy"), ("β = 0.25", "diversity"), ("γ = 0.15", "context"), ("λ = 0.20", "preference weighting λ_pref")]
-    cells = grid(4, 4, L, py, W, emu(1.4), gap=emu(0.3))
+    bh = emu(1.75)
+    box = rrect(s, L, top, W, bh, fill=GREEN, radius=emu(0.3))
+    equation(s, L + emu(0.4), top + emu(0.15), W - emu(0.8), emu(0.7),
+             r"v(S) = \alpha \cdot \mathrm{NDCG@20}(S) + \beta \cdot \mathrm{Diversity}(S) + \gamma \cdot \mathrm{ContextScore}(S), \qquad \alpha + \beta + \gamma = 1",
+             size=24, color=WHITE)
+    equation(s, L + emu(0.4), top + emu(0.9), W - emu(0.8), emu(0.7),
+             r"v_{\mathrm{pref}}(S) = v(S) + \lambda_{\mathrm{pref}} \, {\sum}_{(u,i) \in S} \operatorname{sim}(u,i)", size=22, color=YELLOW)
+    py = top + bh + emu(0.3)
+    params = [(r"\alpha = 0.60", "ranking accuracy"), (r"\beta = 0.25", "diversity"), (r"\gamma = 0.15", "context"), (r"\lambda_{\mathrm{pref}} = 0.20", "preference weighting")]
+    ph = emu(1.2)
+    cells = grid(4, 4, L, py, W, ph, gap=emu(0.3))
     for i, ((v, lab), (x, y, w, h)) in enumerate(zip(params, cells)):
-        kpi(s, x, y, w, h, v, lab, fill=TINT, vcolor=GREEN if i < 3 else ORANGE, lcolor=INK, vsize=30, lsize=16)
-    cy = py + emu(1.4) + emu(0.45)
+        rrect(s, x, y, w, h, fill=TINT, radius=emu(0.3))
+        equation(s, x + emu(0.15), y + emu(0.08), w - emu(0.3), emu(0.68), v, size=26, color=GREEN if i < 3 else ORANGE)
+        textbox(s, x, y + emu(0.76), w, emu(0.35), [Para([Run(lab, font="bold", size=16, color=INK)], align="ctr", lnspc=20)])
+    cy = py + ph + emu(0.35)
     cw = (W - emu(0.4)) / 2
     ch = CB - cy - emu(0.4)
     light_card(s, L, cy + emu(0.25), cw, ch, label="Alignment by design",
@@ -1029,63 +1061,79 @@ def build(template, out):
     # --- C3 Monte Carlo Shapley ---------------------------------------------
     s, top = content_slide(ctx, "Preference-Aware Monte Carlo Shapley", eyebrow=C3, tabs=C1TABS, active="Methodology", notes=N(54))
     lw = emu(9.4)
-    fit_textbox(s, L, top, lw, CB - top - emu(0.2), [
-        *bullets(["Exact Shapley is **combinatorial and infeasible** for realistic systems."], size=21),
-        Para(md_runs("φ̂_{j} = (1/M) Σ_{m} [ v(S_{m} ∪ {j}) − v(S_{m}) ]", size=25, color=GREEN, font="bold"), align="ctr", lnspc=32, spcbef=16),
-        Para(md_runs("φ̂_{j}^{pref} = (1/M) Σ_{m} [ v_{pref}(S_{m} ∪ {j}) − v_{pref}(S_{m}) ]", size=25, color=ORANGE, font="bold"), align="ctr", lnspc=32, spcbef=8),
-        *bullets(["**Unbiased**; variance = σ²/M → MSE decays **O(1/M)**, absolute error **O(1/√M)**.",
-                  "**M = 50 selected:** MSE ≈ 1.4×10^{−5}, ≈ 99 % accuracy on MovieLens-1M; M = 100 → MSE 3.5×10^{−6} (diminishing returns).",
-                  "Refreshed **every 10 batches** (≈ 49 updates / epoch), smoothed by an **exponential moving average**."], size=21, gap0=10, pitch=None),
-    ], min_scale=0.66)
+    yy = top
+    textbox(s, L, yy, lw, emu(0.45), bullets(["Exact Shapley is **combinatorial and infeasible** for realistic systems."], size=21))
+    yy += emu(0.55)
+    eqh = emu(1.45)
+    eb = rrect(s, L, yy, lw, 2 * eqh + emu(0.2), fill=GREEN_SOFT, radius=emu(0.2))
+    equation(s, L + emu(0.2), yy + emu(0.1), lw - emu(0.4), eqh,
+             r"\hat{\varphi}_j = \dfrac{1}{M} \sum_{m=1}^{M} \left[\, v(S_m \cup \{j\}) - v(S_m) \,\right]", size=24, color=GREEN)
+    equation(s, L + emu(0.2), yy + emu(0.1) + eqh, lw - emu(0.4), eqh,
+             r"\hat{\varphi}_j^{\,\mathrm{pref}} = \dfrac{1}{M} \sum_{m=1}^{M} \left[\, v_{\mathrm{pref}}(S_m \cup \{j\}) - v_{\mathrm{pref}}(S_m) \,\right]", size=24, color=ORANGE)
+    yy += 2 * eqh + emu(0.2) + emu(0.15)
+    equation(s, L + emu(0.2), yy, lw - emu(0.4), emu(0.6),
+             r"\mathrm{Var}\left[\hat{\varphi}_j\right] = \sigma^{2}/M \;\;\Rightarrow\;\; \mathrm{MSE} = O(1/M), \quad |\text{error}| = O(1/\sqrt{M})", size=18, color=INK)
+    yy += emu(0.7)
+    fit_textbox(s, L, yy, lw, CB - yy - emu(0.2), bullets([
+        "**Unbiased estimator** — error shrinks with the number of sampled permutations M.",
+        "**M = 50 selected:** MSE ≈ 1.4×10^{−5}, ≈ 99 % accuracy on MovieLens-1M; M = 100 → MSE 3.5×10^{−6} (diminishing returns).",
+        "Refreshed **every 10 batches** (≈ 49 updates / epoch), smoothed by an **exponential moving average**."], size=19, gap0=8), min_scale=0.7)
     dx = L + lw + emu(0.6)
     dw = R - dx
     rows = [["M", "MSE", "Accuracy"], ["25", "≈ 5.6×10⁻⁵", "≈ 96 %"], ["50 ★", "≈ 1.4×10⁻⁵", "≈ 99 %"], ["100", "≈ 3.5×10⁻⁶", "≈ 99.5 %"]]
-    gf, th = table(s, dx, top, dw, rows, col_widths=[1.2, 2.2, 1.8], size=18, align=["ctr", "ctr", "ctr"], header_align=["ctr", "ctr", "ctr"], row_h=emu(0.72))
+    gf, th = table(s, dx, top, dw, rows, col_widths=[1.2, 2.2, 1.8], size=18, align=["ctr", "ctr", "ctr"], header_align=["ctr", "ctr", "ctr"], row_h=emu(0.62))
     textbox(s, dx, top + th + emu(0.08), dw, emu(0.4), [Para([Run("M = 50 balances estimator quality against per-epoch cost; rows 25/100 illustrate the O(1/M) trend.", font="body", size=13, color=MUTED)], lnspc=16)])
-    ky = top + th + emu(0.7)
-    card(s, dx, ky + emu(0.25), dw, CB - ky - emu(0.45), label="In the training loop",
-         paras=bullets(["Sample M permutations per refresh → estimate φ̂ for players in the episode.",
+    ky = top + th + emu(0.55)
+    ch = CB - ky - emu(0.45)
+    card(s, dx, ky + emu(0.25), dw, ch, label="In the training loop",
+         paras=bullets(["Sample M permutations per refresh → estimate φ̂ for the players in the episode.",
                         "Clip, EMA-smooth, normalise → **hypergraph edge weights**.",
-                        "Cost per epoch: **O((L+1)md) + O((M/f)m)**."], size=18, color=WHITE, c0=YELLOW, c1=YELLOW, gap0=8), pad=(0.5, 0.7, 0.45, 0.3))
+                        "Cost per epoch:"], size=18, color=WHITE, c0=YELLOW, c1=YELLOW, gap0=7), pad=(0.5, 0.65, 0.45, 0.85))
+    equation(s, dx + emu(0.5), ky + emu(0.25) + ch - emu(0.85), dw - emu(1.0), emu(0.65),
+             r"O\left((L+1)\,m\,d\right) + O\left((M/f)\,m\right)", size=19, color=YELLOW)
 
     # --- C3 architecture -----------------------------------------------------
     s, top = content_slide(ctx, "Shapley-Weighted Hypergraph Message Passing", eyebrow=C3, tabs=C1TABS, active="Methodology", notes=N(55))
     from PIL import Image
     im = Image.open(os.path.join(FIGS, "dyhucog_arch.png"))
     ratio = im.height / im.width
-    ph = emu(2.55)
+    ph = emu(1.9)
     pw = ph / ratio
     frame = rrect(s, L, top, W, ph + emu(0.3), fill=WHITE, line=RULE, line_w=1.25, radius=emu(0.25))
     picture(s, os.path.join(FIGS, "dyhucog_arch.png"), L + (W - pw) / 2, top + emu(0.15), w=pw, h=ph)
-    ey = top + ph + emu(0.3) + emu(0.3)
-    eqs = [("Base propagation", "e^{(l+1)} = σ( D^{−1/2} A D^{−1/2} e^{(l)} )"),
-           ("Shapley-weighted", "e_{j}^{(l+1)} = σ( W^{(l)} e_{j}^{(l)} + Σ_{k∈N(j)} w_{jk} e_{k}^{(l)} )"),
-           ("Normalised weights", "w_{jk} = φ̂_{jk} / Σ_{k′∈N(j)} φ̂_{jk′}    (clipped + EMA-smoothed)"),
-           ("Attention gate", "a_{ui} = σ( W_{a} [e_{u}, e_{i}, l_{i}] ) ;    y_{ui} = (1 + a_{ui}) ⟨e_{u}, e_{i}⟩"),
-           ("Context-aware score", "f(u,i,c) = y_{ui} + λ_{c} ⟨ g(c_{ui}), e_{cui} ⟩")]
-    rh = (CB - ey - emu(0.15) - emu(0.12) * 4) / 5
-    for i, (h1, eq) in enumerate(eqs):
-        yy = ey + i * (rh + emu(0.12))
+    ey = top + ph + emu(0.3) + emu(0.25)
+    eqs = [("Base propagation", r"e^{(l+1)} = \sigma\left( D^{-1/2} A\, D^{-1/2}\, e^{(l)} \right)", None),
+           ("Shapley-weighted", r"e_j^{(l+1)} = \sigma\left( W^{(l)} e_j^{(l)} + {\sum}_{k \in \mathcal{N}(j)} w_{jk}\, e_k^{(l)} \right)", None),
+           ("Normalised weights", r"w_{jk} = \hat{\varphi}_{jk} \,/\, {\sum}_{k' \in \mathcal{N}(j)} \hat{\varphi}_{jk'}", "clipped + EMA-smoothed"),
+           ("Attention gate", r"a_{ui} = \sigma\left( W_a\, [\,e_u, e_i, l_i\,] \right), \qquad y_{ui} = (1 + a_{ui})\, \langle e_u, e_i \rangle", None),
+           ("Context-aware score", r"f(u,i,c) = y_{ui} + \lambda_c\, \langle\, g(c_{ui}),\, e_{c_{ui}} \rangle", None)]
+    rh = (CB - ey - emu(0.1) - emu(0.1) * 4) / 5
+    for i, (h1, tex, note) in enumerate(eqs):
+        yy = ey + i * (rh + emu(0.1))
         rrect(s, L, yy, W, rh, fill=TINT if i % 2 == 0 else TINT2, radius=emu(0.16))
         textbox(s, L + emu(0.35), yy, emu(3.6), rh, [Para([Run(h1, font="xbold", size=18, color=GREEN)], lnspc=22)], anchor="ctr")
-        fit_textbox(s, L + emu(4.0), yy, W - emu(4.3), rh, [Para(md_runs(eq, size=21, color=INK, font="bold"), lnspc=26)], anchor="ctr", min_scale=0.7)
+        ew = W - emu(4.3) - (emu(3.2) if note else 0)
+        equation(s, L + emu(4.0), yy, ew, rh, tex, size=22, color=INK, align="l")
+        if note:
+            textbox(s, R - emu(3.3), yy, emu(3.0), rh, [Para([Run(note, font="body", size=15, color=MUTED)], align="r", lnspc=18)], anchor="ctr")
 
     # --- C3 loss -------------------------------------------------------------
     s, top = content_slide(ctx, "Multi-Objective Learning", eyebrow=C3, tabs=C1TABS, active="Methodology", notes=N(56))
     box = rrect(s, L, top, W, emu(1.3), fill=GREEN, radius=emu(0.3))
-    shape_text(box, [Para(md_runs("L  =  L_{rec}  +  λ_{div} · L_{div}  +  λ_{ctx} · L_{ctx}  +  λ_{reg} · L_{reg}", size=30, color=WHITE, font="bold"), align="ctr", lnspc=38)],
-               anchor="ctr", insets=(emu(0.4), emu(0.1), emu(0.4), emu(0.1)))
-    terms = [("L_{rec}", "Bayesian Personalised Ranking", "pairwise loss for implicit feedback", GREEN),
-             ("L_{div}", "Intra-List Diversity regulariser", "penalises redundant ranked lists", "1E5F58"),
-             ("L_{ctx}", "Context alignment", "match context embedding to context-node representation", ORANGE),
-             ("L_{reg}", "L2 weight decay", "regularisation", INK)]
+    equation(s, L + emu(0.4), top, W - emu(0.8), emu(1.3),
+             r"\mathcal{L} = \mathcal{L}_{\mathrm{rec}} + \lambda_{\mathrm{div}}\, \mathcal{L}_{\mathrm{div}} + \lambda_{\mathrm{ctx}}\, \mathcal{L}_{\mathrm{ctx}} + \lambda_{\mathrm{reg}}\, \mathcal{L}_{\mathrm{reg}}",
+             size=30, color=WHITE)
+    terms = [(r"\mathcal{L}_{\mathrm{rec}}", "Bayesian Personalised Ranking", "pairwise loss for implicit feedback", GREEN),
+             (r"\mathcal{L}_{\mathrm{div}}", "Intra-List Diversity regulariser", "penalises redundant ranked lists", "1E5F58"),
+             (r"\mathcal{L}_{\mathrm{ctx}}", "Context alignment", "match context embedding to context-node representation", ORANGE),
+             (r"\mathcal{L}_{\mathrm{reg}}", "L2 weight decay", "regularisation", INK)]
     cells = grid(4, 4, L, top + emu(1.7), W, emu(3.5), gap=emu(0.3))
     for (sym, h1, sub, f), (x, y, w, h) in zip(terms, cells):
         box = rrect(s, x, y, w, h, fill=f, radius=emu(0.3))
-        shape_text(box, [Para(_ss_runs(sym, font="title", size=34, color=YELLOW if f != ORANGE else WHITE, spc=-1), lnspc=38),
-                         Para([Run(h1, font="xbold", size=20, color=WHITE)], lnspc=25, spcbef=10),
+        equation(s, x + emu(0.4), y + emu(0.3), emu(2.0), emu(0.85), sym, size=32, color=YELLOW if f != ORANGE else WHITE, align="l")
+        shape_text(box, [Para([Run(h1, font="xbold", size=20, color=WHITE)], lnspc=25),
                          Para([Run(sub, font="body", size=17, color="F1EDE6")], lnspc=21, spcbef=8)],
-                   anchor="t", insets=(emu(0.4), emu(0.4), emu(0.35), emu(0.3)))
+                   anchor="t", insets=(emu(0.4), emu(1.35), emu(0.35), emu(0.3)))
     gy = top + emu(1.7) + emu(3.5) + emu(0.45)
     bar = rrect(s, L, gy, W, CB - gy - emu(0.15), fill=TINT, radius=emu(0.25))
     shape_text(bar, [Para(md_runs("The learning objective and the coalition value are **aligned**: DyHuCoG trains to optimise the **same balance** that later determines attribution.", size=22, color=INK), align="ctr", lnspc=28)],
@@ -1182,9 +1230,11 @@ def build(template, out):
     cw = (W - emu(0.4)) / 2
     ch = CB - cy - emu(0.4)
     light_card(s, L, cy + emu(0.25), cw, ch, label="Complexity",
-               paras=bullets(["Per-epoch cost: **O((L+1)md) + O((M/f)m)** — propagation plus periodic Shapley refresh.",
+               paras=bullets(["Per-epoch cost — propagation plus periodic Shapley refresh:",
                               "Refresh every f = 10 batches keeps the overhead bounded.",
-                              "Inference latency is **suitable for real-time deployment**."], size=20, gap0=10), pad=(0.55, 0.7, 0.5, 0.3))
+                              "Inference latency is **suitable for real-time deployment**."], size=20, gap0=10), pad=(0.55, 0.7, 0.5, 1.0))
+    equation(s, L + emu(0.55), cy + emu(0.25) + ch - emu(0.95), cw - emu(1.1), emu(0.7),
+             r"O\left((L+1)\,m\,d\right) + O\left((M/f)\,m\right)", size=20, color=GREEN)
     card(s, L + cw + emu(0.4), cy + emu(0.25), cw, ch, label="Convergence",
          paras=bullets(["M = 50 → MSE 1.4×10^{−5}, ≈ 99 % accuracy.",
                         "M = 100 → MSE 3.5×10^{−6} — **diminishing returns**.",
@@ -1194,9 +1244,13 @@ def build(template, out):
     # --- C3 significance -----------------------------------------------------
     s, top = content_slide(ctx, "Statistical Significance", eyebrow=C3, tabs=C1TABS, active="Results", notes=N(62))
     cells = grid(3, 3, L, top + emu(0.1), W, emu(2.4), gap=emu(0.35))
-    kpi(s, *cells[0], "t = 46.38", "paired t-test vs HPCF · **df = 6,039**", fill=GREEN, vsize=38)
-    kpi(s, *cells[1], "d_{z} = 1.33", "**Cohen's d_{z}** — a large effect size", fill="1E5F58", vsize=38)
-    kpi(s, *cells[2], "p = 1.8×10^{−270}", "after **Holm–Bonferroni** correction", fill=ORANGE, vcolor=WHITE, vsize=34)
+    stats = [(r"t = 46.38", "paired t-test vs HPCF · **df = 6,039**", GREEN, YELLOW),
+             (r"d_z = 1.33", "**Cohen's d_{z}** — a large effect size", "1E5F58", YELLOW),
+             (r"p = 1.8 \times 10^{-270}", "after **Holm–Bonferroni** correction", ORANGE, WHITE)]
+    for (tex, lab, f, vc), (x, y, w, h) in zip(stats, cells):
+        rrect(s, x, y, w, h, fill=f, radius=emu(0.3))
+        equation(s, x + emu(0.2), y + emu(0.3), w - emu(0.4), emu(1.15), tex, size=38, color=vc)
+        textbox(s, x + emu(0.3), y + emu(1.5), w - emu(0.6), emu(0.7), [Para(md_runs(lab, size=17, color=WHITE), align="ctr", lnspc=22)], anchor="t")
     cy = top + emu(0.1) + emu(2.4) + emu(0.45)
     light_card(s, L, cy + emu(0.25), W, CB - cy - emu(0.45), label="Protocol",
                paras=bullets(["Paired t-tests on **per-user NDCG@20** (n = 6,040 users, MovieLens-1M).",
@@ -1414,3 +1468,5 @@ if __name__ == "__main__":
     out_path = sys.argv[2]
     n = build(tpl_path, out_path)
     print(f"built {n} slides -> {out_path}")
+    for slide_no, scale, what in FIT_REPORT:
+        print(f"  fit note: slide {slide_no} scaled to {scale:.2f}: {what}")
