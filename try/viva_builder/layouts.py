@@ -7,7 +7,7 @@ import mathkit
 
 UNI = "Mohammed V University in Rabat  ·  ENSIAS"
 VIVA = "PhD Viva  ·  Mouad LOUHICHI"
-SHORT_TITLE = "Cooperative Game Theory for Explainable AI in Recommendation Systems  —  A Shapley Framework for Actionable Insight"
+SHORT_TITLE = "Cooperative Game Theory for Explainable AI in Recommendation Systems  ·  A Shapley Framework for Actionable Insight"
 
 L = MARGIN_L
 R = MARGIN_R

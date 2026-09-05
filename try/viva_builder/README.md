@@ -9,7 +9,9 @@ embedded fonts *Roca Two Bold* / *Nunito*, the template's decorative asterisks/s
 * `layouts.py`  – slide chrome, section slides, cards, KPI tiles, pills, auto-shrink text fitting, `equation()`
 * `mathkit.py`  – LaTeX → native PowerPoint equations (OMML) with a rendered PNG fallback
 * `build.py`    – the 64 slides (content mapped from the original 75-slide VIVA; speaker notes merged per slide)
-* `notes_original.json` – speaker notes extracted from the original VIVA deck (keyed by original slide number)
+* `notes_speech.json`   – speaker notes actually used by the build: the original notes rewritten in plain,
+  easy-to-pronounce English (technical terms, numbers and structure unchanged; no em dashes). Keyed by original slide number.
+* `notes_original.json` – the untouched speaker notes extracted from the original VIVA deck (kept for reference)
 
 Build (python-pptx, pillow, fonttools, matplotlib, latex2mathml required):
 
@@ -21,7 +23,7 @@ VIVA_FONT_DIR=/tmp/viva_build/fonts VIVA_ASSET_DIR=/tmp/viva_build/assets VIVA_F
 python3 build.py "../Beige Green Modern Illustrative Playful Thesis Defense Presentation (1).pptx" ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen.pptx
 ```
 
-The build prints `built 64 slides` followed by *fit notes* — text blocks that had to be auto-shrunk
+The build prints `built 64 slides` followed by *fit notes*: text blocks that had to be auto-shrunk
 below 0.85× to fit their box (plain text only; equations are never shrunk below 0.8× without a note).
 
 ## Equations
@@ -49,3 +51,13 @@ Body copy uses a 1.40× line pitch (1.48× for lines containing sub/superscripts
 spacing; text that would overflow its box is shrunk with measured wrapping (min 0.62×). Math symbols not
 present in the embedded font subsets (Greek letters, arrows, ⊆ ∪ …) are set in Office-bundled
 *Calibri* / *Cambria Math* so they render in PowerPoint without extra fonts.
+
+## Wording
+
+Slide text (`build.py`) and speech (`notes_speech.json`) use short sentences and plain words that are easy
+to say out loud, in the register of a typical viva (e.g. *shows*, *helps*, *works*, *the gap is*, *so*).
+Technical terms are kept as they are (Shapley, surrogate, post-hoc, hypergraph, Silhouette, Davies–Bouldin,
+NDCG, Proposition 6.1, regime, ...). No em dashes ("—") are used anywhere: titles use a colon
+(*Choosing k: Interpretability over Geometry*), footers and labels use a middle dot (·), sentences use
+a comma, a colon or a full stop. En dashes remain only inside compound names and numeric ranges
+(Davies–Bouldin, Holm–Bonferroni, 2003–09, pages 806–811).
