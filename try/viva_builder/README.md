@@ -93,20 +93,38 @@ What is new, per area:
   lists / journal / DOI / status, "Thesis answer" statement box + key outcomes.
 * **Backup**: Table 7.1 with ± std, Table 7.6 paired tests, Tables 7.3 / 7.4 cost and convergence.
 
-Speaker notes live in `notes_v7.json` (numeric keys = v6 slide numbers, string keys = the new slides).
-They are written for a **40-minute delivery**: about 5,500 words over the 90 main slides, which is
-39 minutes at 140 words per minute (section slides carry a "Time check" cue: minute 1, 3, 8, 11, 20, 27,
-36, 40). The longer, fully detailed script (about 10,300 words, roughly 70 minutes) is kept in
-`notes_v7_long.json` for rehearsal and for the Q&A; swap the file name in `build_v7.py` to build with it.
+## Versions (never overwritten; each version has its own build script and notes file)
+
+| Version | Deliverable | Build | Notes | What it is |
+|---|---|---|---|---|
+| v6 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen.pptx` | `build.py` | `notes_speech.json` | 64 slides, first Beige Green deck |
+| v7 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx` | `build_v7.py` | `notes_v7.json` | 95 slides, full detailed script (about 10,300 words, roughly 70 min: rehearsal / Q&A reference) |
+| v8 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v8.pptx` | `build_v8.py` | `notes_v8.json` | same 95 slides, **40-minute script** (about 5,500 words, 39 min at 140 wpm; "Time check" cues on section slides) |
+| v9 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx` | `build_v9.py` | `notes_v9.json` | v8 + brand logos on the "AI-Powered Recommendation Is Everywhere" slide + audited thesis figure / table numbers |
+
+v9 changes in detail:
+
+* Slide 7 shows the Netflix, Spotify, Yelp and Amazon logos (the SVG icons used by the reference deck,
+  rasterised to `$VIVA_THESIS_FIG_DIR/logos/{netflix,spotify,yelp,amazon}.png`; text chips are the fallback).
+* Every thesis table used on a slide now carries its thesis number in a small caption: Table 4.1 (datasets),
+  4.2 (hardware), 5.1 (SHAP vs LIME), 6.1 (Beijing validation), 6.2 / 6.3 (generalisation, literature),
+  7.1 (main results), 7.2 (ablation), 7.3 / 7.4 (efficiency), 7.5 (cold-start), 7.6 (significance).
+  Figures: 5.1, 5.2, 6.1, 6.2, 6.3, 7.1 (architecture), 7.2, 7.3, 7.4. All numbers were checked against
+  the captions in `MOUAD_LOUHICHI_Thesis.pdf` (pages 66 to 119).
+* Corrected: the objective-evidence pointers now cite the exact tables / figures ("Table 6.1, Fig. 6.1, 6.2";
+  "Table 7.1, Fig. 7.2, 7.3" instead of "Tables 7.1 to 7.6"); the backup Table 7.3 scale-factor column uses the
+  thesis values (× MF on MovieLens-1M: 1.41, 1.63, 1.89, 1.96, 2.19, 3.41).
+
+Build any version with the same command, changing the script and output names:
 
 ```bash
 # thesis figure crops (pymupdf): page / clip rectangles in PDF points, zoom 4
 #   fig5_1 p86 (113,83,468,301)   fig5_2 p86 (69,642,512,697)   fig6_1 p96 (135,83,446,293)
 #   fig6_2 p96 (69,575,512,763)   fig6_3 p97 (83,157,526,260)   fig7_2 p113 (92,636,518,763)
-#   fig7_3 p114 (108,83,473,239)  fig7_4 p118 (157,147,424,264)
+#   fig7_3 p114 (108,83,473,239)  fig7_4 p118 (157,147,424,264)  fig7_1 p104 (60,295,535,403)
 VIVA_FONT_DIR=/tmp/viva_build/fonts VIVA_ASSET_DIR=/tmp/viva_build/assets VIVA_FIG_DIR=/tmp/viva_build/figs \
 VIVA_THESIS_FIG_DIR=/tmp/viva_build/thesis \
-python3 build_v7.py "../Beige Green Modern Illustrative Playful Thesis Defense Presentation (1).pptx" ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx
+python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense Presentation (1).pptx" ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
