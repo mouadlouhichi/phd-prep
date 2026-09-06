@@ -93,7 +93,11 @@ What is new, per area:
   lists / journal / DOI / status, "Thesis answer" statement box + key outcomes.
 * **Backup**: Table 7.1 with ± std, Table 7.6 paired tests, Tables 7.3 / 7.4 cost and convergence.
 
-Speaker notes live in `notes_v7.json` (numeric keys = v6 notes, string keys = the new slides).
+Speaker notes live in `notes_v7.json` (numeric keys = v6 slide numbers, string keys = the new slides).
+They are written for a **40-minute delivery**: about 5,500 words over the 90 main slides, which is
+39 minutes at 140 words per minute (section slides carry a "Time check" cue: minute 1, 3, 8, 11, 20, 27,
+36, 40). The longer, fully detailed script (about 10,300 words, roughly 70 minutes) is kept in
+`notes_v7_long.json` for rehearsal and for the Q&A; swap the file name in `build_v7.py` to build with it.
 
 ```bash
 # thesis figure crops (pymupdf): page / clip rectangles in PDF points, zoom 4
