@@ -148,9 +148,10 @@ These were measured directly and are unaffected by the correction:
   slide 82 declares "minute 36", the words put you at 39.2 min @ 130 wpm.
 - **The speech reads the slide aloud.** Share of spoken 4-grams already printed on the same
   slide: slide 47 **49.1%**, slide 14 40.5%, slide 87 39.1%, slide 45 37.8%.
-- **Number repetition.** `0.63` printed on 7 slides and spoken 3× (hence slide 38's 17-word
-  "that's Beijing, not wine" disambiguation); `383,585` printed on 12 slides; `1.78×` spoken
-  3× and printed 5×; the ablation pair `4.6 / 6.1` printed on 18 slides.
+- **Number repetition.** `0.63` printed on 7 slides and spoken 4 times across 3 (hence slide 38's
+  17-word "that's Beijing, not wine" disambiguation); `383,585` printed on 12 slides; `1.78×`
+  spoken twice in the main flow plus once in backup and printed on 5 slides; the ablation pair
+  `4.6 / 6.1` printed on 18 slides.
 - **Thesis one-liner spoken on 7 slides** (2, 15, 17, 18, 31, 85, 87).
 - **Slide 72 re-charts tables 70/71** — same seven models, same two metrics, 64 words for
   "a monotone ladder".
@@ -265,3 +266,37 @@ Plus: drop slide 38's 17-word `0.63` disambiguation once `0.63` appears on one s
 
 *Every figure is a count over text and speaker notes extracted from the two `.pptx` files.
 The reference-deck headers were read from the `.pptx` directly, not from the PDF.*
+
+---
+
+## 7. Outcome — v10 (`build_v10.py`, `notes_v10.json`)
+
+Built and measured against the built files.
+
+| | v9 | **v10** | reference |
+|---|---|---|---|
+| Slides | 95 | **80** | 80 |
+| Main-flow slides | 91 | **77** | 77 |
+| Main-flow spoken words | 5,525 | **3,426** (−38%) | 2,811 |
+| Words per slide | 60.7 | **44.5** | 36.5 |
+| @ 130 wpm | 42.5 min | **26.4 min** | 21.6 min |
+| @ 110 wpm (technical pace) | 50.2 min | **31.1 min** | 25.6 min |
+| Backup slides | 4 | **3** | 3 |
+| Text blocks auto-shrunk | 9 | **6** | — |
+| Native OMML equations | 252 | **198** | — |
+
+Per-contribution spine verified present and in order on all three contributions:
+`Research Gap → RQ and Objectives → … → Evaluation Protocol → … → Answer → Key Findings →
+Limitations → Takeaway`. Section counts: C I 13 (ref 12), C II 13 (ref 13), C III 16 (ref 16).
+
+Repetition removed from the main-flow speech: `0.63` 4 → 1, `1.78` 2 → 1, `13.3 percent` 2 → 1,
+recap openers 3 → 0. Section dividers 205 → 100 words (reference 78). All eight `Time check`
+cues retained and re-timed.
+
+### Timing caveat, restated
+
+v10 is 26.4 min of script at 130 wpm, 31.1 min at a slower technical pace of 110 wpm. That is
+*above* the reference deck's 21.6 min but well under a 40-minute slot. If the slot really is 40
+minutes and you intend to fill it from the notes, v10 needs roughly 1,000 words of additional
+**substance** (not recap) — most naturally in the C I and C III results walkthroughs, where the
+reference is also thinnest. Say the word and I will add it.

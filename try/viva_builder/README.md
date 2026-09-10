@@ -101,6 +101,7 @@ What is new, per area:
 | v7 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx` | `build_v7.py` | `notes_v7.json` | 95 slides, full detailed script (about 10,300 words, roughly 70 min: rehearsal / Q&A reference) |
 | v8 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v8.pptx` | `build_v8.py` | `notes_v8.json` | same 95 slides, **40-minute script** (about 5,500 words, 39 min at 140 wpm; "Time check" cues on section slides) |
 | v9 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx` | `build_v9.py` | `notes_v9.json` | v8 + brand logos on the "AI-Powered Recommendation Is Everywhere" slide + audited thesis figure / table numbers |
+| v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 80 slides, 5,525 → 3,426 spoken words**, structure matched slide-for-slide to the reference viva |
 
 v9 changes in detail:
 
@@ -115,7 +116,60 @@ v9 changes in detail:
   "Table 7.1, Fig. 7.2, 7.3" instead of "Tables 7.1 to 7.6"); the backup Table 7.3 scale-factor column uses the
   thesis values (× MF on MovieLens-1M: 1.41, 1.63, 1.89, 1.96, 2.19, 3.41).
 
-Build any version with the same command, changing the script and output names:
+## Version X (`build_v10.py` → `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx`)
+
+Rebuilt to remove the redundancy measured in `REDUNDANCY_ANALYSIS.md`, with the structure
+matched slide-for-slide to the reference viva (`example-phd-passes/Presentation1 (1) (1).pptx`).
+**95 → 80 slides** (the reference is 80) and **5,525 → 3,426 spoken words**, i.e. 42.5 → 26.4 min
+at 130 wpm. Words per slide 60.7 → 44.5 (reference: 36.5).
+
+Per-contribution spine is now identical to the reference in all three contributions:
+`Research Gap → RQ and Objectives → method → Evaluation Protocol → results → Answer →
+Key Findings → Limitations → Takeaway`. Counts land on the reference: C I 13 (ref 12),
+C II 13 (ref 13), C III 16 (ref 16), backup 3 (ref 3).
+
+**Slides removed (15).** Redundant restatements: *Our Thesis in One View* (prose version of the
+contribution cards), *Datasets Used Throughout* (the four cards already give every statistic),
+*The Same Game, Three Times* (third statement of the C1/C2/C3 map), *Ranking Quality Across All
+Baselines* (charts the same 7 models / 2 metrics as the two main-results tables), *Backup Slides*
+index. Merged: *Clustering as a Cooperative Game* → *The Bridge* (its `v(S) = Silhouette`
+definition), *Pipeline in Five Stages* → *Evaluation Protocol*, *Cluster-Specific Signatures* →
+*Global SHAP Ranking* (Fig. 5.2 now a strip beneath Fig. 5.1), *SHAP vs LIME* → *Answer to RQ1*
+(row O3), *Three Atmospheric Regimes* → *How Importance Changes Across Levels*, *Generalisation
+and Comparison* → *Key Findings*, *Coalition Value* → *Recommendation as a Cooperative Game*,
+*Multi-Objective Learning* → *Shapley-Weighted Message Passing* (sixth equation row; the
+architecture figure is shortened from 1.9″ to 1.55″ to make room), *Coverage & Diversity* →
+main-results tables, *Cold-Start / Robustness* → *Statistical Significance*.
+
+**Slides deliberately kept.** The closing quartet stays on every contribution. Rev 1 of the
+analysis wrongly proposed deleting `Key Findings` and `Takeaway`; the reference deck has the
+same twelve slides (555 words against our 591), so it is the accepted template, not a deviation.
+Also kept: the band example and the six arrival orders, Definition 1.1, both bridging
+`Limitations` slides, Proposition 6.1, publications, section dividers.
+
+**Speech rewritten** (`notes_v10.json`, 97 → 80 keys, 17 orphaned by the removed slides):
+each headline number is now spoken once in the main flow (`0.63` 4 → 1, `1.78` 2 → 1,
+`13.3 percent` 2 → 1); the recap openers ("In short:", "The findings in short:") are gone; the
+thesis one-liner is planted on *The Three Contributions* and cashed only in the *Conclusion*;
+section dividers carry a time cue and nothing else (205 → 100 words, reference: 78); and slides
+47/14/87 no longer read their own text aloud.
+
+Build:
+
+```bash
+VIVA_FONT_DIR=/tmp/viva_build/fonts VIVA_ASSET_DIR=/tmp/viva_build/assets VIVA_FIG_DIR=/tmp/viva_build/figs \
+VIVA_THESIS_FIG_DIR=/tmp/viva_build/thesis \
+python3 build_v10.py "../Beige Green Modern Illustrative Playful Thesis Defense Presentation (1).pptx" \
+  ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx
+```
+
+Thesis figure crops must be named `fig5_1_wine_global.png`, `fig5_2_wine_clusters.png`,
+`fig6_1_beijing_global.png`, `fig6_2_beijing_force.png`, `fig6_3_beijing_multilevel.png`,
+`fig7_2_ranking.png`, `fig7_3_coverage_ild.png`, `fig7_4_waterfall.png` in
+`$VIVA_THESIS_FIG_DIR` (crop rectangles at the bottom of this file). Brand logos are optional:
+`$VIVA_THESIS_FIG_DIR/logos/{netflix,spotify,yelp,amazon}.png`, text chips otherwise.
+
+## Build any version
 
 ```bash
 # thesis figure crops (pymupdf): page / clip rectangles in PDF points, zoom 4
