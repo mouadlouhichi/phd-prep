@@ -873,31 +873,38 @@ def build(template, out):
              N(23))
 
     # ======================================================================
-    # DEEP DIVE: cooperative games and the Shapley value (3 slides)
-    # ======================================================================
-    DD = "Technical Deep Dive: Cooperative Games"
-    DDTABS = ["The game", "Shapley value", "In this thesis"]
-
-    # --- DD1: a cooperative game in one picture --------------------------------
-    s, top = content_slide(ctx, "A Cooperative Game in One Picture", eyebrow=DD, tabs=DDTABS, active="The game", notes=N("dd_game"), refs=cite(4))
-    lw = emu(9.0)
-    fit_textbox(s, L, top, lw, emu(3.0), [
-        H("Three ingredients", size=22, color=GREEN),
-        *bullets(["**Players** N = {1, …, n}: the agents who can work together.",
-                  "**Coalition** S ⊆ N: any group of players; there are 2^{n} of them.",
+    # --- Methodology primer: the cooperative game + the Shapley value, one slide
+    # v10: the three "Technical Deep Dive" slides are collapsed into a single
+    # methodology slide. "The Same Game, Three Times" is dropped outright (the
+    # contribution cards and the synthesis already carry that map), and the
+    # six-arrival-order table is reduced to the one worked row that explains it.
+    s, top = content_slide(ctx, "The Cooperative Game and the Shapley Value", eyebrow=C1,
+                           tabs=C1TABS, active="Methodology", notes=N("dd_game"), refs=cite(4, 5))
+    lw = emu(8.4)
+    fit_textbox(s, L, top, lw, emu(2.5), [
+        H("Three ingredients", size=21, color=GREEN),
+        *bullets(["**Players** N = {1, …, n}, and a **coalition** S ⊆ N: any group of them; there are 2^{n}.",
                   "**Characteristic function** v: 2^{N} → ℝ with v(∅) = 0: the value a coalition creates **on its own**.",
-                  "**The question:** the grand coalition N earns v(N); **how should it be shared fairly** among the players?"], size=20, gap0=9),
+                  "**The question:** the grand coalition earns v(N), so **how should it be shared fairly**?"], size=19, gap0=8),
     ], min_scale=0.7)
-    ey = top + emu(3.1)
-    box = rrect(s, L, ey, lw, emu(1.0), fill=GREEN, radius=emu(0.22))
-    textbox(s, L, ey + emu(0.08), lw, emu(0.28), [Para([Run("A COOPERATIVE GAME IS A PAIR", font="xbold", size=12, color=YELLOW, spc=1.5)], align="ctr", lnspc=14)])
-    equation(s, L + emu(0.2), ey + emu(0.32), lw - emu(0.4), emu(0.62), r"(N, v), \qquad v : 2^{N} \to \mathbb{R}, \qquad v(\varnothing) = 0", size=20, color=WHITE)
-    statement(s, L, ey + emu(1.0) + emu(0.45), lw, CB - ey - emu(1.0) - emu(0.7), "Toy example: a three-piece band",
-              "Guitar, Voice and Drums are paid for a gig. Alone they earn **60, 40 and 20**. Guitar + Voice together earn **140**, more than 60 + 40: the value of a group is **not the sum of its parts**. All three together earn **200**. How should the 200 be split?",
-              fill=ORANGE, size=18)
-    dx = L + lw + emu(0.55)
+    ey = top + emu(2.6)
+    box = rrect(s, L, ey, lw, emu(0.95), fill=GREEN, radius=emu(0.22))
+    textbox(s, L, ey + emu(0.07), lw, emu(0.26), [Para([Run("A COOPERATIVE GAME IS A PAIR", font="xbold", size=12, color=YELLOW, spc=1.5)], align="ctr", lnspc=14)])
+    equation(s, L + emu(0.2), ey + emu(0.3), lw - emu(0.4), emu(0.6), r"(N, v), \qquad v : 2^{N} \to \mathbb{R}, \qquad v(\varnothing) = 0", size=19, color=WHITE)
+    sy = ey + emu(1.15)
+    statement(s, L, sy, lw, emu(1.5), "Toy example: a three-piece band",
+              "Guitar, Voice and Drums are paid for a gig. Alone they earn **60, 40 and 20**; Guitar and Voice together earn **140**, more than their sum; all three earn **200**. A fair split must credit what a player **adds to the others**.",
+              fill=ORANGE, size=17)
+    fy = sy + emu(1.7)
+    box = rrect(s, L, fy, lw, emu(2.15), fill=INK, radius=emu(0.28))
+    textbox(s, L, fy + emu(0.14), lw, emu(0.28), [Para([Run("SHAPLEY VALUE OF PLAYER j  ·  SHAPLEY, 1953", font="xbold", size=12, color=YELLOW, spc=1.6)], align="ctr", lnspc=15)])
+    equation(s, L + emu(0.2), fy + emu(0.44), lw - emu(0.4), emu(1.2),
+             r"\varphi_j(v) = \sum_{S \subseteq N \setminus \{j\}} \dfrac{|S|!\,(n-|S|-1)!}{n!}\,\left[\, v(S \cup \{j\}) - v(S) \,\right]", size=20, color=WHITE)
+    textbox(s, L, fy + emu(1.68), lw, emu(0.34), [Para([Run("average marginal contribution over every arrival order", font="body", size=15, color="DCE7E3")], align="ctr", lnspc=18)])
+
+    dx = L + lw + emu(0.5)
     dw = R - dx
-    textbox(s, dx, top - emu(0.05), dw, emu(0.35), [Para([Run("CHARACTERISTIC FUNCTION v(S) OF THE BAND", font="xbold", size=13, color=ORANGE, spc=1.5)], lnspc=16)])
+    textbox(s, dx, top - emu(0.05), dw, emu(0.32), [Para([Run("CHARACTERISTIC FUNCTION v(S) OF THE BAND", font="xbold", size=13, color=ORANGE, spc=1.5)], lnspc=16)])
     rows = [["Coalition S", "Who plays", "v(S)"],
             ["∅", "nobody", "0"],
             ["{G}", "Guitar alone", "60"],
@@ -907,51 +914,22 @@ def build(template, out):
             ["{G, D}", "Guitar + Drums", "100"],
             ["{V, D}", "Voice + Drums", "80"],
             ["{G, V, D}", "the whole band", "200"]]
-    gf, th = table(s, dx, top + emu(0.35), dw, rows, col_widths=[1.6, 2.6, 1.2], size=17, head_size=16, row_h=emu(0.5),
+    gf, th = table(s, dx, top + emu(0.32), dw, rows, col_widths=[1.5, 2.4, 1.1], size=15, head_size=14, row_h=emu(0.40),
                    align=["ctr", "l", "ctr"], header_align=["ctr", "l", "ctr"])
-    ny = top + emu(0.35) + th + emu(0.3)
-    bar = rrect(s, dx, ny, dw, CB - ny - emu(0.3), fill=TINT, radius=emu(0.22))
-    shape_text(bar, [Para(md_runs("Synergy: v({G, V}) = 140 > v({G}) + v({V}) = 100. A fair split has to give credit for what a player **adds to the others**, not only for what they earn alone.", size=16, color=INK), align="ctr", lnspc=21)],
-               anchor="ctr", insets=(emu(0.3), emu(0.1), emu(0.3), emu(0.1)))
-
-    # --- DD2: the Shapley value -------------------------------------------------
-    s, top = content_slide(ctx, "The Shapley Value: Average Marginal Contribution", eyebrow=DD, tabs=DDTABS, active="Shapley value", notes=N("dd_shapley"), refs=cite(4, 5))
-    lw = emu(8.6)
-    textbox(s, L, top - emu(0.05), lw, emu(0.35), [Para([Run("ALL 6 ARRIVAL ORDERS  ·  MARGINAL CONTRIBUTION OF EACH PLAYER", font="xbold", size=13, color=ORANGE, spc=1.5)], lnspc=16)])
-    rows = [["Arrival order", "Guitar", "Voice", "Drums"],
-            ["G → V → D", "60", "80", "60"],
-            ["G → D → V", "60", "100", "40"],
-            ["V → G → D", "100", "40", "60"],
-            ["V → D → G", "120", "40", "40"],
-            ["D → G → V", "80", "100", "20"],
-            ["D → V → G", "120", "60", "20"],
-            [[Para([Run("Average = Shapley value φ", font="xbold", size=17, color=GREEN)], align="l", lnspc=22)],
-             [Para([Run("90", font="xbold", size=19, color=GREEN)], align="ctr", lnspc=23)],
-             [Para([Run("70", font="xbold", size=19, color=GREEN)], align="ctr", lnspc=23)],
-             [Para([Run("40", font="xbold", size=19, color=GREEN)], align="ctr", lnspc=23)]]]
-    gf, th = table(s, L, top + emu(0.35), lw, rows, col_widths=[3.2, 1.8, 1.8, 1.8], size=17, head_size=16, row_h=emu(0.5),
-                   align=["l", "ctr", "ctr", "ctr"], header_align=["l", "ctr", "ctr", "ctr"])
-    ny = top + emu(0.35) + th + emu(0.3)
-    bar = rrect(s, L, ny, lw, CB - ny - emu(0.3), fill=TINT, radius=emu(0.22))
-    shape_text(bar, [Para(md_runs("Reading one row: in the order V → D → G, Voice arrives first and adds 40; Drums then raises the value from 40 to 80 (+40); Guitar completes the band, 80 → 200 (**+120**). The split **90 + 70 + 40 = 200**: nothing is lost, nothing is invented.", size=16, color=INK), align="l", lnspc=21)],
-               anchor="ctr", insets=(emu(0.35), emu(0.1), emu(0.35), emu(0.1)))
-    dx = L + lw + emu(0.55)
-    dw = R - dx
-    bh = emu(2.75)
-    box = rrect(s, dx, top, dw, bh, fill=GREEN, radius=emu(0.3))
-    textbox(s, dx, top + emu(0.2), dw, emu(0.3), [Para([Run("SHAPLEY VALUE OF PLAYER j  (SHAPLEY, 1953)", font="xbold", size=13, color=YELLOW, spc=1.6)], align="ctr", lnspc=17)])
-    equation(s, dx + emu(0.2), top + emu(0.5), dw - emu(0.4), emu(1.7),
-             r"\varphi_j(v) = \sum_{S \subseteq N \setminus \{j\}} \dfrac{|S|!\,(n-|S|-1)!}{n!}\,\left[\, v(S \cup \{j\}) - v(S) \,\right]", size=21, color=WHITE)
-    textbox(s, dx, top + bh - emu(0.5), dw, emu(0.35), [Para([Run("weight = probability that exactly the players in S arrive before j", font="body", size=15, color="DCE7E3")], align="ctr", lnspc=18)])
+    ny = top + emu(0.32) + th + emu(0.22)
+    bar = rrect(s, dx, ny, dw, emu(1.25), fill=TINT, radius=emu(0.2))
+    shape_text(bar, [Para(md_runs("One arrival order, V → D → G: Voice adds **40**, Drums takes 40 → 80 (**+40**), Guitar completes the band, 80 → 200 (**+120**). Averaged over all six orders: **90 / 70 / 40**, which sums to 200.", size=15, color=INK), align="l", lnspc=19)],
+               anchor="ctr", insets=(emu(0.3), emu(0.08), emu(0.3), emu(0.08)))
     ax = [("Efficiency", "the shares add up to v(N)"), ("Symmetry", "equal contributors, equal credit"),
           ("Null player", "adds nothing → gets nothing"), ("Additivity", "linear across games")]
-    cells = grid(4, 2, dx, top + bh + emu(0.3), dw, emu(1.7), gap=emu(0.25), vgap=emu(0.22))
+    cells = grid(4, 2, dx, ny + emu(1.45), dw, emu(1.5), gap=emu(0.22), vgap=emu(0.2))
     for (h1, sub), (x, y, w, h) in zip(ax, cells):
-        chip(s, x, y, w, h, h1, fill=TINT, color=INK, size=17, sub=sub, sub_size=13, sub_color=MUTED, radius=emu(0.2))
-    sy = top + bh + emu(0.3) + emu(1.7) + emu(0.45)
-    statement(s, dx, sy, dw, CB - sy - emu(0.3), "Why it is the right rule",
-              "The Shapley value is the **only** allocation rule that satisfies all four axioms at once. Any other rule (equal shares 66.7 each, or proportional to solo pay 100 / 67 / 33) breaks at least one of them.",
-              fill=ORANGE, size=16)
+        chip(s, x, y, w, h, h1, fill=TINT, color=INK, size=16, sub=sub, sub_size=12, sub_color=MUTED, radius=emu(0.2))
+    wy = ny + emu(1.45) + emu(1.5) + emu(0.25)
+    bar = rrect(s, dx, wy, dw, CB - wy - emu(0.25), fill=ORANGE, radius=emu(0.2))
+    shape_text(bar, [Para(md_runs("**Why this rule:** Shapley proved it is the **only** allocation satisfying all four axioms at once.", size=16, color=WHITE), align="ctr", lnspc=20)],
+               anchor="ctr", insets=(emu(0.3), emu(0.08), emu(0.3), emu(0.08)))
+
 
     # v10: 'The Same Game, Three Times in This Thesis' removed. It was the third
     # statement of the C1/C2/C3 map (after the contribution cards and before the

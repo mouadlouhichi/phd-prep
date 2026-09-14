@@ -101,7 +101,7 @@ What is new, per area:
 | v7 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx` | `build_v7.py` | `notes_v7.json` | 95 slides, full detailed script (about 10,300 words, roughly 70 min: rehearsal / Q&A reference) |
 | v8 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v8.pptx` | `build_v8.py` | `notes_v8.json` | same 95 slides, **40-minute script** (about 5,500 words, 39 min at 140 wpm; "Time check" cues on section slides) |
 | v9 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx` | `build_v9.py` | `notes_v9.json` | v8 + brand logos on the "AI-Powered Recommendation Is Everywhere" slide + audited thesis figure / table numbers |
-| v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 80 slides, 5,525 → 3,426 spoken words**, structure matched slide-for-slide to the reference viva |
+| v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 79 slides, 5,525 → 4,568 spoken words**, three deep-dive slides collapsed into one methodology slide, speech rewritten in the v7 spoken register |
 
 v9 changes in detail:
 
@@ -120,39 +120,63 @@ v9 changes in detail:
 
 Rebuilt to remove the redundancy measured in `REDUNDANCY_ANALYSIS.md`, with the structure
 matched slide-for-slide to the reference viva (`example-phd-passes/Presentation1 (1) (1).pptx`).
-**95 → 80 slides** (the reference is 80) and **5,525 → 3,426 spoken words**, i.e. 42.5 → 26.4 min
-at 130 wpm. Words per slide 60.7 → 44.5 (reference: 36.5).
+**95 → 79 slides** (the reference is 80) and **5,525 → 4,568 spoken words**, i.e. 42.5 → 35.1 min
+at 130 wpm and 38.1 min at 120. Words per slide 60.7 → 60.1, with 16 fewer slides carrying the
+same argument.
 
 Per-contribution spine is now identical to the reference in all three contributions:
 `Research Gap → RQ and Objectives → method → Evaluation Protocol → results → Answer →
-Key Findings → Limitations → Takeaway`. Counts land on the reference: C I 13 (ref 12),
+Key Findings → Limitations → Takeaway`. Counts land on the reference: C I 12 (ref 12),
 C II 13 (ref 13), C III 16 (ref 16), backup 3 (ref 3).
 
-**Slides removed (15).** Redundant restatements: *Our Thesis in One View* (prose version of the
-contribution cards), *Datasets Used Throughout* (the four cards already give every statistic),
-*The Same Game, Three Times* (third statement of the C1/C2/C3 map), *Ranking Quality Across All
-Baselines* (charts the same 7 models / 2 metrics as the two main-results tables), *Backup Slides*
-index. Merged: *Clustering as a Cooperative Game* → *The Bridge* (its `v(S) = Silhouette`
-definition), *Pipeline in Five Stages* → *Evaluation Protocol*, *Cluster-Specific Signatures* →
-*Global SHAP Ranking* (Fig. 5.2 now a strip beneath Fig. 5.1), *SHAP vs LIME* → *Answer to RQ1*
-(row O3), *Three Atmospheric Regimes* → *How Importance Changes Across Levels*, *Generalisation
-and Comparison* → *Key Findings*, *Coalition Value* → *Recommendation as a Cooperative Game*,
-*Multi-Objective Learning* → *Shapley-Weighted Message Passing* (sixth equation row; the
-architecture figure is shortened from 1.9″ to 1.55″ to make room), *Coverage & Diversity* →
-main-results tables, *Cold-Start / Robustness* → *Statistical Significance*.
+**The three "Technical Deep Dive" slides are now one methodology slide.** *A Cooperative Game in
+One Picture* and *The Shapley Value: Average Marginal Contribution* were merged into *The
+Cooperative Game and the Shapley Value* (tab: Methodology), and *The Same Game, Three Times in
+This Thesis* was dropped — the contribution cards and the synthesis already carry that map. The
+six-arrival-order table became a single worked row (V → D → G: +40, +40, +120 → 90/70/40).
+Left column: three ingredients, the `(N, v)` pair, the band example, the Shapley formula.
+Right column: the `v(S)` table, the worked row, the four axiom chips, "why this rule".
+
+**Speech rewritten in the v7 spoken register.** `notes_v10.json` (97 → 79 keys, 18 orphaned by
+the removed slides) now reads as talk rather than as notes: first-person framing ("I want to be
+careful here", "a member of the jury may well notice it"), varied discourse markers instead of
+the terse v8/v9 fragments, and explicit signposting between slides. Measured against the decks
+it replaces:
+
+| | v7 | v9 | **v10** |
+|---|---|---|---|
+| connectors per 100 words | 6.5 | 6.1 | **8.4** |
+| first-person " I " per 100 words | 0.45 | 0.33 | **0.77** |
+| sentences opening "And"/"So" | 5.4% | 4.0% | **1.7%** |
+
+The last row is deliberate: an earlier draft of this rewrite opened 38.7% of sentences with
+"And" or "So", which reads as a tic rather than as connection. The markers are now spread across
+*now / then / which / in other words / here is / notice that / that is why / let me*.
+
+**Other repetition removed.** Each headline number is spoken once in the main flow (`0.63` 4 → 1,
+`1.78` 2 → 1, `13.3 percent` 2 → 1); the recap openers ("In short:", "The findings in short:")
+are gone; the thesis one-liner is planted on *The Three Contributions* and cashed only in the
+*Conclusion*; all seven `Time check` cues are retained and re-timed; slides 47/14/87 no longer
+read their own text aloud.
 
 **Slides deliberately kept.** The closing quartet stays on every contribution. Rev 1 of the
 analysis wrongly proposed deleting `Key Findings` and `Takeaway`; the reference deck has the
 same twelve slides (555 words against our 591), so it is the accepted template, not a deviation.
-Also kept: the band example and the six arrival orders, Definition 1.1, both bridging
-`Limitations` slides, Proposition 6.1, publications, section dividers.
+Also kept: the band example and the Shapley axioms, Definition 1.1, both bridging `Limitations`
+slides, Proposition 6.1, publications, section dividers.
 
-**Speech rewritten** (`notes_v10.json`, 97 → 80 keys, 17 orphaned by the removed slides):
-each headline number is now spoken once in the main flow (`0.63` 4 → 1, `1.78` 2 → 1,
-`13.3 percent` 2 → 1); the recap openers ("In short:", "The findings in short:") are gone; the
-thesis one-liner is planted on *The Three Contributions* and cashed only in the *Conclusion*;
-section dividers carry a time cue and nothing else (205 → 100 words, reference: 78); and slides
-47/14/87 no longer read their own text aloud.
+**Other slides removed (13).** Redundant restatements: *Our Thesis in One View* (prose version of
+the contribution cards), *Datasets Used Throughout* (the four cards already give every
+statistic), *Ranking Quality Across All Baselines* (charts the same 7 models / 2 metrics as the
+two main-results tables), *Backup Slides* index. Merged: *Clustering as a Cooperative Game* →
+*The Bridge* (its `v(S) = Silhouette` definition), *Pipeline in Five Stages* → *Evaluation
+Protocol*, *Cluster-Specific Signatures* → *Global SHAP Ranking* (Fig. 5.2 now a strip beneath
+Fig. 5.1), *SHAP vs LIME* → *Answer to RQ1* (row O3), *Three Atmospheric Regimes* → *How
+Importance Changes Across Levels*, *Generalisation and Comparison* → *Key Findings*, *Coalition
+Value* → *Recommendation as a Cooperative Game*, *Multi-Objective Learning* → *Shapley-Weighted
+Message Passing* (sixth equation row; the architecture figure is shortened from 1.9″ to 1.55″ to
+make room), *Coverage & Diversity* → main-results tables, *Cold-Start / Robustness* →
+*Statistical Significance*.
 
 Build:
 
