@@ -101,7 +101,7 @@ What is new, per area:
 | v7 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v7.pptx` | `build_v7.py` | `notes_v7.json` | 95 slides, full detailed script (about 10,300 words, roughly 70 min: rehearsal / Q&A reference) |
 | v8 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v8.pptx` | `build_v8.py` | `notes_v8.json` | same 95 slides, **40-minute script** (about 5,500 words, 39 min at 140 wpm; "Time check" cues on section slides) |
 | v9 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx` | `build_v9.py` | `notes_v9.json` | v8 + brand logos on the "AI-Powered Recommendation Is Everywhere" slide + audited thesis figure / table numbers |
-| v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 79 slides, 5,525 → 4,568 spoken words**, three deep-dive slides collapsed into one methodology slide, speech rewritten in the v7 spoken register |
+| v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 79 slides, 5,525 → 4,563 spoken words**, three deep-dive slides collapsed into one methodology slide, speech rewritten as spoken delivery |
 
 v9 changes in detail:
 
@@ -120,8 +120,8 @@ v9 changes in detail:
 
 Rebuilt to remove the redundancy measured in `REDUNDANCY_ANALYSIS.md`, with the structure
 matched slide-for-slide to the reference viva (`example-phd-passes/Presentation1 (1) (1).pptx`).
-**95 → 79 slides** (the reference is 80) and **5,525 → 4,568 spoken words**, i.e. 42.5 → 35.1 min
-at 130 wpm and 38.1 min at 120. Words per slide 60.7 → 60.1, with 16 fewer slides carrying the
+**95 → 79 slides** (the reference is 80) and **5,525 → 4,563 spoken words**, i.e. 42.5 → 35.1 min
+at 130 wpm and 38.0 min at 120. Words per slide 60.7 → 60.0, with 16 fewer slides carrying the
 same argument.
 
 Per-contribution spine is now identical to the reference in all three contributions:
@@ -145,13 +145,22 @@ it replaces:
 
 | | v7 | v9 | **v10** |
 |---|---|---|---|
-| connectors per 100 words | 6.5 | 6.1 | **8.4** |
-| first-person " I " per 100 words | 0.45 | 0.33 | **0.77** |
-| sentences opening "And"/"So" | 5.4% | 4.0% | **1.7%** |
+| connectors per 100 words | 6.5 | 6.1 | **10.0** |
+| contractions per 100 words | 0.13 | 0.14 | **2.17** |
+| first-person " I " per 100 words | 0.45 | 0.33 | **0.55** |
+| sentences opening "And"/"So" | 5.4% | 4.0% | **16.0%** |
 
-The last row is deliberate: an earlier draft of this rewrite opened 38.7% of sentences with
-"And" or "So", which reads as a tic rather than as connection. The markers are now spread across
-*now / then / which / in other words / here is / notice that / that is why / let me*.
+The deck is written to be *said*, not read: contractions throughout (`let's`, `we're`, `isn't`,
+`you'll`), inter-slide transitions that name the move ("So let's move to the problem itself",
+"So let's move on to Contribution I", "And that brings us to Contribution III", "So let's bring
+everything together"), and direct address ("as you can see", "you'll notice", "look at the
+orange box").
+
+The last row is the guard rail. Two earlier drafts of this rewrite opened **38.7%** and **37.2%**
+of sentences with "And" or "So" — that is a tic, not connection, and both were measured and
+reverted. The rule that works is *one* "And"/"So" transition per note, with the remaining
+sentence-initial positions varied across *now / then / which / finally / in other words / here
+is / notice that / put simply / in short / rather than*.
 
 **Other repetition removed.** Each headline number is spoken once in the main flow (`0.63` 4 → 1,
 `1.78` 2 → 1, `13.3 percent` 2 → 1); the recap openers ("In short:", "The findings in short:")
