@@ -156,6 +156,16 @@ The deck is written to be *said*, not read: contractions throughout (`let's`, `w
 everything together"), and direct address ("as you can see", "you'll notice", "look at the
 orange box").
 
+**Plain wording applies to everything except the technical vocabulary.** Simplify the connective
+tissue, never the terms of art. `interpretability`, `transparency`, `clustering pipelines`,
+`attribution`, `surrogate`, `coalition`, `characteristic function`, `Silhouette`, `NDCG`,
+`hyperedge`, `message passing`, `surrogate fidelity`, `Proposition 6.1`, `Holm`, `Cohen` and
+`Wilcoxon` are kept verbatim wherever they appear, because they are the thesis's own language and
+the jury will use them in questions. A simplification pass on slide 4 wrongly turned them into
+`clear explanation` / `clear` / `clustering tools`; they were restored. The rule that survives is:
+`interpretability` (6 syllables) stays, while `widespread` becomes `how big these systems are`,
+`afterwards` becomes `later`, and `the pattern we keep seeing` becomes `what keeps happening`.
+
 The last row is the guard rail. Two earlier drafts of this rewrite opened **38.7%** and **37.2%**
 of sentences with "And" or "So" — that is a tic, not connection, and both were measured and
 reverted. The rule that works is *one* "And"/"So" transition per note, with the remaining
