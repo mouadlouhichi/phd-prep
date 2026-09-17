@@ -23,6 +23,20 @@ SWAP = {
     "CFDAD6": "C9D8E6",   # paler green text on dark fills
 }
 
+# v13: match the reference viva deck. Its slides reference the theme colour
+# accent1 2,160 times, and accent1 is 4472C4, so that is "the same blue".
+# The companions are the standard Office tints/shades of 4472C4, and the
+# orange accent becomes a deep teal so the categorical trios
+# (Explain/Scale/Guide, Regimes A/B/C, Users/Items/Contexts) stay separable.
+SWAP_V13 = {
+    "124944": "4472C4",   # GREEN      -> reference accent1
+    "1E5F58": "2F5597",   # mid green  -> Accent1, Darker 25%
+    "E6EEEA": "D9E2F3",   # GREEN_SOFT -> Accent1, Lighter 80%
+    "DCE7E3": "D6E4F7",   # pale text on dark fills
+    "CFDAD6": "BDD0EA",   # paler text on dark fills
+    "DF8330": "1F7A8C",   # ORANGE     -> deep teal
+}
+
 
 def _sw(v):
     """Swap a colour literal, recursing into tuples/lists of them."""
@@ -42,8 +56,11 @@ def _reblue_callable(fn):
         fn.__kwdefaults__ = {k: _sw(x) for k, x in fn.__kwdefaults__.items()}
 
 
-def apply(*mods):
-    """Rewrite green literals in each module's globals and bound defaults."""
+def apply(*mods, swap=None):
+    """Rewrite palette literals in each module's globals and bound defaults."""
+    global SWAP
+    if swap is not None:
+        SWAP = swap
     for m in mods:
         for name, val in list(vars(m).items()):
             new = _sw(val)
