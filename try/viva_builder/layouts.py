@@ -7,6 +7,9 @@ import mathkit
 
 UNI = "Mohammed V University in Rabat  ·  ENSIAS"
 VIVA = "PhD Viva  ·  Mouad LOUHICHI"
+# Set False (e.g. from a newer builder) to drop the university / viva header line.
+SHOW_HEADER = True
+
 SHORT_TITLE = "Cooperative Game Theory for Explainable AI in Recommendation Systems  ·  A Shapley Framework for Actionable Insight"
 
 L = MARGIN_L
@@ -161,8 +164,9 @@ SECTION_COUNT = 7
 def chrome(slide, n, dark=False, footer=None):
     """Header (university / viva), footer (logo + running title or numbered references + page number)."""
     col = WHITE if dark else INK
-    textbox(slide, L, HEADER_Y, emu(8), emu(0.4), [Para([Run(UNI, font="bold", size=20, color=col, spc=-1.1)], lnspc=28)])
-    textbox(slide, R - emu(8), HEADER_Y, emu(8), emu(0.4), [Para([Run(VIVA, font="bold", size=20, color=col, spc=-1.1)], align="r", lnspc=28)])
+    if SHOW_HEADER:
+        textbox(slide, L, HEADER_Y, emu(8), emu(0.4), [Para([Run(UNI, font="bold", size=20, color=col, spc=-1.1)], lnspc=28)])
+        textbox(slide, R - emu(8), HEADER_Y, emu(8), emu(0.4), [Para([Run(VIVA, font="bold", size=20, color=col, spc=-1.1)], align="r", lnspc=28)])
     fx = L
     if FOOTER_LOGO and os.path.exists(FOOTER_LOGO):
         picture(slide, FOOTER_LOGO, L, emu(10.58), h=emu(0.42))

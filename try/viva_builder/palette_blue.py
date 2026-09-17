@@ -1,0 +1,59 @@
+"""Swap the template's green palette for a blue one.
+
+The green lives entirely in the code palette: the template's raster art
+(illustrations, logos, thesis figures) was measured at 0% green, so no
+image recolouring is needed.
+
+Why this is a module and not a constant override in the builder: ten
+functions in tpl.py / layouts.py take the green as a *default argument*
+(rrect, rect, line, table, card, chip, arrow, kpi, ...). Default values
+are evaluated when the def runs, i.e. at import time, so assigning
+``tpl.GREEN = BLUE`` afterwards changes nothing for those shapes. This
+rewrites the bound defaults as well as the module globals.
+
+Call ``apply(tpl, layouts)`` before ``from layouts import *``.
+"""
+
+# old green -> new blue. Same tonal role, comparable lightness.
+SWAP = {
+    "124944": "0E3B5E",   # GREEN        deep teal  -> deep navy
+    "1E5F58": "1F5C99",   # GREEN mid    (14 uses)  -> medium blue
+    "E6EEEA": "E4EBF4",   # GREEN_SOFT   pale tint  -> pale blue tint
+    "DCE7E3": "D6E2EF",   # pale green text on dark fills
+    "CFDAD6": "C9D8E6",   # paler green text on dark fills
+}
+
+
+def _sw(v):
+    """Swap a colour literal, recursing into tuples/lists of them."""
+    if isinstance(v, str):
+        return SWAP.get(v.upper(), v)
+    if isinstance(v, tuple):
+        return tuple(_sw(x) for x in v)
+    if isinstance(v, list):
+        return [_sw(x) for x in v]
+    return v
+
+
+def _reblue_callable(fn):
+    if getattr(fn, "__defaults__", None):
+        fn.__defaults__ = tuple(_sw(x) for x in fn.__defaults__)
+    if getattr(fn, "__kwdefaults__", None):
+        fn.__kwdefaults__ = {k: _sw(x) for k, x in fn.__kwdefaults__.items()}
+
+
+def apply(*mods):
+    """Rewrite green literals in each module's globals and bound defaults."""
+    for m in mods:
+        for name, val in list(vars(m).items()):
+            new = _sw(val)
+            if new is not val and new != val:
+                setattr(m, name, new)
+        for val in list(vars(m).values()):
+            if callable(val) and getattr(val, "__module__", None) == m.__name__:
+                _reblue_callable(val)
+            if isinstance(val, type):
+                for attr in list(vars(val).values()):
+                    if callable(attr):
+                        _reblue_callable(attr)
+    return SWAP
