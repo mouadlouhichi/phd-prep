@@ -37,6 +37,10 @@ SWAP_V13 = {
     "DF8330": "1F7A8C",   # ORANGE     -> deep teal
 }
 
+# v14: v13 plus a white slide background. BG is a bound default of
+# Deck.new_slide(bg=BG), so this has to go through apply(), not a constant.
+SWAP_V14 = dict(SWAP_V13, **{"FEF8F3": "FFFFFF"})
+
 
 def _sw(v):
     """Swap a colour literal, recursing into tuples/lists of them."""

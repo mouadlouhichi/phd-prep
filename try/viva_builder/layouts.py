@@ -9,6 +9,8 @@ UNI = "Mohammed V University in Rabat  ·  ENSIAS"
 VIVA = "PhD Viva  ·  Mouad LOUHICHI"
 # Set False (e.g. from a newer builder) to drop the university / viva header line.
 SHOW_HEADER = True
+# Set False to drop the decorative accent drawn just right of each headline.
+TITLE_ACCENT = True
 
 SHORT_TITLE = "Cooperative Game Theory for Explainable AI in Recommendation Systems  ·  A Shapley Framework for Actionable Insight"
 
@@ -217,7 +219,8 @@ def title_block(ctx, slide, headline, eyebrow=None, tabs=None, active=None, acce
     th = emu(size / 72 * 1.25)
     textbox(slide, L, y, W, th, [Para([Run(headline, font="title", size=size, color=INK)], lnspc=size * 1.1)])
     tw = text_width_pt(headline, "title", size, -0.05 * size) / 72 * IN
-    accent(slide, accent_key or ctx.next_accent(), L + tw + emu(0.28), y - emu(0.05), emu(0.5))
+    if TITLE_ACCENT:
+        accent(slide, accent_key or ctx.next_accent(), L + tw + emu(0.28), y - emu(0.05), emu(0.5))
     y += th + emu(0.12)
     if tabs:
         x = L
