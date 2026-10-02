@@ -41,6 +41,9 @@ SWAP_V13 = {
 # Deck.new_slide(bg=BG), so this has to go through apply(), not a constant.
 SWAP_V14 = dict(SWAP_V13, **{"FEF8F3": "FFFFFF"})
 
+# v17: the warm beige card fill becomes a cool light blue-grey.
+SWAP_V17 = dict(SWAP_V14, **{"F6ECDF": "E7EAF3"})
+
 
 def _sw(v):
     """Swap a colour literal, recursing into tuples/lists of them."""

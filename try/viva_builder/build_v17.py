@@ -20,7 +20,6 @@ import json
 import os
 import sys
 
-import diagrams
 import layouts
 import palette_blue
 import tpl
@@ -28,26 +27,31 @@ import tpl
 # Reference blue, teal accent, white background, no header line, no
 # decorative accent beside the headlines.
 # Must run before the star import so the builder sees the patched constants.
-palette_blue.apply(tpl, layouts, swap=palette_blue.SWAP_V14)
+palette_blue.apply(tpl, layouts, swap=palette_blue.SWAP_V17)
 layouts.SHOW_HEADER = False
 layouts.TITLE_ACCENT = False
 
 from layouts import *  # noqa
 from layouts import _ss_runs, FIT_REPORT
 
+AI = os.path.join(HERE, "ai_figs")
+
+def _place_ai(slide, name, x, y, w, h):
+    """Place an AI figure preserving its aspect, centred in the box."""
+    from PIL import Image as _I
+    p = os.path.join(AI, name)
+    im = _I.open(p)
+    ar = im.width / im.height
+    pw, ph = w, w / ar
+    if ph > h:
+        ph = h
+        pw = ph * ar
+    picture(slide, p, x + (w - pw) / 2, y + (h - ph) / 2, w=pw, h=ph)
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIGS = os.environ.get("VIVA_FIG_DIR", "/tmp/viva_build/figs")
 FONT_DIR = os.environ.get("VIVA_FONT_DIR", "/tmp/viva_build/fonts")
-diagrams.render_all(FIGS, FONT_DIR)
-AIFIGS = os.path.join(HERE, "aifigs")
-
-
-def place_fig(slide, path, x, y, w, h):
-    from PIL import Image as _I
-    im = _I.open(path); ratio = im.height / im.width
-    tw, th = w, w * ratio
-    if th > h: th = h; tw = th / ratio
-    picture(slide, path, x + (w - tw) / 2, y + (h - th) / 2, w=tw, h=th)
 THESIS_FIGS = os.environ.get("VIVA_THESIS_FIG_DIR", "/tmp/viva_build/thesis")
 NOTES = json.load(open(os.path.join(HERE, "notes_v17.json")))
 
@@ -371,15 +375,16 @@ def build(template, out):
             "**Why it matters:** an explanation that names a changeable driver supports **action**, not only description.",
         ], size=21)
     ], min_scale=0.7)
+    # right: detailed AI figure "from explanation to action"
     dx = L + lw + emu(0.6)
-    place_fig(s, os.path.join(AIFIGS, "intro_actionable.png"), dx, top, R - dx, CB - top - emu(0.3))
+    dw = R - dx
+    _place_ai(s, "intro_actionable.png", dx, top + emu(0.2), dw, CB - top - emu(0.4))
 
     # --- Research context -----------------------------------------------------
     s, top = content_slide(ctx, "Research Context", eyebrow="Introduction",
                            tabs=["Motivation", "Actionable Insight", "Research Context"], active="Research Context", notes=N(6), refs=cite(10, 12, 16, 26))
-    # timeline of recommender evolution
-    place_fig(s, os.path.join(AIFIGS, "intro_evolution.png"), L, top + emu(0.2), W, CB - top - emu(0.4))
-
+    # evolution of recommender systems: detailed AI figure
+    _place_ai(s, "intro_evolution.png", L, top + emu(0.1), W, CB - top - emu(0.2))
 
     # --- AI recommenders around us: brand logos (example-deck style) --------
     s, top = content_slide(ctx, "AI-Powered Recommendation Is Everywhere", eyebrow="Introduction",
@@ -435,7 +440,7 @@ def build(template, out):
         return s
 
     def diag_content(s, x, y, w, h):
-        place_fig(s, os.path.join(AIFIGS, "ctx_content.png"), x, y, w, h)
+        _place_ai(s, "ctx_content.png", x, y, w, h)
     approach_slide("Content-Based Filtering",
                    ["Recommends items **based on their features** and the user's past preferences.",
                     "Builds a **user profile** from previously liked, viewed or selected items.",
@@ -445,7 +450,7 @@ def build(template, out):
                    diag_content, N("ap_content"), cite(22))
 
     def diag_cf(s, x, y, w, h):
-        place_fig(s, os.path.join(AIFIGS, "ctx_cf.png"), x, y, w, h)
+        _place_ai(s, "ctx_cf.png", x, y, w, h)
     approach_slide("Collaborative Filtering",
                    ["Recommends items using the **preferences and behaviour of similar users**.",
                     "Finds patterns in **user-item interactions**: ratings, clicks, purchases.",
@@ -455,7 +460,7 @@ def build(template, out):
                    diag_cf, N("ap_cf"), cite(22))
 
     def diag_hybrid(s, x, y, w, h):
-        place_fig(s, os.path.join(AIFIGS, "ctx_mf.png"), x, y, w, h)
+        _place_ai(s, "ctx_mf.png", x, y, w, h)
     approach_slide("Hybrid Approaches and Matrix Factorisation",
                    ["**Hybrid:** combines content-based and collaborative methods to reduce the weaknesses of each.",
                     "Handles limited data, over-specialisation and part of the cold-start problem.",
@@ -465,7 +470,7 @@ def build(template, out):
                    diag_hybrid, N("ap_hybrid"), cite(10, 22))
 
     def diag_graph(s, x, y, w, h):
-        place_fig(s, os.path.join(AIFIGS, "ctx_hyper.png"), x, y, w, h)
+        _place_ai(s, "ctx_hyper.png", x, y, w, h)
     approach_slide("Graph-Based and Hypergraph Recommenders",
                    ["Represent users, items and their interactions as **nodes and edges** in a graph.",
                     "Use **message passing** (LightGCN, HCCF, HPCF) to reach multi-hop neighbours.",
