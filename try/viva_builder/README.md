@@ -107,6 +107,7 @@ What is new, per area:
 | v21 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v21.pptx` | `build_v21.py` | `notes_v21.json` | full slide-vs-speech technical audit: speech upgraded to the slides' level (slide 12 now names nodes/edges, LightGCN/HCCF/HPCF, hyperedges, benchmarks and the compute/memory limitation), "forty minutes" corrected to thirty-six, "acidity" corrected to fixed acidity (slide 33), small trims keep 4,679 words = 36.0 min at 130 wpm |
 | v22 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v22.pptx` | `build_v22.py` | `notes_v22.json` | read-along pass: notes on the gap slides (4, 18-19, 22-23, 29-30, 32, 55, 60-62) now mirror the slide wording and numbers so the presenter can read from the slide; the spoken "players = features, v(S) = Silhouette" line added to slide 29; 4,713 words = 36.3 min at 130 wpm |
 | v23 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v23.pptx` | `build_v23.py` | `notes_v23.json` | slide 4 note rewritten as natural spoken delivery while keeping the slide's facts ($15B by 2029, EU AI Act, accountable/auditable/actionable, core tension); slide 5 text rewritten to mirror the speech (what we can change, domain language, what to change to improve the outcome); 4,737 words = 36.4 min at 130 wpm |
+| v24 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v24.pptx` | `build_v24.py` | `notes_v24.json` | dataset slides (18-21) reduced to the example deck's level: SAMPLE RECORDS tables dropped, intro bullets and the specification table get the freed room; speech unchanged |
 
 v9 changes in detail:
 
