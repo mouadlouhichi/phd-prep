@@ -103,6 +103,7 @@ What is new, per area:
 | v9 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v9.pptx` | `build_v9.py` | `notes_v9.json` | v8 + brand logos on the "AI-Powered Recommendation Is Everywhere" slide + audited thesis figure / table numbers |
 | v10 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v10.pptx` | `build_v10.py` | `notes_v10.json` | **de-redundant rebuild: 95 → 79 slides, 5,525 → 4,563 spoken words**, three deep-dive slides collapsed into one methodology slide, speech rewritten as spoken delivery |
 | v19 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v19.pptx` | `build_v19.py` | `notes_v19.json` | projection pass: wider title logos, real platform logos on slide 7, on-palette slide-9 figure, slide 29 de-cluttered (no bottom clipping), DyHuCoG figure enlarged with 6 → 3 equation rows, variance / big-O equations folded into bullets deck-wide, captions floored at 14 pt |
+| v20 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v20.pptx` | `build_v20.py` | `notes_v20.json` | speaker notes replaced by `speech_enhanced.fixed.json`, re-aligned entry-by-entry to the 79-slide order (the speech was authored for an older numbering), two short transitions added for the C1 protocol and C2 takeaway slides, longest entries trimmed to land at 4,665 spoken words ≈ 36 min at 130 wpm |
 
 v9 changes in detail:
 
