@@ -7,11 +7,6 @@ import mathkit
 
 UNI = "Mohammed V University in Rabat  ·  ENSIAS"
 VIVA = "PhD Viva  ·  Mouad LOUHICHI"
-# Set False (e.g. from a newer builder) to drop the university / viva header line.
-SHOW_HEADER = True
-# Set False to drop the decorative accent drawn just right of each headline.
-TITLE_ACCENT = True
-
 SHORT_TITLE = "Cooperative Game Theory for Explainable AI in Recommendation Systems  ·  A Shapley Framework for Actionable Insight"
 
 L = MARGIN_L
@@ -139,9 +134,10 @@ def fit_textbox(slide, x, y, w, h, paras, anchor="t", insets=(0, 0, 0, 0), min_s
 # --------------------------------------------------------------------------
 def equation(slide, x, y, w, h, tex, size=24, color=INK, align="ctr", anchor="ctr", name="Equation"):
     """Typeset `tex` as a real PowerPoint equation centred in the (x, y, w, h) EMU box.
-    The font size is reduced (never below 11 pt) until the equation fits the box with
+    The font size is reduced (never below 16 pt) until the equation fits the box with
     comfortable leading above and below."""
-    fitted = mathkit.fit_size(tex, size, w / mathkit.PT, h / mathkit.PT, min_size=11)
+    size = max(size, 16)  # v25: no small equations
+    fitted = mathkit.fit_size(tex, size, w / mathkit.PT, h / mathkit.PT, min_size=16)
     if fitted < size * 0.8:
         FIT_REPORT.append((len(slide.part.package.presentation_part.presentation.slides._sldIdLst), round(fitted / size, 2), "EQ " + tex[:40]))
     return mathkit.add_equation(slide, x, y, w, h, tex, size_pt=fitted, color=color, align=align, anchor=anchor, name=name)
@@ -163,24 +159,43 @@ FOOTER_LOGO = None      # optional path to a small logo drawn at the left of the
 SECTION_COUNT = 7
 
 
+def _short_cites(footer):
+    """Condense "[n] Full, Names, ... (Year). Title..." citations to "[n] Surname Year"."""
+    import re as _re
+    out = []
+    for part in footer.split("   "):
+        part = part.strip()
+        m = _re.match(r"\[(\d+)\]\s*(.*)", part)
+        if not m:
+            out.append(part)
+            continue
+        num, rest = m.groups()
+        years = _re.findall(r"\(((?:19|20)\d{2})\)", part)
+        yy = years[0] if years else ""
+        who = _re.split(r"\.\s|,", rest, maxsplit=1)[0].strip()
+        if who.endswith("."):
+            who = who[:-1].strip()
+        if rest.strip().startswith("et al."):
+            who += " et al."
+        out.append(("[%s] %s %s" % (num, who, yy)).strip())
+    return "   ".join(out)
+
+
 def chrome(slide, n, dark=False, footer=None):
     """Header (university / viva), footer (logo + running title or numbered references + page number)."""
     col = WHITE if dark else INK
-    if SHOW_HEADER:
-        textbox(slide, L, HEADER_Y, emu(8), emu(0.4), [Para([Run(UNI, font="bold", size=20, color=col, spc=-1.1)], lnspc=28)])
-        textbox(slide, R - emu(8), HEADER_Y, emu(8), emu(0.4), [Para([Run(VIVA, font="bold", size=20, color=col, spc=-1.1)], align="r", lnspc=28)])
+    textbox(slide, L, HEADER_Y, emu(8), emu(0.4), [Para([Run(UNI, font="bold", size=20, color=col, spc=-1.1)], lnspc=28)])
+    textbox(slide, R - emu(8), HEADER_Y, emu(8), emu(0.4), [Para([Run(VIVA, font="bold", size=20, color=col, spc=-1.1)], align="r", lnspc=28)])
     fx = L
     if FOOTER_LOGO and os.path.exists(FOOTER_LOGO):
         picture(slide, FOOTER_LOGO, L, emu(10.58), h=emu(0.42))
         fx = L + emu(0.6)
     if footer:
-        # example-deck style: the numbered references replace the running title on this slide
-        fw = R - emu(1.3) - fx
-        paras = [Para([Run(footer, font="body", size=10, color=MUTED if not dark else "CFDAD6")], lnspc=12)]
-        fitted, _ = shrink_to_fit(paras, fw, emu(0.56), min_scale=0.8)
-        textbox(slide, fx, emu(10.5), fw, emu(0.62), fitted, anchor="ctr")
-    else:
-        textbox(slide, fx, emu(10.66), emu(14), emu(0.3), [Para([Run(SHORT_TITLE, font="bold", size=13, color=MUTED if not dark else "CFDAD6")], lnspc=16)])
+        # v25: citations sit in their own band above an untouched footer
+        rrect(slide, L, emu(10.02), W, emu(0.52), fill=WHITE if not dark else INK, radius=emu(0))
+        textbox(slide, L, emu(10.06), W, emu(0.44),
+                [Para([Run(_short_cites(footer), font="body", size=14, color=MUTED if not dark else "CFDAD6")], lnspc=17)], anchor="ctr")
+    textbox(slide, fx, emu(10.66), emu(14), emu(0.3), [Para([Run(SHORT_TITLE, font="bold", size=14, color=MUTED if not dark else "CFDAD6")], lnspc=16)])
     textbox(slide, R - emu(1.2), emu(10.6), emu(1.2), emu(0.36), [Para([Run(f"{n:02d}", font="xbold", size=18, color=col)], align="r", lnspc=22)])
 
 
@@ -191,7 +206,7 @@ def tracker(slide, current, x, y, d=emu(0.36), gap=emu(0.08), count=None):
         on = (i == current)
         bx = x + (i - 1) * (d + gap)
         rrect(slide, bx, y, d, d, fill=GREEN if on else WHITE, line=GREEN if on else RULE, line_w=1.25, radius=emu(0.06))
-        textbox(slide, bx, y, d, d, [Para([Run(str(i), font="xbold", size=13, color=WHITE if on else MUTED)], align="ctr", lnspc=15)], anchor="ctr")
+        textbox(slide, bx, y, d, d, [Para([Run(str(i), font="xbold", size=14, color=WHITE if on else MUTED)], align="ctr", lnspc=15)], anchor="ctr")
     return x + count * (d + gap)
 
 
@@ -219,8 +234,7 @@ def title_block(ctx, slide, headline, eyebrow=None, tabs=None, active=None, acce
     th = emu(size / 72 * 1.25)
     textbox(slide, L, y, W, th, [Para([Run(headline, font="title", size=size, color=INK)], lnspc=size * 1.1)])
     tw = text_width_pt(headline, "title", size, -0.05 * size) / 72 * IN
-    if TITLE_ACCENT:
-        accent(slide, accent_key or ctx.next_accent(), L + tw + emu(0.28), y - emu(0.05), emu(0.5))
+    accent(slide, accent_key or ctx.next_accent(), L + tw + emu(0.28), y - emu(0.05), emu(0.5))
     y += th + emu(0.12)
     if tabs:
         x = L
