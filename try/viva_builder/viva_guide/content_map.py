@@ -29,7 +29,7 @@ SIDEBAR = [
         ("sec-discussion", "Q&A stage + backup · 75-79"),
     ]),
     ("Technical deep dive (sections 3-6)", [
-        ("walk", "Eight concept walkthroughs"),
+        ("walk", "Twelve concept walkthroughs"),
         ("glossary", "Beginner glossary"),
     ]),
     ("Section 7", [("sec7", "How to present the conclusion")]),
@@ -342,7 +342,7 @@ S1 = {
          "how": "This is the most spoken slide of the section (105 words) and it deserves it: read the three questions "
                 "as three questions, with a small pause after each. Land on the tension sentence: as models gain power "
                 "they lose transparency, and this thesis refuses the trade-off. Do not read the card subtitles.",
-         "time": "≈ 48 s", "cue": "The “$15B by 2029” market number was removed in v26 because it could not be sourced. Do not reintroduce it from memory or from an older deck."},
+         "time": "≈ 48 s", "cue": "The “&#36;15B by 2029” market number was removed in v26 because it could not be sourced. Do not reintroduce it from memory or from an older deck."},
         {"n": "5", "title": "Actionable Insight: the Definition",
          "screen": "Definition 1.1 in three blocks: what we can change, the language of the domain, why it matters.",
          "how": "Read the definition once, slowly, then give the three domains that instantiate it: acidity in wine, "

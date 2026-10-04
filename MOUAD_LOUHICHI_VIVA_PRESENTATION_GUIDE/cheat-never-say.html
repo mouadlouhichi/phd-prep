@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cheat · never say / always say · Viva Presentation Guide</title>
+<meta name="description" content="The scope fences, phrased as things to avoid and things to say instead">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Cheat · never say / always say</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-never-say.html" class="cur">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="index.html#overview">The deck in one page</a>
+<a href="index.html#timing">Timing ledger &amp; checkpoints</a>
+<a href="index.html#anatomy">How every section is built</a>
+<a href="index.html#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="playbook-contribution-ii.html#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="qa.html#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+<section class="sec" id="never">
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 2</div><h2>Never say / always say</h2>
+  <div class="sec-meta"><span class="pill o">scope fences</span><span class="pill g">rehearse the right-hand column</span></div></div>
+  <p>These are not style preferences. Each left-hand formulation is wider than the thesis, and a jury member who has
+  read Chapter 5, 6 or 7 can falsify it in one sentence. The right-hand version is equally strong and defensible.</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>If the thought is…</th><th>Say this</th><th>Never say this</th></tr></thead><tbody><tr><td><strong>Is the gain from Shapley?</strong></td><td>“It contributes, and the ablation isolates it: −4.6 % on MovieLens-1M and −6.1 % on Amazon-Book when removed.”</td><td>“Shapley is the main reason for the improvement.” (Context is the largest single component.)</td></tr><tr><td><strong>Is Amazon-Book significant?</strong></td><td>“The paired tests are tabulated on MovieLens-1M; Amazon-Book is a consistent descriptive gain over five seeds, where the standard deviations are close to the gap.”</td><td>“Yes, it is significant.”</td></tr><tr><td><strong>Did you compare against LIME?</strong></td><td>“The comparison is theoretical and literature-backed (Chapter 5); LIME is the protocol comparator, not an empirical bake-off in this thesis.”</td><td>“We benchmarked SHAP against LIME on the wine data.”</td></tr><tr><td><strong>Are you explaining K-Means?</strong></td><td>“I explain a faithful supervised reconstruction of the partition, with macro-F1 ≈ 0.82 as the validity condition.”</td><td>“Yes, the SHAP values explain the K-Means geometry.”</td></tr><tr><td><strong>How many sub-clusters?</strong></td><td>“Coarse regimes, then level-2 sub-clusters where appropriate; no count of sub-clusters is reported.”</td><td>“Nine sub-clusters.”</td></tr><tr><td><strong>Was actionability measured?</strong></td><td>“It is a framing concept, illustrated by the nature of the variables; the user study is future work.”</td><td>“We validated that the explanations are actionable.”</td></tr><tr><td><strong>Is the k = 3 choice objective?</strong></td><td>“k = 2 is geometrically better (0.214 versus 0.144); k = 3 was chosen on interpretability grounds, and both criteria are reported.”</td><td>“Three is the best number of clusters.”</td></tr><tr><td><strong>Which Silhouette is 0.63?</strong></td><td>“Beijing, not wine. Wine is 0.144 at k = 3; Beijing is about 0.63.”</td><td>Any sentence that attaches 0.63 to the wine partition.</td></tr><tr><td><strong>How is the in-training signal validated?</strong></td><td>“By ablation, and by reading the explanation against the objective; a random-weight control is a natural next experiment and is not reported here.”</td><td>“We proved the weights are necessary.”</td></tr><tr><td><strong>What is the scope of the framework?</strong></td><td>“A consistent and productive shared view, not one fully unified framework that removes all tension.”</td><td>“This is a general theory of explanation and recommendation.”</td></tr></tbody></table></div>
+</section>
+
+
+  </main>
+</div>
+<nav class="pager"><a class="p-prev" href="cheat-numbers.html">‹ Cheat · every number in one table</a><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="cheat-checklist.html">Cheat · pre-defence checklist ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>

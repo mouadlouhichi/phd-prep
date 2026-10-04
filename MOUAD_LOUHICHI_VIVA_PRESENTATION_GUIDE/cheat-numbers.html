@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cheat · every number in one table · Viva Presentation Guide</title>
+<meta name="description" content="The number sheet: datasets, contributions, significance, cost">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Cheat · every number in one table</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html" class="cur">Cheat · every number in one table</a>
+<a href="cheat-never-say.html">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="index.html#overview">The deck in one page</a>
+<a href="index.html#timing">Timing ledger &amp; checkpoints</a>
+<a href="index.html#anatomy">How every section is built</a>
+<a href="index.html#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="playbook-contribution-ii.html#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="qa.html#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="#numbers">Every number in one table</a>
+<a href="cheat-never-say.html#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+<section class="sec" id="numbers">
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 1</div><h2>Every number in one table</h2>
+  <div class="sec-meta"><span class="pill">verified against the thesis and the three papers</span></div></div>
+  <p>If you memorise one page from this guide, make it this one. Every value below appears on the slides or in the
+  speaker notes and was checked against the thesis or a source paper.</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Topic</th><th>The numbers</th></tr></thead><tbody><tr><td><strong>Datasets</strong></td><td>Wine 4,898 × 11 features · Beijing 383,585 hourly records × 11 variables (2013-2017) · MovieLens-1M 6,040 users / 3,706 items / 1,000,209 interactions / density 0.0447 · Amazon-Book 52,643 / 91,599 / 2,984,108 / density 0.0006</td></tr><tr><td><strong>Clustering</strong></td><td>Wine k* = 3: Silhouette 0.144, DB 2.097; k = 2: 0.214 / 1.775 (better geometry, not chosen). Beijing k = 3: Silhouette ≈ 0.63, DB ≈ 0.55. Reference point Gramegna &amp; Giudici 0.37 (positioning, not like-for-like). Surrogate: 100 trees, 31 leaves, macro-F1 ≈ 0.82 (floor ≈ 0.80).</td></tr><tr><td><strong>Wine SHAP ranking</strong></td><td>density → pH → fixed acidity → sulfur dioxide → alcohol. Beijing SHAP ranking: temperature, dew point, pressure → CO, NO₂, PM10, PM2.5.</td></tr><tr><td><strong>DyHuCoG setting</strong></td><td>α = 0.60 (NDCG@20), β = 0.25 (diversity), γ = 0.15 (context), λ_pref = 0.20, M = 50 permutations, refresh every 10 batches (≈ 49 per epoch), batch 2048, seeds 42-46, patience 20.</td></tr><tr><td><strong>Main results, MovieLens-1M</strong></td><td>NDCG@20 0.2775 vs HPCF 0.2528 (+9.8 %); Recall@20 0.2362 vs 0.2098 (+12.6 %); Coverage 0.397 vs 0.342 (+16.1 %); ILD 0.516 vs 0.461 (+11.9 %).</td></tr><tr><td><strong>Main results, Amazon-Book</strong></td><td>NDCG@20 0.0306 vs 0.0270 (+13.3 %); Recall@20 0.0417 vs 0.0359 (+16.2 %); Coverage 0.336 vs 0.259 (+29.7 %); ILD 0.602 vs 0.535 (+12.5 %). <em>Descriptive</em>, not tabulated as significant.</td></tr><tr><td><strong>Ablation (NDCG@20 drop)</strong></td><td>Context −8.2 % / −11.0 %; hypergraph −6.8 % / −8.9 %; diversity −5.8 % / −5.8 %; Shapley −4.6 % / −6.1 %; attention −3.5 % / −3.5 % (MovieLens-1M / Amazon-Book).</td></tr><tr><td><strong>Cost</strong></td><td>Training 2,000 s vs HPCF 1,125 s = 1.78× (Amazon 9,279 s); inference 1.84 ms vs 1.18 ms (Amazon 8.52 ms); memory 4.4 vs 4.1 GB (Amazon 17.9 vs 16.8 GB). MF baseline ×1.00, DyHuCoG ×3.41.</td></tr><tr><td><strong>Monte Carlo</strong></td><td>M = 10: MSE <span class="math">\(1.4\times 10^{-4}\)</span>, 95 %, 1.3× · M = 25: <span class="math">\(5.6\times 10^{-5}\)</span>, 98 %, 1.6× · M = 50: <span class="math">\(1.4\times 10^{-5}\)</span>, 99 %, 1.78× · M = 100: <span class="math">\(3.5\times 10^{-6}\)</span>, 99.5 %, 2.5×. Accuracy is against a high-sample reference.</td></tr><tr><td><strong>Significance (ML-1M)</strong></td><td>vs HPCF t = 46.38, p = <span class="math">\(1.81\times 10^{-270}\)</span>, <span class="math">\(d_z = 1.33\)</span>; vs RecDCL 92.72 / 2.67; vs HCCF 61.21 / 1.76; vs LightGCN 132.19 / 3.80; vs NCF 311.13 / 8.95; vs MF 341.76 / 9.83. Holm thresholds 0.0083-0.05; Wilcoxon p &lt; 0.001; df = 6,039.</td></tr><tr><td><strong>Cold start</strong></td><td>Users with ≤ 5 training interactions: 0.061 vs 0.055 (+10.9 %); items: 0.057 vs 0.052 (+9.6 %).</td></tr><tr><td><strong>Proposition 6.1</strong></td><td><span class="math">\(\Phi_{\mathrm{parent}} = \sum w_{c'} \Phi_{\mathrm{child}} + \varepsilon\)</span>, with <span class="math">\(w_{c'} = \dfrac{|c'|}{|c|}\)</span>; ε from surrogate mismatch, vanishes under perfect fidelity, treated as conceptual (not estimated). Derived from the law of total expectation.</td></tr><tr><td><strong>Publications</strong></td><td>Procedia CS 220, 806-811 (2023) DOI 10.1016/j.procs.2023.03.107 · IJACSA 16(7), 716-725 (2025) DOI 10.14569/IJACSA.2025.0160780 · IJIES 19(2), 887-902 (2026) DOI 10.22266/ijies2026.0228.54.</td></tr><tr><td><strong>Hardware</strong></td><td>Intel Core i9-14900K (24 cores), 48 GB RAM, 2 TB SSD, NVIDIA RTX 4090 24 GB for C3, Python 3.8, PyTorch 2.0.1.</td></tr></tbody></table></div>
+  <div class="callout warn"><h4>Four numbers people confuse</h4>
+  <ul>
+    <li><strong>0.144 versus 0.63</strong> — wine versus Beijing Silhouette. Never swap them.</li>
+    <li><strong>+9.8 % versus +13.3 %</strong> — relative NDCG@20 gain on MovieLens-1M versus Amazon-Book.</li>
+    <li><strong>−4.6 % versus −8.2 %</strong> — removing Shapley weighting versus removing context (MovieLens-1M).</li>
+    <li><strong>M = 25 versus M = 50</strong> — 98 % versus 99 % agreement with the high-sample reference; 50 is the default.</li>
+  </ul></div>
+</section>
+
+
+  </main>
+</div>
+<nav class="pager"><a class="p-prev" href="qa-h.html">‹ Q&amp;A H</a><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="cheat-never-say.html">Cheat · never say / always say ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>

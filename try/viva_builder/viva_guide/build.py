@@ -33,16 +33,149 @@ import content_qa1      # noqa: E402
 import content_qa2      # noqa: E402
 import content_extra    # noqa: E402
 
+content_extra.RICH = None  # set below, once rich() exists
+
 
 # --------------------------------------------------------------------------
 # mini-markup -> HTML
 # --------------------------------------------------------------------------
 INLINE = [
+    (re.compile(r"\$([^$]+)\$"), r'<span class="math">\\(\1\\)</span>'),
     (re.compile(r"\*\*(.+?)\*\*", re.S), r"<strong>\1</strong>"),
     (re.compile(r"(?<!\w)\*(?!\s)(.+?)(?<!\s)\*(?!\w)", re.S), r"<em>\1</em>"),
     (re.compile(r"`([^`]+)`"), r"<code>\1</code>"),
     (re.compile(r"\[([0-9ivx]+)\]"), r'<span class="code-chip">[\1]</span>'),
 ]
+
+
+# --------------------------------------------------------------------------
+# math: every formula in the content is rewritten to TeX ($...$) and rendered
+# with KaTeX; detex() gives a readable text form for the search attributes.
+# --------------------------------------------------------------------------
+_TEX2U = [
+    (r"\hat\varphi", "φ̂"), (r"\varphi", "φ"), (r"\Phi", "Φ"), (r"\sigma", "σ"),
+    (r"\alpha", "α"), (r"\beta", "β"), (r"\gamma", "γ"), (r"\lambda", "λ"),
+    (r"\varepsilon", "ε"), (r"\eta", "η"), (r"\ell", "ℓ"), (r"\mu", "μ"),
+    (r"\sum", "Σ"), (r"\cdot", "·"), (r"\times", "×"), (r"\propto", "∝"),
+    (r"\langle", "⟨"), (r"\rangle", "⟩"), (r"\subseteq", "⊆"), (r"\setminus", "∖"),
+    (r"\cup", "∪"), (r"\varnothing", "∅"), (r"\mid", "|"), (r"\sqrt", "√"),
+    (r"\bigl", ""), (r"\bigr", ""), (r"\left", ""), (r"\right", ""),
+    (r"\overline", ""), (r"\mathrm", ""), (r"\mathbb", ""), (r"\,", " "),
+    (r"\;", " "), (r"\!", ""), (r"\ ", " "), (r"\{", "{"), (r"\}", "}"),
+]
+
+
+def detex(t):
+    for a, b in _TEX2U:
+        t = t.replace(a, b)
+    t = re.sub(r"\\frac\{([^{}]*)\}\{([^{}]*)\}", r"(\1)/(\2)", t)
+    t = re.sub(r"\\dfrac\{([^{}]*)\}\{([^{}]*)\}", r"(\1)/(\2)", t)
+    t = re.sub(r"\\[a-zA-Z]+", "", t)
+    return t.replace("{", "").replace("}", "").replace("\\", "")
+
+
+SUP = str.maketrans("⁻⁰¹²³⁴⁵⁶⁷⁸⁹", "-0123456789")
+
+
+def _sci(m):
+    return "$%s.%s\\times 10^{%s}$" % (m.group(1), m.group(2), m.group(3).translate(SUP))
+
+
+MATH_REPS = [
+    # scientific notation, e.g. 1.81×10⁻²⁷⁰
+    (re.compile(r"(?<![\d.])(\d+)\.(\d+)×10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)"), _sci),
+    # Shapley value, long form (walkthrough 2 / glossary)
+    (re.compile(r"`φ_j\(v\) = Σ over S ⊆ N\s*\\+\s*\{j\} of.*?\[ v\(S ∪ \{j\}\) − v\(S\) \]`"),
+     r"$\varphi_j(v) = \sum_{S \subseteq N \setminus \{j\}} \frac{|S|!\,(n-|S|-1)!}{n!}\,"
+     r"\bigl[v(S \cup \{j\}) - v(S)\bigr]$"),
+    # Proposition 6.1, aggregation + weights
+    (re.compile(r"`Φ_j\^\(level ℓ, cluster c\) = Σ over children.*?ε_j`"),
+     r"$\Phi_j^{(\ell,c)} = \sum_{c' \in \mathrm{child}(c)} w_{c'}\,\Phi_j^{(\ell+1,c')} + \varepsilon_j$"),
+    (re.compile(r"`?w_c′ = \|c′\| / \|c\|`?"), r"$w_{c'} = \dfrac{|c'|}{|c|}$"),
+    (re.compile(r"Φ_parent = Σ w_c′ Φ_child \+ ε"),
+     r"$\Phi_{\mathrm{parent}} = \sum w_{c'} \Phi_{\mathrm{child}} + \varepsilon$"),
+    # Monte Carlo estimator
+    (re.compile(r"`φ̂_j = \(1/M\) Σ_\{m=1\.\.M\} \[ v\(S_m ∪ \{j\}\) − v\(S_m\) \]`"),
+     r"$\hat\varphi_j = \frac{1}{M}\sum_{m=1}^{M}\bigl[v(S_m \cup \{j\}) - v(S_m)\bigr]$"),
+    # coalition value of DyHuCoG
+    (re.compile(r"`?v\(S\) = α ?· ?NDCG@20\(S\) \+ β ?· ?Diversity\(S\) \+ γ ?· ?ContextScore\(S\)`?"),
+     r"$v(S) = \alpha\cdot \mathrm{NDCG@20}(S) + \beta\cdot \mathrm{Diversity}(S)"
+     r" + \gamma\cdot \mathrm{ContextScore}(S)$"),
+    (re.compile(r"`?v_pref\(S\) = v\(S\) \+ λ_pref ?· ?Σ sim\(u, ?i\)`?"),
+     r"$v_{\mathrm{pref}}(S) = v(S) + \lambda_{\mathrm{pref}} \sum \mathrm{sim}(u,i)$"),
+    (re.compile(r"λ_pref\s*·\s*Σ sim\(u, ?i\)"), r"$\lambda_{\mathrm{pref}} \sum \mathrm{sim}(u,i)$"),
+    # the DyHuCoG model: gate, score, prediction, loss
+    (re.compile(r"`a_ui = σ\(W_a \[e_u, e_i, l_i\]\)`"),
+     r"$a_{ui} = \sigma\!\left(W_a\,[e_u, e_i, l_i]\right)$"),
+    (re.compile(r"`y_ui = \(1 \+ a_ui\) ?⟨e_u, e_i⟩`"),
+     r"$y_{ui} = (1 + a_{ui})\,\langle e_u, e_i\rangle$"),
+    (re.compile(r"`f\(u, i, c\) = y_ui \+ λ_c ⟨g\(c\), e_c⟩`"),
+     r"$f(u,i,c) = y_{ui} + \lambda_c\,\langle g(c), e_c\rangle$"),
+    (re.compile(r"`L = L_BPR \+ λ_div L_div \+ λ_ctx L_ctx \+ λ_reg L_reg`"),
+     r"$L = L_{\mathrm{BPR}} + \lambda_{\mathrm{div}} L_{\mathrm{div}}"
+     r" + \lambda_{\mathrm{ctx}} L_{\mathrm{ctx}} + \lambda_{\mathrm{reg}} L_{\mathrm{reg}}$"),
+    (re.compile(r"`L_div = −\(1/\|U\|\) Σ(_u)? ILD\(R_u\)`"),
+     r"$L_{\mathrm{div}} = -\frac{1}{|U|}\sum_u \mathrm{ILD}(R_u)$"),
+    # metrics
+    (re.compile(r"`DCG@K = Σ_\{i=1\.\.K\} \(2\^rel_i − 1\) / log₂\(i \+ 1\)`"),
+     r"$\mathrm{DCG@K} = \sum_{i=1}^{K} \frac{2^{\mathrm{rel}_i} - 1}{\log_2(i+1)}$"),
+    (re.compile(r"`NDCG@K = DCG@K / IDCG@K`"),
+     r"$\mathrm{NDCG@K} = \dfrac{\mathrm{DCG@K}}{\mathrm{IDCG@K}}$"),
+    (re.compile(r"`s\(x\) = \(b\(x\) − a\(x\)\) / max\(a\(x\), b\(x\)\)`"),
+     r"$s(x) = \dfrac{b(x) - a(x)}{\max\bigl(a(x), b(x)\bigr)}$"),
+    # statistics
+    (re.compile(r"`?t = mean\(d\) / \(sd\(d\)/√n\)`?"),
+     r"$t = \dfrac{\overline{d}}{s_d / \sqrt{n}}$"),
+    (re.compile(r"\bdz = (\d+\.\d+)"), lambda m: "$d_z = %s$" % m.group(1)),
+    (re.compile(r"α/\(m − k \+ 1\)"), r"$\alpha/(m-k+1)$"),
+    (re.compile(r"α \+ β \+ γ = 1"), r"$\alpha + \beta + \gamma = 1$"),
+    # variance, expectation, axioms
+    (re.compile(r"σ²/M"), r"$\sigma^2/M$"),
+    (re.compile(r"(?<![\w$])σ²(?![\w$])"), r"$\sigma^2$"),
+    (re.compile(r"E\[X\] = Σ P\(c′\) · E\[X \| c′\]"),
+     r"$\mathbb{E}[X] = \sum P(c') \cdot \mathbb{E}[X \mid c']$"),
+    (re.compile(r"E\[φ̂\] = φ"), r"$\mathbb{E}[\hat\varphi] = \varphi$"),
+    (re.compile(r"Σ φ_j = v\(N\) − v\(∅\)"), r"$\sum_j \varphi_j = v(N) - v(\varnothing)$"),
+    (re.compile(r"φ\(v \+ w\) = φ\(v\) \+ φ\(w\)"), r"$\varphi(v + w) = \varphi(v) + \varphi(w)$"),
+    # structures and sets
+    (re.compile(r"H = \(V, E, W\)"), r"$H = (V, E, W)$"),
+    (re.compile(r"N = U ∪ I ∪ C"), r"$N = U \cup I \cup C$"),
+    (re.compile(r"q\(i\) ∝ f_i\^η"), r"$q(i) \propto f_i^{\eta}$"),
+    (re.compile(r"2\^N\b"), r"$2^{N}$"),
+    (re.compile(r"2³⁰"), r"$2^{30}$"),
+    # prose variants without backticks
+    (re.compile(r"DCG@K = Σ 2\^rel_i − 1 over log₂\(i\+1\)"),
+     r"$\mathrm{DCG@K} = \sum_{i=1}^{K} \frac{2^{\mathrm{rel}_i} - 1}{\log_2(i+1)}$"),
+    (re.compile(r"α·NDCG@20\(S\) \+ …"), r"$\alpha\cdot \mathrm{NDCG@20}(S) + \dots$"),
+    (re.compile(r"α·NDCG@20\(S\)"), r"$\alpha\cdot \mathrm{NDCG@20}(S)$"),
+    # worked numbers (walkthroughs 1, 2, 6, 11)
+    (re.compile(r"`v\((G,V,D|G,V|G,D|V,D|G|V|D)\) = (\d+)`"),
+     lambda m: "$v(%s) = %s$" % (m.group(1), m.group(2))),
+    (re.compile(r"90 \+ 70 \+ 40 = 200 = v\(N\)"), r"$90 + 70 + 40 = 200 = v(N)$"),
+    (re.compile(r"\|S\| = (\d):"), lambda m: "$|S| = %s$:" % m.group(1)),
+    (re.compile(r"([0-2]!)·([0-2]!)/3! = ([\d/]+)"),
+     lambda m: "$%s\\cdot%s/3! = %s$" % (m.group(1), m.group(2), m.group(3))),
+    (re.compile(r"1/3 \+ 2·\(1/6\) \+ 1/3 = 1"), r"$1/3 + 2\cdot(1/6) + 1/3 = 1$"),
+    (re.compile(r"w₁ = 600/1000 = 0\.6"), r"$w_1 = 600/1000 = 0.6$"),
+    (re.compile(r"w₂ = 400/1000 = 0\.4"), r"$w_2 = 400/1000 = 0.4$"),
+    (re.compile(r"0\.6 × 0\.10 \+ 0\.4 × 0\.20 = 0\.14"),
+     r"$0.6 \times 0.10 + 0.4 \times 0.20 = 0.14$"),
+    (re.compile(r"ε = 0\b"), r"$\varepsilon = 0$"),
+    (re.compile(r"\(2¹ − 1\)/log₂\((\d+)\) = ([\d./]+)"),
+     lambda m: "$(2^1 - 1)/\\log_2(%s) = %s$" % (m.group(1), m.group(2))),
+    (re.compile(r"1/log₂\((\d+)\) = ([\d./]+)"),
+     lambda m: "$1/\\log_2(%s) = %s$" % (m.group(1), m.group(2))),
+    (re.compile(r"1/log₂\(i\+1\)"), r"$1/\log_2(i+1)$"),
+]
+
+
+def apply_math(text):
+    for pat, rep in MATH_REPS:
+        if callable(rep):
+            text = pat.sub(rep, text)
+        else:
+            text = pat.sub(lambda m, _r=rep: _r, text)  # TeX backslashes are literal
+    return text
 
 
 def md(text):
@@ -52,6 +185,7 @@ def md(text):
     text = str(text).strip()
     if not text:
         return ""
+    text = apply_math(text)
     blocks, para, bullets, numbers = [], [], [], []
 
     def flush():
@@ -96,6 +230,17 @@ def md(text):
     return out
 
 
+def rich(s):
+    """Inline formatting only (no block wrapping): math, bold, italic, code."""
+    out = apply_math(str(s))
+    for pat, rep in INLINE:
+        out = pat.sub(rep, out)
+    return out
+
+
+content_extra.RICH = rich
+
+
 def esc(s):
     return html.escape(str(s))
 
@@ -106,7 +251,9 @@ def slug(s):
 
 def plain(s):
     """Text with the mini-markup stripped, for search attributes."""
-    return re.sub(r"[*`]", "", str(s)).replace("\n", " ")
+    s = apply_math(str(s))
+    s = re.sub(r"\$([^$]+)\$", lambda m: detex(m.group(1)), s)
+    return re.sub(r"[*`]", "", s).replace("\n", " ")
 
 
 def table(headers, rows, cls="tbl"):
@@ -186,7 +333,7 @@ def render_glossary(entries):
             '<p class="gwhy"><span class="lab">In this thesis</span>%s</p>'
             "</div>"
             % (esc(e["term"]), esc(e.get("tag", "")), esc(e.get("where", "")),
-               i, esc(e["term"]), esc(e.get("tag", "")), md(e["plain"]), md(e["deep"]),
+               i, rich(e["term"]), esc(e.get("tag", "")), md(e["plain"]), md(e["deep"]),
                md(e.get("why", "")))
         )
     return "\n".join(cards)
@@ -198,6 +345,15 @@ def render_walkthroughs(items):
         out.append('<div class="walk" id="walk-%s"><h3>%s</h3><p class="walklede">%s</p>%s</div>'
                    % (slug(w["title"]), esc(w["title"]), md(w.get("lede", "")), md(w["body"])))
     return "\n".join(out)
+
+
+QA_ANCHOR = {"A": "framing", "B": "game", "C": "c1", "D": "c2",
+             "E": "c3", "F": "method", "G": "ethics", "H": "limits"}
+
+
+def qa_anchor(title):
+    m = re.match(r"\s*([A-H])\s*[\u00b7:\-]", str(title))
+    return QA_ANCHOR.get(m.group(1), slug(title)) if m else slug(title)
 
 
 def render_qa(groups):
@@ -218,7 +374,7 @@ def render_qa(groups):
                    esc(g["title"]), ("".join('<span class="tag wt">%s</span>' % esc(t) for t in q.get("tags", []))))
             )
         out.append('<div class="qgroup" id="qa-%s"><h3>%s <span class="qcount">%d questions</span></h3>%s</div>'
-                   % (slug(g["title"]), esc(g["title"]), len(g["items"]), "".join(items)))
+                   % (qa_anchor(g["title"]), esc(g["title"]), len(g["items"]), "".join(items)))
     return "\n".join(out), n
 
 
@@ -385,6 +541,10 @@ details.qa[open] .qchev{transform:rotate(90deg)}
 
 /* ---------- misc ---------- */
 .hidden{display:none !important}
+.math{font-family:KaTeX_Main,"Times New Roman",serif;font-size:1.03em;white-space:nowrap}
+.math .katex{font-size:1.04em}
+@media(max-width:760px){.math{white-space:normal;overflow-x:auto;display:inline-block;max-width:100%}}
+.katex-display{margin:.6em 0;overflow-x:auto;overflow-y:hidden}
 .toTop{position:fixed;right:1.1rem;bottom:1.1rem;background:var(--green);color:#fff;border:0;border-radius:99px;
  padding:.6rem .9rem;font:inherit;font-size:.85rem;cursor:pointer;box-shadow:var(--shadow);opacity:.9;z-index:50}
 .toTop:hover{opacity:1}
@@ -410,6 +570,18 @@ footer.foot{max-width:1560px;margin:0 auto;padding:2rem 1.6rem 3rem;color:var(--
  details.qa{break-inside:avoid}
 }
 """
+
+KATEX_HEAD = (
+    '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" '
+    'crossorigin="anonymous">\n'
+    '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" '
+    'crossorigin="anonymous"></script>\n'
+    '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" '
+    'crossorigin="anonymous"\n'
+    "  onload=\"renderMathInElement(document.body,{delimiters:[{left:'\\\\(',right:'\\\\)',display:false},"
+    "{left:'\\\\[',right:'\\\\]',display:true},{left:'$$',right:'$$',display:true}],"
+    "throwOnError:false,strict:false});\"></script>"
+)
 
 JS = """
 (function(){
@@ -516,7 +688,7 @@ def build(out_path=DEFAULT_OUT):
     gloss = render_glossary(content_tech.GLOSSARY)
     body.append(wrap_pane("tech", tech_intro
                           + '<section class="sec" id="walk"><h2>Concept walkthroughs</h2>'
-                            '<p class="walklede">Eight worked explanations, from the three-piece band to the Holm correction. '
+                            '<p class="walklede">Twelve worked explanations, from the three-piece band to the accuracy-diversity trade. '
                             'Read these if any slide in sections 3 to 6 feels like a formula you can recite but not defend.</p>'
                           + walks + "</section>"
                           + '<section class="sec" id="glossary"><h2>Beginner glossary: every technical term on the deck</h2>'
@@ -547,6 +719,7 @@ def build(out_path=DEFAULT_OUT):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Viva Presentation Guide · Mouad LOUHICHI · PhD Defence 2026</title>
 <meta name="description" content="Section-by-section presentation guide, beginner-level technical deep dive and 100 defence questions for the PhD viva of Mouad Louhichi.">
+{KATEX_HEAD}
 <style>{css}</style>
 </head>
 <body>

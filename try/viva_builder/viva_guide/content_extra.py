@@ -2,11 +2,15 @@
 """Section 7 delivery plan, Q&A tactics, number cheat sheet, never/always sheet, checklist."""
 
 
+def _rich(s):
+    fn = globals().get("RICH")
+    return fn(s) if fn else s
+
+
 def tbl(headers, rows, cls="tbl"):
-    h = "".join("<th>%s</th>" % c for c in headers)
-    body = "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % c for c in r) for r in rows)
+    h = "".join("<th>%s</th>" % _rich(c) for c in headers)
     return ('<div class="tw"><table class="%s"><thead><tr>%s</tr></thead><tbody>%s</tbody></table></div>'
-            % (cls, h, "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % c for c in r) for r in rows)))
+            % (cls, h, "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % _rich(c) for c in r) for r in rows)))
 
 
 # ==========================================================================

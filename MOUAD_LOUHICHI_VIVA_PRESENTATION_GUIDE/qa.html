@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q&amp;A · 100 questions · Viva Presentation Guide</title>
+<meta name="description" content="How to handle the discussion, and the 100 defence questions by category">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Q&amp;A · 100 questions</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html" class="cur">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-never-say.html">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="index.html#overview">The deck in one page</a>
+<a href="index.html#timing">Timing ledger &amp; checkpoints</a>
+<a href="index.html#anatomy">How every section is built</a>
+<a href="index.html#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="playbook-contribution-ii.html#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="cheat-never-say.html#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+
+<section class="sec" id="qa-intro">
+  <div class="sec-head"><div class="sec-kicker">Part five</div><h2>The discussion: 100 questions, and how to answer any of them</h2>
+  <div class="sec-meta"><span class="pill">100 questions</span><span class="pill g">8 categories</span>
+  <span class="pill o">answers written to be spoken in 45-75 seconds</span></div></div>
+
+  <p>Every question below is one a jury member could plausibly ask this thesis: some are certain, some are the
+  questions an examiner asks when they want to see how a candidate behaves under pressure. Each answer is written to
+  be <em>spoken</em> — one direct answer, one piece of evidence with a number, one boundary — and each is grounded in
+  the thesis, the three papers or the deck, never in invention. Answers marked <span class="tag wt">danger</span>
+  are the ones where an over-claim would be fatal; read those twice and rehearse the correct phrasing until it is
+  automatic.</p>
+
+  <div class="callout goal"><h4>The three-part answer shape</h4>
+  <p><strong>1. Answer.</strong> Say “yes”, “no”, or “within this scope” in the first four words. Juries remember
+  evasions, and a delayed answer sounds like a search for an exit. <strong>2. Evidence.</strong> One number, one
+  table, one proposition — from memory, or by displaying the slide. <strong>3. Boundary.</strong> The sentence that
+  says where the claim stops. This third move is what distinguishes a doctoral answer from a student answer: a
+  doctoral candidate knows their scope.</p></div>
+
+  <div class="grid2">
+    <div class="mini"><h5>If you know the answer</h5>Answer in the three-part shape, then stop. Do not keep talking
+    after the boundary sentence: extra sentences create new attack surface. If the jury wants more,
+    they will ask.</div>
+    <div class="mini"><h5>If you do not know</h5>Say what you do know, then name the boundary precisely: “that
+    analysis is not reported in the thesis; it is listed as future work.” Never invent a number, a citation or an
+    experiment. An honest gap is a strength; a fabricated result is the end of the viva.</div>
+    <div class="mini"><h5>If the question is ambiguous</h5>Restate it in one sentence — “so the question is whether
+    the attribution is stable under a change of surrogate depth” — and answer the restated version. This buys three
+    seconds and prevents answering the wrong question, which is worse than not answering.</div>
+    <div class="mini"><h5>If the question is hostile</h5>Separate the technical content from the tone: concede the
+    part that is true (“you are right that the ablation is not factorial”), then give the boundary and the reason the
+    design is nevertheless defensible. Confident concession is the strongest move available.</div>
+    <div class="mini"><h5>If you need a slide</h5>Say “let me show you the table”, name the slide, and go to it.
+    Slides 77, 78 and 79 exist for exactly this. Announcing the slide is a professional move, not a stall.</div>
+    <div class="mini"><h5>If you are interrupted mid-answer</h5>Stop immediately, listen to the new question, and
+    answer it. Do not resume the interrupted answer unless asked. Interruption is a signal that the jury has what it
+    needs from the first question.</div>
+  </div>
+
+  <h3>The twelve questions most likely to be asked, in order of probability</h3>
+  <p>Why k = 3 when k = 2 is better (C1) · are you explaining K-Means or the surrogate (C3) · did you run LIME
+  (B4) · is Amazon-Book significant (E6) · what does Proposition 6.1 actually prove (B7) · is the gain from Shapley
+  or from the other components (E2) · why not more Monte Carlo samples (E3) · why is the wine Silhouette so low and
+  where does 0.63 come from (C2) · how did you prevent leakage (F7) · what is the biggest limitation (H1) · what is
+  actionable about this (G1) · why is this one thesis (A2). Every one of them has a full answer below.</p>
+
+  <div class="callout warn"><h4>The three things never to say</h4>
+  <ul>
+    <li>“The experiments show statistical significance on Amazon-Book.” They do not: the paired tests are tabulated
+    on MovieLens-1M, and Amazon-Book is reported as a descriptive gain over five seeds.</li>
+    <li>“We benchmarked SHAP against LIME on the wine data.” Chapter 5 states the comparison is theoretical and
+    literature-backed, not a rerun empirical bake-off.</li>
+    <li>“The hierarchy has nine sub-clusters.” No source gives a count of level-2 sub-clusters; the “9” in an early
+    draft came from a misreading of nine principal components explaining 97 % of variance.</li>
+  </ul></div>
+
+  <div class="callout"><h4>How to use the 100 questions</h4>
+  <p>Use the search box in the header to find a term or a slide number, and use the “Expand all answers” button when
+  you want to read straight through. If you have one evening before the defence, read the twelve most likely
+  questions with their answers, then read every question tagged <span class="tag wt">danger</span>, then skim the
+  rest for vocabulary. If you are rehearsing with a colleague, ask them to pick questions at random and time your
+  answers at 45 to 75 seconds.</p></div>
+</section>
+<div class="qtools"><span>One page per category. Click any question to open the answer; answers are written to be spoken in about 45–75 seconds.</span></div><div class="tw"><table class="tbl qindex"><thead><tr><th></th><th><p>Category</p></th><th><p>Questions</p></th><th><p>Range</p></th><th><p>Open</p></th></tr></thead><tbody><tr><td><p>A</p></td><td><p>A · Framing, scope and contribution</p></td><td><p>10</p></td><td><p>Q001–Q010</p></td><td><p><a href="qa-a.html">qa-a.html ›</a></p></td></tr><tr><td><p>B</p></td><td><p>B · Cooperative game theory and the Shapley value</p></td><td><p>14</p></td><td><p>Q011–Q024</p></td><td><p><a href="qa-b.html">qa-b.html ›</a></p></td></tr><tr><td><p>C</p></td><td><p>C · Contribution I — explainable black-box clustering</p></td><td><p>14</p></td><td><p>Q025–Q038</p></td><td><p><a href="qa-c.html">qa-c.html ›</a></p></td></tr><tr><td><p>D</p></td><td><p>D · Contribution II — multi-level explanation at scale</p></td><td><p>12</p></td><td><p>Q039–Q050</p></td><td><p><a href="qa-d.html">qa-d.html ›</a></p></td></tr><tr><td><p>E</p></td><td><p>E · Contribution III — DyHuCoG and in-training attribution</p></td><td><p>20</p></td><td><p>Q051–Q070</p></td><td><p><a href="qa-e.html">qa-e.html ›</a></p></td></tr><tr><td><p>F</p></td><td><p>F · Protocol, metrics and statistics</p></td><td><p>15</p></td><td><p>Q071–Q085</p></td><td><p><a href="qa-f.html">qa-f.html ›</a></p></td></tr><tr><td><p>G</p></td><td><p>G · Ethics, regulation, actionability and impact</p></td><td><p>9</p></td><td><p>Q086–Q094</p></td><td><p><a href="qa-g.html">qa-g.html ›</a></p></td></tr><tr><td><p>H</p></td><td><p>H · Limitations, threats to validity and future work</p></td><td><p>6</p></td><td><p>Q095–Q100</p></td><td><p><a href="qa-h.html">qa-h.html ›</a></p></td></tr></tbody></table></div>
+  </main>
+</div>
+<nav class="pager"><a class="p-prev" href="section-07-delivery.html">‹ Section 7 · delivery plan</a><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="qa-a.html">Q&amp;A A ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>
