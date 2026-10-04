@@ -125,6 +125,14 @@ thirty-odd, and on twelve slides a card or note bar ended at y = 10.28 over a ba
 shape above it allows (49 slides, 94 shapes, 3 card panels gave up padding, no new overlaps were
 created). Text height is measured with the embedded Nunito Semi-Bold, so the line counts are real.
 
+### v30 addendum: slide 6 trimmed to two blocks
+
+At the candidate's request slide 6 now carries the evolution timeline and one card only: "Why the gap
+matters". The one-line conclusion above the cards ("The interpretability gap grows: ...") and the card
+"What this thesis argues" were deleted, and the surviving card became a full-width panel (y 6.38-9.74,
+which keeps it clear of the three-line citation band below) with its three points in three columns at
+22 pt. The speech for the slide loses its closing paragraph, the one about the removed card.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5

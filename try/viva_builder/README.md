@@ -113,6 +113,7 @@ What is new, per area:
 | v27 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v27.pptx` | `build_v27.py` | `notes_v27.json` | **the candidate's own opening speech**: slides 1 and 2 carry the speech as written (the spoken title spells out "artificial intelligence"), slide 4 is a short spoken note that follows the three motivation cards, and slide 6's notes and the two blocks "Why the gap matters" / "What this thesis argues" were rewritten short so that screen and speech say the same three things; speech now **4,594 words = 35.3 min at 130 wpm** |
 | v28 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx` | `build_v28.py` | `notes_v28.json` | the title on slides 1 and 76 spells out **Explainable Artificial Intelligence**, re-broken as "Cooperative Game Theory for Explainable" / "Artificial Intelligence in Recommendation Systems" and still 50 pt (measured with the embedded Roca Two Bold: 82.3 % of the box); the slide 6 speech is rewritten in spoken register; **4,641 words = 35.7 min at 130 wpm** |
 | v29 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v29.pptx` | `build_v28.py` + `patch_v29.py` | `notes_v28.json` | **full-citation bands**: every citation band now carries the complete reference from slides 73-74 instead of "[21] Zhang 2020", at 14 pt over one to three lines; the bands are drawn last (nothing can cover them again) and the content that used to sit over them was moved up shape by shape, only as far as needed (49 slides, 94 shapes, no card overlaps created) |
+| v30 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v30.pptx` | `build_v30.py` | `notes_v30.json` | slide 6 keeps the evolution timeline and **one** card: the one-line "The interpretability gap grows" note and the card "What this thesis argues" are gone, and "Why the gap matters" is now a full-width card whose three bullets sit in three columns at 22 pt; the speech for slide 6 loses its last paragraph, spoken total **4,587 words = 35.3 min** |
 
 v9 changes in detail:
 
@@ -236,6 +237,18 @@ python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense P
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
+
+## v30: slide 6, two blocks only
+
+```bash
+python3 patch_v30.py    # ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v30.pptx + notes_v30.json
+```
+
+Slide 6 keeps the evolution diagram and "Why the gap matters". The card is rebuilt as a full-width
+panel (y 6.38-9.74, clear of the three-line citation band) with its three bullets as three columns of
+one bullet each at 22 pt, centred vertically. The columns are copies of the original bullet
+paragraph, so the bold lead-in, the yellow bullet and the white Nunito in both weights are exactly
+the ones the deck already used. The speech loses the paragraph about the removed card.
 
 ## v29: the reference bands in full
 
