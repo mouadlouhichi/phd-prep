@@ -8,9 +8,9 @@ GROUPS = [
  "items": [
 {
  "q": "What is genuinely new here compared with HCCF, HPCF, or a standard attention mechanism?",
- "a": """Three things, and they can be stated precisely. First, the origin of the weights. Hypergraph recommenders
+ "a": """Three things, and they can be stated exactly. First, the origin of the weights. Hypergraph recommenders
  treat message importance as uniform or learn it implicitly through attention or through the loss; here the
- importance of an entity is a Shapley value of an explicitly defined cooperative game whose characteristic function
+ importance of an entity is a Shapley value of an plainly defined cooperative game whose characteristic function
  is the recommendation quality achievable by a coalition, v(S) = α·NDCG@20(S) + β·Diversity(S) + γ·ContextScore(S),
  plus a preference term. So the weight has an allocation-theoretic interpretation with the four Shapley properties,
  not just a learned scalar. Second, the alignment of objectives: the game is built from the same three concerns
@@ -58,7 +58,7 @@ GROUPS = [
 {
  "q": "If Shapley estimates already encode importance, why do you also need an attention gate?",
  "a": """Because they do different jobs at different points in the pipeline, and this is a distinction the thesis
- makes explicitly. The Shapley coefficients encode coalition utility *before* propagation: they determine how
+ makes plainly. The Shapley coefficients encode coalition utility *before* propagation: they determine how
  strongly a relationship is allowed to carry information. The attention gate adaptively reweights the propagated
  signal *during* representation learning and scoring, acting as an interpolation between Shapley-weighted
  propagation and a more uniform mode. Its practical role is robustness: in early training the sampled Shapley
@@ -101,7 +101,7 @@ GROUPS = [
  one the architecture predicts: entities with little interaction history have weak individual evidence, so a model
  that propagates information over hyperedges and weights those relationships by their contribution to a
  multi-objective utility can draw more from structure and context than a model that relies mainly on the entity's
- own sparse history. The thesis states the appropriate caveat: this improves performance in precisely the regime
+ own sparse history. The thesis states the appropriate caveat: this improves performance in exactly the regime
  where it is hardest, but it does not solve cold start. The figures are computed from the rounded table values;
  the source paper's prose computes the same gain from unrounded values as about 9.8 % for both cases, so I give
  the deck's numbers and note the derivation when asked.""",
@@ -112,7 +112,7 @@ GROUPS = [
  "a": """Because context is doing structural work in this design, not decorating it. It appears in three places at
  once: as nodes in the hypergraph (so it participates in message passing), as one of the three terms of the
  coalition utility (ContextScore, weight γ = 0.15), and as an explicit loss term L_ctx that aligns the encoded
- contextual state with the learned context representation. Removing it therefore removes a source of information,
+ contextual state with the learned context representation. Removing it so removes a source of information,
  a term of the training objective and a component of the attribution game at the same time — which is why the drop
  is the largest of the five: −8.2 % on MovieLens-1M and −11.0 % on Amazon-Book. The consequence, stated on the
  limitations slide, is a genuine dependency: on data without meaningful context, the gain of the method would
@@ -145,7 +145,7 @@ GROUPS = [
  and the same estimand — average marginal contribution to a coalition's value — is what the explanation reports at
  inference time, so the training signal and the explanation are the same object measured at different moments.
  What I cannot claim from this thesis is a separate control experiment that isolates "coherent weighting" from
- "any non-uniform weighting"; that would require the random-weight control in the next question.""",
+ "any non-uniform weighting"; that would need the random-weight control in the next question.""",
  "tags": ["danger"],
 },
 {
@@ -194,13 +194,13 @@ GROUPS = [
  splitting rule, the leave-one-out target, the negative sampling distribution and the five seeds are the same for
  DyHuCoG and for every baseline, so the comparison is like-for-like on the data pipeline. What is not identical
  across models is the training objective — DyHuCoG optimises a composite loss with diversity and context terms,
- which is the contribution, not a protocol advantage. The fair statement is therefore: data, splits, evaluation
+ which is the contribution, not a protocol advantage. The fair statement is so: data, splits, evaluation
  and seeds are shared; the objective and the architecture differ, which is what is being tested.""",
  "tags": ["danger"],
 },
 {
  "q": "Could this scale to an industrial catalogue with hundreds of millions of items?",
- "a": """Not in its current form without substantial engineering, and the reasons are concrete rather than
+ "a": """Not in its current form without large engineering, and the reasons are concrete rather than
  hypothetical. The coalition value is evaluated on the episode induced by a coalition, which involves ranking
  candidate items and computing NDCG@20, diversity and context alignment — cheap on a local episode of a few dozen
  entities, expensive if the candidate set must be drawn from a catalogue of hundreds of millions of items. The
@@ -247,7 +247,7 @@ GROUPS = [
  explanation interface. For a designer or auditor, the read-out is actionable in the sense that it identifies
  which objective term dominated a particular decision, which supports debugging and monitoring. For an end user,
  "this recommendation is driven by context alignment" is not yet a natural-language justification, and turning
- Shapley read-outs into user-facing explanations is precisely the user-centred evaluation direction on the
+ Shapley read-outs into user-facing explanations is exactly the user-centred evaluation direction on the
  perspectives slide: do explanations measurably improve judgement, trust and perceived fairness? That study has
  not been run here.""",
  "tags": ["danger"],
@@ -261,7 +261,7 @@ GROUPS = [
  the set contains no post-2024 LLM-augmented recommender, so superiority is claimed only against the tested set —
  the thesis says this on the limitations slide. Third, the ablation is component-wise rather than factorial, so
  interactions are not characterised. On the other side, the protocol is shared, five seeds are used, the statistical
- treatment is conservative (Holm-Bonferroni on six comparisons), and the Amazon-Book results are explicitly labelled
+ treatment is conservative (Holm-Bonferroni on six comparisons), and the Amazon-Book results are plainly labelled
  descriptive rather than significant. That combination is, I think, the right balance of ambition and restraint.""",
  "tags": ["danger"],
 },
@@ -298,7 +298,7 @@ GROUPS = [
  "q": "Why is NDCG@20 the main metric rather than Recall@20 or precision?",
  "a": """Because it is the only one of the three that measures both retrieval and ranking position. Recall@20
  rewards finding the relevant items somewhere in the top twenty, without caring where; with one held-out target it
- degenerates into a hit indicator, and Precision@20 is essentially determined by it. NDCG@20 weights each position
+ degenerates into a hit indicator, and Precision@20 is basically determined by it. NDCG@20 weights each position
  by a logarithmic discount, so placing the relevant item first counts about four times more than placing it
  twentieth, which matches the user experience of a recommendation list. It is also the metric the coalition utility
  is built on — v(S) uses α·NDCG@20(S) — so the headline metric and the training signal are aligned by design,
@@ -370,7 +370,7 @@ GROUPS = [
  slide claims, and not enough to claim more. Removing one component at a time shows that the model's performance
  depends on each of the five: context −8.2 % / −11.0 %, hypergraph structure −6.8 % / −8.9 %, diversity −5.8 % /
  −5.8 %, Shapley weighting −4.6 % / −6.1 %, attention −3.5 % / −3.5 %. What it does not show is interaction
- effects — for instance, whether the Shapley weighting still matters once the attention gate is removed, or whether
+ effects — for example, whether the Shapley weighting still matters once the attention gate is removed, or whether
  context and diversity are partly redundant. A factorial or leave-two-out design would answer that, and the thesis
  lists "component-wise ablation only" as a limitation on the C3 limitations slide rather than pretending the
  evidence is stronger than it is.""",
@@ -404,7 +404,7 @@ GROUPS = [
  "q": "What does Cohen's dz = 1.33 mean in plain words?",
  "a": """It means that the average improvement for a user is about 1.33 standard deviations of the per-user
  differences. Since the conventional benchmarks are 0.2 for small, 0.5 for medium and 0.8 for large, 1.33 is a
- large effect — the gain is not just statistically detectable, it is substantial relative to how much users differ
+ large effect — the gain is not just statistically detectable, it is large relative to how much users differ
  in how much they improve. This matters because with 6,040 users almost any difference becomes significant, so the
  p-value alone would be uninformative; the effect size is what says the improvement is worth having. The thesis
  reports dz ≥ 1.33 in all six comparisons, and 1.33 specifically against HPCF, the strongest baseline, which is the
@@ -427,21 +427,21 @@ GROUPS = [
 {
  "q": "Are these improvements large enough to matter in a deployed system?",
  "a": """For ranking quality, a 9.8 % relative NDCG@20 gain over the strongest baseline would be considered
- substantial in a production recommender, and the joint improvement in coverage and diversity would matter to a
+ large in a production recommender, and the joint improvement in coverage and diversity would matter to a
  platform worried about catalogue concentration. The qualification is the cost: training takes about 1.78× HPCF —
  roughly 2,000 s against 1,125 s on MovieLens-1M — and inference is 1.84 ms per query against 1.18 ms, which is
  still real-time but not free. So the realistic framing is a trade: better ranking and better catalogue coverage
  for a bounded increase in training cost and a modest inference cost. Whether that trade is worth it depends on
  the platform's constraints, and the thesis is careful to describe the overhead as "measurable, but modest" rather
  than as negligible. I would also note that all of this is offline evaluation; no online A/B test was run, and
- that is the evidence a platform would ultimately require.""",
+ that is the evidence a platform would ultimately need.""",
  "tags": ["danger"],
 },
 {
  "q": "What about reproducibility — is the code available?",
  "a": """No, and this is one of the honest limitations of the work. The thesis appendix states that no public code
  URL is distributed and that raw per-seed logs are not released, so what a reader can reproduce is the method and
- the reported summary statistics rather than the exact runs. What is documented is substantial: the configuration
+ the reported summary statistics rather than the exact runs. What is documented is large: the configuration
  is specified (100-tree, 31-leaf LightGBM surrogate; α = 0.60, β = 0.25, γ = 0.15; λ_pref = 0.20; M = 50; refresh
  every 10 batches; batch size 2048; seeds 42-46; early-stopping patience 20), the datasets are three public
  benchmarks plus a UCI repository dataset, and the tables report means and standard deviations over five seeds.
@@ -463,8 +463,8 @@ GROUPS = [
  wine result is the cleanest example: the global ranking puts density, pH, fixed acidity, sulfur dioxide and
  alcohol at the top, and each of those is a quantity a wine maker controls directly — density through must
  composition and fermentation management, pH through acidification or blending, sulfur dioxide through
- preservation practice, alcohol through harvest timing and must adjustment. The explanation therefore names
- levers, not latent dimensions. What I must add, because the thesis says it explicitly, is that actionability is
+ preservation practice, alcohol through harvest timing and must adjustment. The explanation so names
+ levers, not latent dimensions. What I must add, because the thesis says it plainly, is that actionability is
  used as a framing concept in this work: it is illustrated by the nature of the variables and not measured with
  users, so the causal claim that changing pH changes the cluster membership in a specified way is a hypothesis
  that a domain study would need to test.""",
@@ -479,7 +479,7 @@ circumstances; the deck's wording is deliberately limited to "transparency dutie
 challenged" rather than the popular claim that explanations are mandated everywhere. What this work offers in that
 direction is a technically grounded attribution method whose guarantees are explicit (efficiency, symmetry, null
 player, additivity) and a demonstration that attribution can also shape training. What it does not offer is a
-compliance analysis: that would require a specific system, a specific risk classification, a legal reading of the
+compliance analysis: that would need a specific system, a specific risk classification, a legal reading of the
 applicable articles, and evidence about how explanations are delivered to and understood by affected people. The
 honest sentence is that the thesis contributes a component of the technical basis, not a compliance argument.""",
  "tags": ["danger", "must know"],
@@ -505,7 +505,7 @@ honest sentence is that the thesis contributes a component of the technical basi
  was chosen here to balance accuracy, diversity and context. Second, exposing entity-level attributions about users
  could enable inference about individual behaviour, which is a privacy question, particularly where the
  explanations are shown or logged. Third, an explanation can create undue trust: a probabilistic attribution
- presented as a causal statement invites users to act on it as if it were a mechanism, which is precisely why the
+ presented as a causal statement invites users to act on it as if it were a mechanism, which is exactly why the
  thesis insists that its attributions are decompositions of a surrogate's output rather than causal claims. The
  mitigations are in the design: the objective is explicit and multi-dimensional, the read-out is a decomposition
  rather than a narrative, and the limitations state what is not claimed.""",
@@ -529,7 +529,7 @@ honest sentence is that the thesis contributes a component of the technical basi
  "q": "Would a real user understand these explanations?",
  "a": """Not in their current form. The outputs are SHAP values in the units of a surrogate's log-odds, cluster
  profiles, and coalition attributions over objective terms; these are legible to an analyst or an auditor who knows
- the model, not to a lay user. Making them user-facing would require a translation layer — natural-language
+ the model, not to a lay user. Making them user-facing would need a translation layer — natural-language
  statements grounded in the domain vocabulary of Definition 1.1, evidence about comprehension, and a decision
  about what to show and when. That is a research problem in its own right, and it is exactly the third perspective
  on slide 71: do explanations measurably improve analyst judgement, user trust, quality of action or perceived
@@ -544,7 +544,7 @@ honest sentence is that the thesis contributes a component of the technical basi
  respect to that game, not a causal statement about the world. Two consequences follow. First, with dependent
  features the value function itself embodies a choice — conditional versus interventional expectations — so the
  decomposition depends on how feature dependence is modelled. Second, in this thesis the attribution is computed
- on a surrogate and therefore describes a faithful reconstruction of the partition rather than the K-Means geometry
+ on a surrogate and so describes a faithful reconstruction of the partition rather than the K-Means geometry
  itself. The right way to describe it is: a principled, axiomatically characterised decomposition of the model's
  behaviour, whose value derives from the guarantees it carries and from being reported with its scope, not from
  being metaphysically correct.""",
@@ -560,14 +560,14 @@ honest sentence is that the thesis contributes a component of the technical basi
  explanation is a property of the model rather than a document written about it. Whether that justifies the cost —
  about 1.78× the training time and 4.4 GB instead of 4.1 GB in this study — is a deployment decision, and the
  thesis is careful to frame the overhead as bounded and measurable rather than negligible. It is also worth saying
- that no user study was run, so the human benefit is argued rather than demonstrated.""",
+ that no user study was run, so the human benefit is argued rather than shown.""",
 },
 {
  "q": "How does the work relate to human-in-the-loop decision making?",
  "a": """It supplies the attribution layer that a human-in-the-loop process needs, and it stops short of supplying
  the interface and the study. A human in the loop needs three things from an explanation: a decomposition of the
  decision that accounts for the output (which efficiency provides), a statement about which factors are
- controllable (which Definition 1.1 requires), and enough stability that the same situation does not produce
+ controllable (which Definition 1.1 needs), and enough stability that the same situation does not produce
  contradictory explanations (which the axioms and the fidelity floor support). What the thesis does not provide is
  the human side of the loop: no study of whether an analyst given these read-outs makes better or faster decisions,
  no measurement of trust or of perceived fairness, and no interface design. That is the user-centred evaluation
@@ -588,7 +588,7 @@ honest sentence is that the thesis contributes a component of the technical basi
  of interest; in the recommendation contribution the Shapley estimates are sampled (variance σ²/M), computed on a
  local episode, and refreshed periodically, so they are approximate in a second sense. The thesis names this in its
  own limitations: exact Shapley is not feasible, every contribution relies on approximation, surrogates or limited
- reporting. The mitigating design is that the approximation is quantified at each level — a fidelity floor, an MSE
+ reporting. The reducing design is that the approximation is quantified at each level — a fidelity floor, an MSE
  and accuracy curve against a high-sample reference — and reported with the claim, so a reader knows exactly how
  far the conclusion extends.""",
  "tags": ["must know"],
@@ -620,11 +620,11 @@ honest sentence is that the thesis contributes a component of the technical basi
 },
 {
  "q": "If you had ten times the compute, what would change?",
- "a": """Three things, in order of value. First, larger and more numerous Monte Carlo samples with adaptive
+ "a": """Three things, in order of value. First, larger and more many Monte Carlo samples with adaptive
  refresh rules, which would reduce the estimator variance and let me test whether the in-training signal becomes
  stronger when it is less noisy — M = 100 already improves MSE to 3.5×10⁻⁶ at 2.5× the cost, so the question is
  whether the recommendation metrics eventually follow. Second, a genuine factorial ablation over the five
- components, which is computationally expensive because each cell requires a full training run on two datasets.
+ components, which is computationally expensive because each cell needs a full training run on two datasets.
  Third, an online or streaming formulation with a time-evolving hypergraph, which is the perspective the thesis
  argues for on slide 71 and which needs infrastructure more than it needs raw compute. What I would not change is
  the evaluation protocol: more compute does not fix a protocol that is already shared, seeded and corrected for

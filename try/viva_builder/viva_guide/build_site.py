@@ -60,6 +60,8 @@ for _letter, _f in QA_FILES.items():
 PAGES += [
     ("cheat-numbers.html", "Cheat · every number in one table",
      "The number sheet: datasets, contributions, significance, cost"),
+    ("cheat-stats.html", "Cheat · statistical tests at a glance",
+     "The paired t-test end to end: hypotheses, assumptions, Holm, effect size, probe answers"),
     ("cheat-never-say.html", "Cheat · never say / always say",
      "The scope fences, phrased as things to avoid and things to say instead"),
     ("cheat-checklist.html", "Cheat · pre-defence checklist",
@@ -73,6 +75,7 @@ ANCHOR_PAGE = {
     "tech-intro": "walkthroughs.html", "walk": "walkthroughs.html",
     "glossary": "glossary.html", "sec7": "section-07-delivery.html",
     "qa-intro": "qa.html", "numbers": "cheat-numbers.html",
+    "stats": "cheat-stats.html",
     "never": "cheat-never-say.html", "checklist": "cheat-checklist.html",
 }
 for _s in SECS:
@@ -185,6 +188,17 @@ JS_SITE = """
 """
 
 
+def fix_body_links(body, current):
+    """Rewrite #anchor links whose target lives on another page of the site."""
+    def rep(m):
+        a = m.group(1)
+        t = ANCHOR_PAGE.get(a)
+        if t and t != current:
+            return 'href="%s#%s"' % (t, a)
+        return m.group(0)
+    return re.sub(r'href="#([^"]+)"', rep, body)
+
+
 def page(fname, title, desc, body):
     doc = """<!DOCTYPE html>
 <html lang="en">
@@ -230,7 +244,8 @@ def page(fname, title, desc, body):
 <script src="assets/app.js"></script>
 </body>
 </html>
-""" % (esc(title), esc(desc), b.KATEX_HEAD, esc(title), render_site_nav(fname), body, pager(fname))
+""" % (esc(title), esc(desc), b.KATEX_HEAD, esc(title), render_site_nav(fname),
+       fix_body_links(body, fname), pager(fname))
     path = os.path.join(SITE, fname)
     with open(path, "w", encoding="utf-8") as f:
         f.write(doc)
@@ -337,15 +352,17 @@ def build():
 
     # ---- cheat sheets (one page per sheet)
     cheat = content_extra.render_cheat()
-    parts = re.split(r'(?=<section class="sec" id="(?:numbers|never|checklist)">)', cheat)
+    parts = re.split(r'(?=<section class="sec" id="(?:numbers|stats|never|checklist)">)', cheat)
     titles = {"numbers": ("cheat-numbers.html", "Cheat · every number in one table",
                           "The number sheet: datasets, contributions, significance, cost"),
+              "stats": ("cheat-stats.html", "Cheat · statistical tests at a glance",
+                        "The paired t-test end to end: hypotheses, assumptions, Holm, effect size"),
               "never": ("cheat-never-say.html", "Cheat · never say / always say",
                         "The scope fences, phrased as things to avoid and things to say instead"),
               "checklist": ("cheat-checklist.html", "Cheat · pre-defence checklist",
                             "The twelve items to check the night before the defence")}
     for part in parts:
-        m = re.search(r'<section class="sec" id="(numbers|never|checklist)">', part or "")
+        m = re.search(r'<section class="sec" id="(numbers|stats|never|checklist)">', part or "")
         if not m:
             continue
         fname, title, desc = titles[m.group(1)]

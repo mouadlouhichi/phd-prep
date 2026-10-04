@@ -18,12 +18,12 @@ GLOSSARY_B = [
 {
  "term": "Content-based filtering", "tag": "Recommenders", "where": "slides 9, 23",
  "plain": "Recommending items that resemble the ones you already liked, using the items' own features.",
- "deep": "The system builds a profile of the user from previously liked items, then scores new items by feature "
+ "deep": "The system builds a profile of the user from earlier liked items, then scores new items by feature "
          "similarity: genre, cast, keywords, brand. Because the reason for a recommendation is a named feature, this "
          "family is explainable by construction. The cost is over-specialisation (the filter bubble) and a hard "
          "dependence on rich, well-maintained metadata.",
- "why": "It sets the bar the thesis has to clear: content-based systems are transparent *by construction*, whereas "
-        "the thesis has to obtain transparency for systems that have no such construction, by attributing credit "
+ "why": "It sets the bar the thesis has to clear: content-based systems are transparent *by construction*, while "
+        "the thesis has to get transparency for systems that have no such construction, by attributing credit "
         "after the fact (C1, C2) or during training (C3).",
 },
 {
@@ -86,8 +86,8 @@ GLOSSARY_B = [
  "term": "HCCF and HPCF", "tag": "Recommenders", "where": "slides 12, 23, 57, 58",
  "plain": "Two strong hypergraph recommenders: HCCF adds contrastive learning, HPCF adds a projection step.",
  "deep": "Hypergraph Contrastive Collaborative Filtering (HCCF, SIGIR 2022) combines hypergraph convolution with "
-         "self-supervised contrastive objectives; Hypergraph Projection Enhanced Collaborative Filtering (HPCF, 2025) "
-         "improves how hypergraph structure is projected into the node space. In this thesis HPCF is explicitly the "
+         "self-supervised contrastive objectives; Hypergraph Projection Improved Collaborative Filtering (HPCF, 2025) "
+         "improves how hypergraph structure is projected into the node space. In this thesis HPCF is plainly the "
          "strongest reference point: NDCG@20 = 0.2528 on MovieLens-1M and 0.0270 on Amazon-Book, the numbers DyHuCoG "
          "has to beat.",
  "why": "Beating a 2025 state-of-the-art hypergraph model, and not a weak baseline, is the core empirical claim of "
@@ -164,7 +164,7 @@ GLOSSARY_B = [
          "exposure at all), ILD is list-level (are the twenty items in front of me varied). A system that only ever "
          "recommends blockbusters can have excellent ranking accuracy and terrible coverage. Treating diversity as "
          "a *training* objective rather than a post-hoc re-ranking rule is a design decision with a measurable "
-         "effect: DyHuCoG raises coverage and ILD while also raising NDCG and Recall, whereas most accuracy-first "
+         "effect: DyHuCoG raises coverage and ILD while also raising NDCG and Recall, while most accuracy-first "
          "models show a trade-off.",
  "why": "The joint improvement is the empirical answer to RQ4 and appears in every results table. It is also why "
         "the ablation keeps the diversity term as a separate row (−5.8 % on both datasets when removed).",
@@ -245,7 +245,7 @@ GLOSSARY_B = [
  "plain": "The probability of seeing a difference at least this large if there were really no difference.",
  "deep": "A p-value is not the probability that the null hypothesis is true, and it is not a measure of how big "
          "the effect is. It depends on sample size: with 6,040 users, trivially small differences become "
-         "significant. That is precisely why the thesis reports effect sizes next to p-values: significance says "
+         "significant. That is exactly why the thesis reports effect sizes next to p-values: significance says "
          "'this is unlikely to be noise', the effect size says 'and it is worth caring about'.",
  "why": "The headline p-value is 1.81×10⁻²⁷⁰ for DyHuCoG versus HPCF. It is a formality; the sentence that "
         "matters is the effect size, dz = 1.33, and the +9.8 % NDCG gain behind it.",
@@ -323,7 +323,7 @@ GLOSSARY_B = [
           "cover it completely.",
  "deep": "The strictness matters: if a child could belong to two parents, or if some records were unassigned, the "
          "children would no longer form a partition of the parent, and the law of total expectation could not be "
-         "applied. The thesis also says explicitly that the hierarchy is an analytical device, not a claim that "
+         "applied. The thesis also says plainly that the hierarchy is an analytical device, not a claim that "
          "nature is organised that way.",
  "why": "Proposition 6.1 is stated under exactly this condition: 'for a strict nested hierarchy on a consistent "
         "feature space'. If asked about the hypothesis, that is the answer — question D5.",
@@ -397,7 +397,7 @@ GLOSSARY_B = [
  "plain": "The data-protection rule on automated decision-making, and the international policy principles on "
           "trustworthy AI.",
  "deep": "GDPR Article 22 limits decisions based solely on automated processing when they produce legal or "
-         "similarly significant effects, and gives a right to obtain human intervention. The OECD principles "
+         "similarly significant effects, and gives a right to get human intervention. The OECD principles "
          "define the policy vocabulary - human-centred values, transparency and explainability, robustness, "
          "accountability - that most national AI frameworks reuse. Together they make explanation a governance "
          "expectation rather than a research preference.",
@@ -428,5 +428,69 @@ GLOSSARY_B = [
          "dependence on the approximation quality of the importance estimates during training.",
  "why": "The post-hoc to in-training move is the single narrative of the thesis — explain (C1), scale (C2), guide "
         "(C3) — and every limitations slide marks where the move stops.",
+},
+{
+ "term": "Null and alternative hypothesis", "tag": "Statistics", "where": "slides 62, 78",
+ "plain": "H0 is the boring world where the two models are equal; H1 is the claim that they are not.",
+ "deep": "A statistical test never proves H1; it only reports how incompatible the observed data are with H0. "
+         "Here H0 says the mean of the per-user NDCG@20 differences is zero. The test computes how extreme the "
+         "observed mean difference would be in a world where that holds. Because H1 is two-sided — the mean is "
+         "not zero, in either direction — the direction of the gain is read from the sign of the mean difference, "
+         "not baked into the test.",
+ "why": "The thesis claims DyHuCoG beats six baselines on MovieLens-1M; the paired tests on slides 62 and 78 are "
+        "the formal version of that claim, one H0 per baseline.",
+},
+{
+ "term": "Type I and Type II errors, and power", "tag": "Statistics", "where": "slides 62, 78",
+ "plain": "A Type I error is crying wolf — claiming a gain that is really noise. A Type II error is missing a "
+          "real gain.",
+ "deep": "The significance level α bounds the Type I error per test. When six tests are run at α = 0.05, the "
+         "chance of at least one false positive in the family rises well above 5 % — the family-wise error rate "
+         "problem — and Holm–Bonferroni is what brings it back to 5 %. Type II risk shrinks with sample size "
+         "(statistical power grows); with 6,040 paired users, power against a large effect is very high, so "
+         "neither error is likely in this protocol.",
+ "why": "If asked 'what error are you controlling?', the answer is: Type I, across the family of six comparisons, "
+        "through Holm — stated implicitly by the correction table on backup slide 78.",
+},
+{
+ "term": "Degrees of freedom (df)", "tag": "Statistics", "where": "slides 62, 78",
+ "plain": "How many independent numbers the test is actually working with.",
+ "deep": "For the paired t-test on n differences, one degree of freedom is consumed by estimating the mean, so "
+         "df = n − 1. With 6,040 users that is 6,039. The df fixes the exact shape of the t distribution used to "
+         "convert the statistic into a p-value; at this size the t distribution is almost identical to the normal "
+         "distribution, but the thesis reports df correctly anyway.",
+ "why": "'df = 6,039' and 'n = 6,040' always travel together on slides 78 and 62 — never quote one without the "
+        "other.",
+},
+{
+ "term": "One-tailed versus two-tailed", "tag": "Statistics", "where": "slide 78",
+ "plain": "A one-tailed test only counts surprises in one direction; a two-tailed test counts surprises in both.",
+ "deep": "A two-sided test — used here — asks whether the mean difference is not zero, in either direction, and "
+         "splits α across both tails. A one-tailed test would be justified only if the direction of the effect "
+         "were fixed in advance and a large effect in the opposite direction would be treated as no finding. "
+         "Two-sided is the convention in the field and is the more conservative choice, so the thesis uses it.",
+ "why": "If the jury asks which one you used: two-sided. Then note that the observed t is positive and enormous, "
+        "so the tail choice changes nothing about the conclusion.",
+},
+{
+ "term": "Normality and the central limit theorem", "tag": "Statistics", "where": "slides 62, 78",
+ "plain": "The t-test assumes the differences are roughly bell-shaped; with thousands of users the average is "
+          "bell-shaped almost automatically.",
+ "deep": "The exact assumption is about the distribution of the per-user differences, not of the raw NDCG values. "
+         "The central limit theorem says that with a large sample the sampling distribution of the mean is close "
+         "to normal even when the differences themselves are not. The thesis adds the Wilcoxon signed-rank test — "
+         "which ranks the differences and assumes no normality — as a robustness check; it agrees at p < 0.001.",
+ "why": "'Is the normality assumption safe?' — answer: large n plus the central limit theorem, and the "
+        "distribution-free Wilcoxon agrees; the conclusion does not depend on the assumption.",
+},
+{
+ "term": "Confidence interval", "tag": "Statistics", "where": "slides 62, 78",
+ "plain": "A range of plausible values for the real average gain, not just a yes/no verdict.",
+ "deep": "A 95 % confidence interval for the mean paired difference is mean(d) ± t* · sd(d)/√n, with t* from the "
+         "t distribution at n − 1 degrees of freedom. It conveys precision and size in one number pair, which a "
+         "p-value cannot do. The thesis tabulates means, standard deviations and Cohen's dz instead; intervals "
+         "follow from the same reported quantities.",
+ "why": "If asked for intervals: they are not tabulated, they are computable from the reported statistics, and "
+        "reporting them is future work — the future-work rule, in its cleanest form.",
 },
 ]

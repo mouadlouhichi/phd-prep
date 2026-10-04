@@ -37,7 +37,7 @@ def render_sec7():
          "and productive shared view, not one fully unified framework that removes all tension.”",
          "If you say only one thing here, say that clause. It disarms the hardest question of the whole viva."],
         ["<strong>71</strong> · Agenda", "4 sentences, 30 s",
-         "Turn each limitation into a direction and link it explicitly: lower-variance estimators address sampling "
+         "Turn each limitation into a direction and link it plainly: lower-variance estimators address sampling "
          "noise; streaming addresses the static graph; user studies address unmeasured actionability; trustworthy-AI "
          "evaluation extends the governance framing of the introduction.",
          "Present this as a research programme, not a wish list. One clause of justification per direction."],
@@ -51,7 +51,7 @@ def render_sec7():
          "team's related work on 74. Nothing more is needed.",
          "These slides exist so that a reference question can be answered from the screen rather than from memory."],
         ["<strong>75</strong> · Courtesy", "2 sentences, 16 s",
-         "Thank the jury, offer the three areas — methodology, theoretical foundations, experimental results — and "
+         "Thank the jury, offer the three areas — method, theoretical foundations, experimental results — and "
          "state that you will stay on the closing slide for the discussion.",
          "Do not summarise again. The summary happened on 68 and 72."],
         ["<strong>76</strong> · Handover", "nothing spoken",
@@ -80,7 +80,7 @@ def render_sec7():
   yourself adding an argument in the conclusion, it belongs in the discussion.</p></div>
 
   <h3>The five-beat structure, and what each beat is for</h3>
-  <div class="tw"><table class="tbl"><thead><tr><th>Beat</th><th>Length</th><th>What it must achieve</th>
+  <div class="tw"><table class="tbl"><thead><tr><th>Beat</th><th>Length</th><th>What it must reach</th>
   <th>Delivery note</th></tr></thead><tbody>
   """ + "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % c for c in r) for r in beats) + """
   </tbody></table></div>
@@ -186,6 +186,31 @@ def render_qa_intro(qn):
   are the ones where an over-claim would be fatal; read those twice and rehearse the correct phrasing until it is
   automatic.</p>
 
+  <div class="callout goal"><h4>The future-work rule: anything you did not do is future work</h4>
+  <p>This is the single most useful piece of advice for the discussion. When the honest answer is “we did not do
+  that”, do not defend the gap and do not apologise for it. Do three things instead: <strong>1.</strong> say plainly
+  that it is not in the thesis — one sentence, no excuses; <strong>2.</strong> name it as future work;
+  <strong>3.</strong> give one sentence of plan: what you would do, or why it is the right next step. Then stop.</p>
+  <p>The formula in one line: <em>“That is not in the thesis — it is future work, and my plan is …”</em> A gap
+  turned into a plan sounds like a researcher with an agenda. The same gap defended sounds like a hole in the work.
+  Three worked conversions:</p>
+  <ul>
+    <li><strong>No user study of the explanations.</strong> “A user study with domain analysts is future work. The
+    thesis measures fidelity and argues actionability; whether analysts really act on the explanations is the next
+    experiment, and it is designed.”</li>
+    <li><strong>No significance test on Amazon-Book.</strong> “The paired tests are tabulated on MovieLens-1M;
+    Amazon-Book is descriptive over five seeds — that scope is stated on slide 59. Extending the full significance
+    protocol to Amazon-Book is future work.”</li>
+    <li><strong>No streaming or online updates.</strong> “The hypergraph is built offline on the training period;
+    online updates are future work, named as such on slide 71.”</li>
+    <li><strong>No lower-variance Shapley estimator.</strong> “M = 50 leaves a stated variance of 1.4×10⁻⁵; better
+    estimators — stratified sampling, antithetic permutations — are future work, on the slide 71 agenda.”</li>
+  </ul>
+  <p>Two guard rails. The rule is for things that are <em>not done</em>: never use it to blur something that was
+  done imperfectly — that gets its own honest answer. And the three never-claims stay absolute: no significance on
+  Amazon-Book, no empirical SHAP-versus-LIME bake-off, no count of sub-clusters. “It is future work” is not a way
+  to smuggle those claims in; it is a way to close a gap question in three sentences and move on.</p></div>
+
   <div class="callout goal"><h4>The three-part answer shape</h4>
   <p><strong>1. Answer.</strong> Say “yes”, “no”, or “within this scope” in the first four words. Juries remember
   evasions, and a delayed answer sounds like a search for an exit. <strong>2. Evidence.</strong> One number, one
@@ -197,9 +222,14 @@ def render_qa_intro(qn):
     <div class="mini"><h5>If you know the answer</h5>Answer in the three-part shape, then stop. Do not keep talking
     after the boundary sentence: extra sentences create new attack surface. If the jury wants more,
     they will ask.</div>
-    <div class="mini"><h5>If you do not know</h5>Say what you do know, then name the boundary precisely: “that
-    analysis is not reported in the thesis; it is listed as future work.” Never invent a number, a citation or an
-    experiment. An honest gap is a strength; a fabricated result is the end of the viva.</div>
+    <div class="mini"><h5>If you do not know</h5>Say what you do know, then use the future-work rule: “that
+    analysis is not in the thesis; it is future work, and my plan is …” — one sentence of plan, then stop. Never
+    invent a number, a citation or an experiment. An honest gap with a plan is a strength; a fabricated result is
+    the end of the viva.</div>
+    <div class="mini"><h5>If the question is about the statistics</h5>Name the test first — a paired t-test on
+    per-user NDCG@20 differences — then the hypotheses, then the Holm correction, then the effect size. Know this
+    chain end to end; it is the most likely technical probe of the whole defence. The full drill is in
+    <a href="#stats">Statistical tests at a glance</a>.</div>
     <div class="mini"><h5>If the question is ambiguous</h5>Restate it in one sentence — “so the question is whether
     the attribution is stable under a change of surrogate depth” — and answer the restated version. This buys three
     seconds and prevents answering the wrong question, which is worse than not answering.</div>
@@ -313,6 +343,13 @@ def render_cheat():
         ["<strong>What is the scope of the framework?</strong>",
          "“A consistent and productive shared view, not one fully unified framework that removes all tension.”",
          "“This is a general theory of explanation and recommendation.”"],
+        ["<strong>Any gap: “did you do X?”</strong>",
+         "“That is not in the thesis — it is future work, and my plan is …” (one sentence of plan, then stop).",
+         "“We could not do it.” / “I forgot.” / a long apology with no plan."],
+        ["<strong>Why no confidence intervals?</strong>",
+         "“The thesis reports means, standard deviations and Cohen's dz; intervals follow from the same quantities. "
+         "Adding them is future work.”",
+         "“We did not think of it.” / pretending they are in the thesis."],
     ]
 
     checklist = [
@@ -336,10 +373,83 @@ def render_cheat():
          "actually held."],
         ["10", "Prepare the first answer", "The first question is usually about k = 3 or about the surrogate. Have both "
          "answers in the three-part shape and word-perfect."],
-        ["11", "Bring a printed A4", "One page: the twelve numbers, the three never-say items, and the question-to-slide "
+        ["11", "Bring a printed A4", "One page: the twelve numbers, the four-sentence statistics drill, the never-say "
+         "items, and the question-to-slide "
          "index (77 stability, 78 significance, 79 cost). No slides on paper, just the sheet."],
         ["12", "Decide the ending", "The last spoken sentence of the presentation is the closing line on slide 72, then "
          "the thanks. Never the reverse."],
+    ]
+
+    stats_a = [
+        ["<strong>Which test</strong>", "Paired samples t-test on per-user NDCG@20 differences: for each user u, "
+         "d = NDCG@20_u(DyHuCoG) − NDCG@20_u(baseline). Six comparisons, one per baseline."],
+        ["<strong>Why paired</strong>", "The same 6,040 users are scored by both models. Pairing removes the "
+         "between-user variance — some users are simply easier to predict — so the test sees only the model "
+         "difference. An unpaired test would answer the wrong question."],
+        ["<strong>Hypotheses</strong>", "H0: the mean of the differences is zero (no model effect). H1: the mean "
+         "difference is not zero — two-sided. The direction of the gain is read from the sign of the mean "
+         "difference, not from the choice of tail."],
+        ["<strong>Statistic and df</strong>", "t = mean(d) / (sd(d)/√n), df = n − 1 = 6,039 (6,040 users, one "
+         "constraint consumed by the estimated mean). Headline row: t = 46.38 versus HPCF."],
+        ["<strong>Assumptions</strong>", "1. Differences are independent across users — one row per user. "
+         "2. Differences are roughly normal — with n = 6,040 the central limit theorem makes the test robust to "
+         "moderate non-normality, and Wilcoxon (no normality assumption) agrees at p < 0.001. "
+         "3. NDCG@20 is a bounded continuous score, so its differences are on a usable scale."],
+        ["<strong>p-value</strong>", "The probability, assuming H0, of seeing |t| at least this large. Not the "
+         "probability that H0 is true; not the size of the gain. With 6,040 users it only separates noise from "
+         "signal — which is why effect size is reported next to it."],
+        ["<strong>α and multiplicity</strong>", "α = 0.05 per test. Six tests would raise the chance of at least "
+         "one false positive well above 5 %; Holm–Bonferroni controls the family-wise error rate at 5 %."],
+        ["<strong>Holm step-down</strong>", "Sort the six p-values, compare the k-th with α/(m − k + 1): 0.00833, "
+         "0.0100, 0.0125, 0.0167, 0.0250, 0.0500; stop at the first failure. All six comparisons pass (slide 78)."],
+        ["<strong>Effect size</strong>", "Cohen's dz = mean(d)/sd(d). Conventional benchmarks: 0.2 small, 0.5 "
+         "medium, 0.8 large. The thesis reports dz ≥ 1.33 against every baseline — dz = 1.33 against the "
+         "strongest (HPCF)."],
+        ["<strong>Robustness check</strong>", "Wilcoxon's signed-rank test, which does not assume normality, "
+         "agrees at p < 0.001 on all six comparisons, so the conclusion does not rest on the normality "
+         "assumption."],
+        ["<strong>What is not tested</strong>", "Amazon-Book and the other metrics are descriptive over five "
+         "seeds (±1σ bands, slide 77). The five seeds measure run-to-run noise; the 6,040 users measure "
+         "generalisation across users — two different questions, both reported, neither confused with the other."],
+        ["<strong>If asked for a confidence interval</strong>", "“The thesis reports means, standard deviations "
+         "and dz; a confidence interval follows from the same quantities — mean(d) ± t* · sd(d)/√n. Tabulating "
+         "it is future work.” Then stop."],
+    ]
+
+    stats_b = [
+        ["Why a paired t-test?",
+         "Same users, two models: the pairing removes user difficulty and tests only the model difference."],
+        ["Why not an unpaired test?",
+         "It would mix user-to-user variance into the error term and ask whether two user populations differ — "
+         "not the question."],
+        ["Are the differences normal?",
+         "That is the assumption; with 6,040 users the central limit theorem covers moderate non-normality, and "
+         "Wilcoxon agrees at p < 0.001."],
+        ["One-tailed or two-tailed?",
+         "Two-sided, by convention. The sign of the mean difference gives the direction; the test itself does not."],
+        ["What does p = 1.81×10⁻²⁷⁰ mean?",
+         "Under no real difference, a t this large would be almost impossible. It is not the probability that "
+         "H0 is true, and it says nothing about the size of the gain."],
+        ["Why correct for multiplicity?",
+         "Six tests at α = 0.05 inflate the chance of a false positive; Holm keeps the family-wise error at 5 % "
+         "with only a small loss of power."],
+        ["What is a Type I error here?",
+         "Declaring DyHuCoG better when the difference is noise. Holm controls the chance of even one such error "
+         "across the six comparisons. At n = 6,040 the Type II risk is small."],
+        ["What does df = 6,039 mean?",
+         "6,040 user differences minus one for the estimated mean; it fixes the exact shape of the t distribution "
+         "used for the p-value."],
+        ["Why not a z-test, why not bootstrap?",
+         "A z-test needs a known standard deviation; with an estimated one, the t distribution is the right "
+         "reference. Bootstrap is a fair extra robustness check — future work."],
+        ["Why 6,040 and not 5 seeds?",
+         "Seeds measure training noise (the ±1σ bands on slide 77); users support the claim about users. The test "
+         "is over users, the bands are over seeds."],
+        ["What does dz = 1.33 mean?",
+         "The average gain is 1.33 standard deviations of the per-user differences — 'large' against the 0.8 "
+         "benchmark — and it rides on a +9.8 % relative NDCG@20 gain."],
+        ["Is the effect large in practice?",
+         "Effect size and relative gain answer together: dz = 1.33 and +9.8 % NDCG@20 over HPCF on MovieLens-1M."],
     ]
 
     return """
@@ -358,8 +468,26 @@ def render_cheat():
   </ul></div>
 </section>
 
+<section class="sec" id="stats">
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 2</div><h2>Statistical tests at a glance</h2>
+  <div class="sec-meta"><span class="pill">know this end to end</span><span class="pill o">the most likely technical probe</span></div></div>
+  <p>Your supervisor is right: expect the jury to probe the statistics. The whole defence rests on one test — the
+  paired t-test on slides 62 and 78 — plus one correction and one effect size. Below is the full chain, then the
+  one-breath answers to the questions examiners actually ask. Rehearse the four-sentence drill until it is
+  automatic: <em>name the test, give the hypotheses, give the statistic with its degrees of freedom, give the
+  correction and the effect size.</em></p>
+  """ + tbl(["Item", "What you must be able to say"], stats_a) + """
+  <h3>If the jury probes the statistics</h3>
+  """ + tbl(["Question", "Answer in one breath"], stats_b) + """
+  <div class="callout warn"><h4>The four-sentence drill</h4>
+  <p>“The comparison is a <strong>paired t-test</strong> on per-user NDCG@20 differences across 6,040 users. The
+  null hypothesis is that the mean difference is zero; the alternative is that it is not. The statistic is
+  t = 46.38 with 6,039 degrees of freedom, and the six baseline comparisons are corrected with Holm–Bonferroni.
+  The effect size is Cohen's dz = 1.33 — large by the standard benchmarks.” Then stop.</p></div>
+</section>
+
 <section class="sec" id="never">
-  <div class="sec-head"><div class="sec-kicker">Cheat sheet 2</div><h2>Never say / always say</h2>
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 3</div><h2>Never say / always say</h2>
   <div class="sec-meta"><span class="pill o">scope fences</span><span class="pill g">rehearse the right-hand column</span></div></div>
   <p>These are not style preferences. Each left-hand formulation is wider than the thesis, and a jury member who has
   read Chapter 5, 6 or 7 can falsify it in one sentence. The right-hand version is equally strong and defensible.</p>
@@ -367,7 +495,7 @@ def render_cheat():
 </section>
 
 <section class="sec" id="checklist">
-  <div class="sec-head"><div class="sec-kicker">Cheat sheet 3</div><h2>Pre-defence checklist</h2>
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 4</div><h2>Pre-defence checklist</h2>
   <div class="sec-meta"><span class="pill">twelve items</span><span class="pill g">technical and rhetorical</span></div></div>
   """ + tbl(["#", "Item", "What to do"], checklist) + """
   <div class="callout win"><h4>The one-sentence summary of this whole guide</h4>

@@ -51,6 +51,7 @@
 <a href="qa-g.html">Q&amp;A G</a>
 <a href="qa-h.html">Q&amp;A H</a>
 <a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-stats.html">Cheat · statistical tests at a glance</a>
 <a href="cheat-never-say.html">Cheat · never say / always say</a>
 <a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
 <h5>Jump to</h5>
@@ -80,6 +81,7 @@
 <a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
 <a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
 <a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="cheat-stats.html#stats">Statistical tests at a glance</a>
 <a href="cheat-never-say.html#never">Never say / always say</a>
 <a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
   </aside>
@@ -97,6 +99,31 @@
   are the ones where an over-claim would be fatal; read those twice and rehearse the correct phrasing until it is
   automatic.</p>
 
+  <div class="callout goal"><h4>The future-work rule: anything you did not do is future work</h4>
+  <p>This is the single most useful piece of advice for the discussion. When the honest answer is “we did not do
+  that”, do not defend the gap and do not apologise for it. Do three things instead: <strong>1.</strong> say plainly
+  that it is not in the thesis — one sentence, no excuses; <strong>2.</strong> name it as future work;
+  <strong>3.</strong> give one sentence of plan: what you would do, or why it is the right next step. Then stop.</p>
+  <p>The formula in one line: <em>“That is not in the thesis — it is future work, and my plan is …”</em> A gap
+  turned into a plan sounds like a researcher with an agenda. The same gap defended sounds like a hole in the work.
+  Three worked conversions:</p>
+  <ul>
+    <li><strong>No user study of the explanations.</strong> “A user study with domain analysts is future work. The
+    thesis measures fidelity and argues actionability; whether analysts really act on the explanations is the next
+    experiment, and it is designed.”</li>
+    <li><strong>No significance test on Amazon-Book.</strong> “The paired tests are tabulated on MovieLens-1M;
+    Amazon-Book is descriptive over five seeds — that scope is stated on slide 59. Extending the full significance
+    protocol to Amazon-Book is future work.”</li>
+    <li><strong>No streaming or online updates.</strong> “The hypergraph is built offline on the training period;
+    online updates are future work, named as such on slide 71.”</li>
+    <li><strong>No lower-variance Shapley estimator.</strong> “M = 50 leaves a stated variance of 1.4×10⁻⁵; better
+    estimators — stratified sampling, antithetic permutations — are future work, on the slide 71 agenda.”</li>
+  </ul>
+  <p>Two guard rails. The rule is for things that are <em>not done</em>: never use it to blur something that was
+  done imperfectly — that gets its own honest answer. And the three never-claims stay absolute: no significance on
+  Amazon-Book, no empirical SHAP-versus-LIME bake-off, no count of sub-clusters. “It is future work” is not a way
+  to smuggle those claims in; it is a way to close a gap question in three sentences and move on.</p></div>
+
   <div class="callout goal"><h4>The three-part answer shape</h4>
   <p><strong>1. Answer.</strong> Say “yes”, “no”, or “within this scope” in the first four words. Juries remember
   evasions, and a delayed answer sounds like a search for an exit. <strong>2. Evidence.</strong> One number, one
@@ -108,9 +135,14 @@
     <div class="mini"><h5>If you know the answer</h5>Answer in the three-part shape, then stop. Do not keep talking
     after the boundary sentence: extra sentences create new attack surface. If the jury wants more,
     they will ask.</div>
-    <div class="mini"><h5>If you do not know</h5>Say what you do know, then name the boundary precisely: “that
-    analysis is not reported in the thesis; it is listed as future work.” Never invent a number, a citation or an
-    experiment. An honest gap is a strength; a fabricated result is the end of the viva.</div>
+    <div class="mini"><h5>If you do not know</h5>Say what you do know, then use the future-work rule: “that
+    analysis is not in the thesis; it is future work, and my plan is …” — one sentence of plan, then stop. Never
+    invent a number, a citation or an experiment. An honest gap with a plan is a strength; a fabricated result is
+    the end of the viva.</div>
+    <div class="mini"><h5>If the question is about the statistics</h5>Name the test first — a paired t-test on
+    per-user NDCG@20 differences — then the hypotheses, then the Holm correction, then the effect size. Know this
+    chain end to end; it is the most likely technical probe of the whole defence. The full drill is in
+    <a href="cheat-stats.html#stats">Statistical tests at a glance</a>.</div>
     <div class="mini"><h5>If the question is ambiguous</h5>Restate it in one sentence — “so the question is whether
     the attribution is stable under a change of surrogate depth” — and answer the restated version. This buys three
     seconds and prevents answering the wrong question, which is worse than not answering.</div>

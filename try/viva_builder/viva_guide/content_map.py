@@ -46,6 +46,7 @@ SIDEBAR = [
     ]),
     ("Cheat sheets", [
         ("numbers", "Every number in one table"),
+        ("stats", "Statistical tests at a glance"),
         ("never", "Never say / always say"),
         ("checklist", "Pre-defence checklist"),
     ]),
@@ -126,7 +127,7 @@ def render_deckmap():
   <div class="sec-meta"><span class="pill">79 slides</span><span class="pill g">76 spoken + 3 backup</span>
   <span class="pill o">4,584 words = 35.3 min</span></div></div>
   <p>Every word count below was measured from the speaker notes actually stored in the v28 file, excluding the
-  seven <em>Time check</em> cues and the two pre-defence reminder lines, which are not spoken. The deck therefore
+  seven <em>Time check</em> cues and the two pre-defence reminder lines, which are not spoken. The deck so
   fits a 40-minute slot with about four and a half minutes in hand at a normal 130 words per minute, or about one and
   a half minutes at 120 wpm. If the 40 minutes include the jury's questions, you are 5 to 10 minutes over and should
   use the cut list at the end of this page.</p>
@@ -226,7 +227,7 @@ def render_sections_intro():
   <div class="sec-head"><div class="sec-kicker">Part two</div><h2>Section playbooks · how to present slides 1 to 79</h2>
   <div class="sec-meta"><span class="pill">7 sections</span><span class="pill g">every slide covered</span>
   <span class="pill o">time, content, delivery, risk</span></div></div>
-  <p>Each section below opens with what that section must achieve in front of the jury, then gives a row for every
+  <p>Each section below opens with what that section must reach in front of the jury, then gives a row for every
   slide: what the jury sees, how to present it, the measured speaking time, and the cue or the risk attached to that
   slide. The times are computed from the v28 speaker notes at 130 words per minute, which is a normal academic
   delivery pace; add roughly 8 percent if you speak at 120 wpm.</p>
@@ -288,7 +289,7 @@ S0 = {
          "screen": "Seven numbered parts plus Q&amp;A, each with a one-line description.",
          "how": "Walk the seven parts in one breath each: introduction, problem, protocol, three contributions, "
                 "conclusion. Then say the sentence that buys you the right to a uniform structure: each contribution "
-                "follows the same path, gap → objectives → methodology → protocol → results → findings. Finish with "
+                "follows the same path, gap → objectives → method → protocol → results → findings. Finish with "
                 "“the next thirty-six minutes” as the note says. Do not describe the Q&amp;A block, just name it.",
          "time": "≈ 25 s", "cue": "The note says “the next 36 minutes”, which matches the measured 35.3 min at 130 wpm. "
                                   "If you know you speak faster, say “about half an hour”."},
@@ -426,7 +427,7 @@ S2 = {
                 "accurate and scalable, but a score cannot be traced to a factor a person understands. Say the phrase "
                 "“the gap between accuracy and interpretability becomes stronger here” — it is the sentence that "
                 "justifies the next slide.",
-         "time": "≈ 32 s", "cue": "Do not attempt to explain matrix factorisation mathematics here; the glossary in this guide has the version you need if asked."},
+         "time": "≈ 32 s", "cue": "Do not try to explain matrix factorisation mathematics here; the glossary in this guide has the version you need if asked."},
         {"n": "12", "title": "Graph-Based and Hypergraph Recommenders",
          "screen": "Nodes and edges, message passing (LightGCN, HCCF, HPCF), hyperedges connecting user, item and context, state of the art on sparse benchmarks, and the limitation: compute, memory, uniform unexplained messages.",
          "how": "This is the most spoken slide of the section (119 words) and the most important one: the thesis is "
@@ -511,7 +512,7 @@ S3 = {
         {"n": "18", "title": "Wine Quality: Portuguese Vinho Verde",
          "screen": "Three intro bullets, a specification table (4,898 observations, 11 numeric features, target quality 3-9 not used, no missing values, standardised, k* = 3) and the caption.",
          "how": "Say the numbers once — 4,898 samples, 11 physicochemical measurements — then the justification: small, "
-                "dense and chemically correlated, so an explanation can be checked against the domain. Note explicitly "
+                "dense and chemically correlated, so an explanation can be checked against the domain. Note plainly "
                 "that the taste score exists but is not used for clustering. Do not read the table row by row.",
          "time": "≈ 42 s", "cue": "The first of the four datasets: the notes open with a sentence that frames all four, then narrow to wine. Keep that order."},
         {"n": "19", "title": "Beijing Multi-Site Air Quality",

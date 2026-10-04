@@ -76,7 +76,7 @@ same way.
 
 **Transfer to the thesis.** Players are the eleven wine variables (or the eleven air-quality variables). The value
 function is the Silhouette of the clustering computed on the subset of variables in the coalition. A Shapley value
-for "density" is therefore the average amount by which the clustering's separation improves when density joins a
+for "density" is so the average amount by which the clustering's separation improves when density joins a
 group of variables, averaged over every possible order in which variables could be introduced. That is the sentence
 to say if a jury member asks what your explanation actually measures.
 """,
@@ -168,7 +168,7 @@ There is no TreeSHAP for centroids.
   features, then apply exact TreeSHAP to that classifier. The explanation is expressed in the original eleven
   variables, and the computation is fast and exact for the surrogate.
 
-**The cost, stated honestly.** You are now explaining the surrogate, not K-Means. The thesis says this explicitly:
+**The cost, stated honestly.** You are now explaining the surrogate, not K-Means. The thesis says this plainly:
 "the chapter does not claim to explain K-Means geometry in a mechanistic sense; it explains a faithful supervised
 reconstruction of the discovered partition." The explanation is valid to the extent that the surrogate reconstructs
 the partition, which is why the thesis imposes a fidelity floor: macro-F1 around 0.82 for a 100-tree, 31-leaf
@@ -237,7 +237,7 @@ and c₂ with 400. Suppose the expected absolute SHAP value of "temperature" is 
 2. *Differences are still allowed and expected.* The identity is about the **expected absolute** importance, not
    about per-instance explanations, and not about the ranking of features. At the coarse level, temperature and dew
    point dominate because they separate the broad atmospheric regimes; inside a cluster, CO, SO₂, PM10, wind speed or
-   ozone become more informative. Both statements can be true at once, and Proposition 6.1 is precisely what makes
+   ozone become more informative. Both statements can be true at once, and Proposition 6.1 is exactly what makes
    the pair non-contradictory.
 
 **The scope, in the thesis's own words.** ε is "a conceptual residual term rather than an empirically estimated
@@ -350,22 +350,41 @@ optimum is reported; the intermediate surface is not in the paper."
 """,
 },
 {
- "title": "10 · Statistics in one page: pairing, Holm, and effect size",
- "lede": "Every number on slides 62 and 78 follows from four ideas. Here they are, with the actual p-values of the "
-         "thesis.",
+ "title": "10 · The statistical tests, end to end",
+ "lede": "The defence rests on one test, one correction and one effect size. Here is the whole chain with the "
+         "actual numbers of the thesis — know this page by heart, because the statistics are the most likely "
+         "technical probe of the viva.",
  "body": """
-**1. Why paired.** The comparison is not "does DyHuCoG have a higher average NDCG than HPCF". It is "for each of the
-6,040 users, did DyHuCoG do better?" The pairing removes the enormous between-user variance — some users are simply
-easier to predict — and makes the test far more sensitive. The statistic is `t = mean(d) / (sd(d)/√n)` with
-df = n − 1 = 6,039.
+**1. The test and its hypotheses.** The test on slides 62 and 78 is a paired samples t-test. For every one of the
+6,040 users you compute one number: d = NDCG@20(DyHuCoG) − NDCG@20(baseline). The null hypothesis H0 is "the mean
+of these 6,040 differences is zero" — the two models are equal for this population of users. The alternative H1 is
+"the mean difference is not zero", and the test is two-sided: the direction of the gain comes from the sign of the
+mean difference, not from the choice of tail. Everything else follows from this one design.
 
-**2. The six comparisons and their thresholds.** Holm–Bonferroni orders the six p-values from smallest to largest and
+**2. Why paired.** The comparison is not "does DyHuCoG have a higher average NDCG than HPCF". It is "for each of the
+6,040 users, did DyHuCoG do better?". The pairing removes the enormous between-user variance — some users are simply
+easier to predict — and makes the test far more sensitive. An unpaired test would answer a different, weaker
+question.
+
+**3. The statistic, the degrees of freedom, the assumptions.** The statistic is `t = mean(d) / (sd(d)/√n)` with
+df = n − 1 = 6,039: 6,040 differences, minus one constraint consumed by the estimated mean. Three assumptions: the
+differences are independent across users (one row per user); the differences are roughly normal — with n = 6,040
+the central limit theorem makes the test robust to moderate non-normality, and the Wilcoxon signed-rank test, which
+does not assume normality at all, agrees at p < 0.001; and NDCG@20 is a bounded continuous score, so its
+differences live on a usable scale.
+
+**4. What the p-value says, and what it does not say.** A p-value is the probability, assuming H0 is true, of
+seeing a |t| at least this large. It is not the probability that H0 is true, and it is not the size of the gain.
+With 6,040 users almost any real difference becomes significant, so the p-value mostly separates noise from signal —
+which is why the thesis reports effect sizes next to it.
+
+**5. The six comparisons and their thresholds.** Holm–Bonferroni orders the six p-values from smallest to largest and
 compares the k-th with α/(m − k + 1). With m = 6 and α = 0.05 the thresholds are 0.00833, 0.0100, 0.0125, 0.0167,
 0.0250, 0.0500 — exactly the last column of backup slide 78. Each p-value is compared with its own, increasingly
 generous threshold, and the procedure stops at the first failure. It controls the probability of even one false
-positive across the family of tests, which plain uncorrected testing would not.
+positive across the family of tests — the family-wise error rate — which plain uncorrected testing would not.
 
-**3. The results in the thesis.**
+**6. The results in the thesis.**
 
 - DyHuCoG vs HPCF: t = 46.38, p = 1.81×10⁻²⁷⁰, dz = 1.33, threshold 0.0500.
 - vs RecDCL: t = 92.72, dz = 2.67, threshold 0.0083.
@@ -374,23 +393,29 @@ positive across the family of tests, which plain uncorrected testing would not.
 - vs NCF: t = 311.13, dz = 8.95, threshold 0.0167.
 - vs MF: t = 341.76, dz = 9.83, threshold 0.0250.
 
-All six are significant; Wilcoxon's signed-rank test agrees at p < 0.001, so the conclusion does not rest on
-normality.
+All six are significant after correction; Wilcoxon's signed-rank test agrees at p < 0.001, so the conclusion does
+not rest on normality.
 
-**4. Why the effect size is the interesting number.** With n = 6,040, almost any difference is statistically
-significant, so the p-values are mostly a formality. Cohen's dz is the mean paired difference divided by its standard
-deviation; the conventional reading is 0.2 small, 0.5 medium, 0.8 large. The thesis reports dz ≥ 1.33 against every
-baseline, including 1.33 against the strongest one. The sentence to say is: "the gain is large by the standard
-benchmarks, and it survives correction for multiple comparisons."
+**7. Why the effect size is the interesting number.** Cohen's dz is the mean paired difference divided by its
+standard deviation; the conventional reading is 0.2 small, 0.5 medium, 0.8 large. The thesis reports dz ≥ 1.33
+against every baseline, including 1.33 against the strongest one. The sentence to say is: "the gain is large by the
+standard benchmarks, and it survives correction for multiple comparisons."
 
-**5. The scope fence.** These tests are tabulated for per-user NDCG@20 on MovieLens-1M. Amazon-Book and the other
+**8. The scope fence.** These tests are tabulated for per-user NDCG@20 on MovieLens-1M. Amazon-Book and the other
 metrics are reported as descriptive over five seeds, and the standard deviations on backup slide 77 show why: on
-Amazon-Book the ±1σ bands for NDCG@20 and Recall@20 nearly touch between DyHuCoG and HPCF. Saying this yourself is
-not a weakness; it is the difference between a candidate who knows the limits of their analysis and one who does not.
+Amazon-Book the ±1σ bands for NDCG@20 and Recall@20 nearly touch between DyHuCoG and HPCF. The five seeds measure
+run-to-run noise; the 6,040 users support the claim about users — two different questions, both reported. Saying
+the fence yourself is not a weakness; it is the difference between a candidate who knows the limits of their
+analysis and one who does not.
+
+**9. If pressed further.** Confidence intervals are not tabulated in the thesis; they follow from the same
+quantities — mean(d) ± t* · sd(d)/√n — and adding them is future work (the future-work rule again: name it, give
+the plan, stop). The full question drill — why not a z-test, why not bootstrap, one-tailed or two-tailed, what a
+Type I error is here — is in the cheat sheet "Statistical tests at a glance".
 """,
 },
 {
- "title": "11 · NDCG@20 by hand: why position matters",
+"title": "11 · NDCG@20 by hand: why position matters",
  "lede": "One worked example and the metric will never feel mysterious again.",
  "body": """
 **The formula.** `DCG@K = Σ_{i=1..K} (2^rel_i − 1) / log₂(i + 1)`, normalised by the best achievable ordering:
@@ -444,7 +469,7 @@ while accuracy fell. It does not. And the ablation shows the reverse causality: 
 5.8 % NDCG@20 on both datasets. In other words, diversity is not a tax on accuracy in this architecture; it is part
 of what produces it.
 
-**The honest boundary, and the sentence to use.** This is demonstrated on two benchmarks with offline evaluation,
+**The honest boundary, and the sentence to use.** This is shown on two benchmarks with offline evaluation,
 and the thesis does not claim that the trade-off disappears in general — slide 64 says the trade-off "is not fixed
 by nature" when importance comes from a cooperative-game utility, which is a claim about this design, tested on
 these datasets. If a jury member asks whether the gain comes from the diversity regulariser rather than from
@@ -475,7 +500,7 @@ GLOSSARY_A = [
  "plain": "Grouping data points so that points in the same group are more similar to each other than to points in "
           "other groups.",
  "deep": "Clustering has no ground truth, which means two things follow. First, the number of clusters is a choice, "
-         "not a fact — hence the multi-criteria selection in this thesis. Second, validity must be argued: internal "
+         "not a fact — so the multi-criteria selection in this thesis. Second, validity must be argued: internal "
          "metrics such as Silhouette and Davies-Bouldin measure geometry, while domain plausibility measures "
          "usefulness. The thesis uses both, and says so.",
  "why": "Contributions I and II are about explaining clustering, and the thesis deliberately picks two domains "
@@ -500,7 +525,7 @@ GLOSSARY_A = [
  "deep": "Matrix factorisation represents each user and item as a vector of, say, 64 latent numbers, and scores a "
          "pair by their dot product. The model is accurate and compact, but nothing constrains the factors to "
          "correspond to anything a person can name; two runs with different seeds can produce rotated versions of "
-         "the same space. Explanation in latent space is therefore not actionable; it merely re-describes the model "
+         "the same space. Explanation in latent space is so not actionable; it merely re-describes the model "
          "in other unreadable terms.",
  "why": "It is the technical reason phrase 'the answer comes back in variables an expert can change' matters, and "
         "why the surrogate bridge in Contribution I exists at all.",
@@ -633,12 +658,12 @@ GLOSSARY_A = [
  "plain": "The problem of recommending to a brand-new user or recommending a brand-new item, when there is almost "
           "no interaction history to learn from.",
  "deep": "Collaborative models learn from co-occurrence, so an entity with no co-occurrences has a representation "
-         "driven only by its initialisation or its side features. Cold start is therefore the regime where "
+         "driven only by its initialisation or its side features. Cold start is so the regime where "
          "structure-aware models can add the most — if they can propagate information from context and from "
          "neighbours rather than relying on the entity's own sparse history.",
  "why": "The thesis reports cold-start results: 0.061 versus 0.055 NDCG@20 for users with at most five training "
         "interactions (+10.9 %) and 0.057 versus 0.052 for cold items (+9.6 %). 'It does not solve cold start "
-        "completely, but it improves performance in precisely the regime where it is hardest.'",
+        "completely, but it improves performance in exactly the regime where it is hardest.'",
 },
 {
  "term": "Popularity bias", "tag": "ML basics", "where": "slides 13, 58, 59",
@@ -657,7 +682,7 @@ GLOSSARY_A = [
  "deep": "With implicit feedback, the negatives are constructed. Uniform sampling produces mostly trivially "
          "irrelevant items, which makes training easy and uninformative. Popularity-aware sampling draws negatives "
          "with a probability related to an item's frequency — written `q(i) ∝ f_i^η` — so the sampled negatives "
-         "are popular enough to be plausible and therefore hard. The exponent η tunes how strongly frequency is "
+         "are popular enough to be plausible and so hard. The exponent η tunes how strongly frequency is "
          "emphasised; η = 0 recovers uniform sampling. Harder negatives sharpen the ranking boundary.",
  "why": "It is a protocol line on slide 22 that a recommender-systems jury will notice, and the honest answer to "
         "'how were negatives drawn?' — question F9.",
@@ -698,7 +723,7 @@ GLOSSARY_A = [
          "components are mixtures of the original variables and that scaling changes the result, so it must be "
          "applied to standardised data.",
  "why": "The thesis uses PCA for clustering support and for the two-dimensional visual inspection of the Beijing "
-        "structure — and explicitly not as the space in which explanations are reported. That restraint is what "
+        "structure — and plainly not as the space in which explanations are reported. That restraint is what "
         "keeps the attribution in the eleven named variables.",
 },
 {
@@ -813,7 +838,7 @@ GLOSSARY_A = [
  "term": "LIME", "tag": "Explainability", "where": "slides 7, 23, 27, 31, 34",
  "plain": "Local Interpretable Model-agnostic Explanations: perturb an instance, see how the model's output changes, "
           "and fit a simple interpretable model locally.",
- "deep": "LIME generates neighbourhood samples around the instance, obtains the model's predictions for them, "
+ "deep": "LIME generates neighbourhood samples around the instance, gets the model's predictions for them, "
          "weights the samples by proximity and fits a sparse linear model whose coefficients are the explanation. "
          "It is intuitive and applies to any model. Its explanations depend on how the neighbourhood was defined, "
          "how the perturbations were generated and how well the local linear fit approximates the true boundary — "
@@ -892,7 +917,7 @@ GLOSSARY_A = [
 },
 {
  "term": "Characteristic function v(S)", "tag": "Game theory", "where": "slides 29, 54",
- "plain": "The rule that says what each coalition can achieve on its own, without help from the players outside it.",
+ "plain": "The rule that says what each coalition can reach on its own, without help from the players outside it.",
  "deep": "The only formal constraints are that the empty coalition is worth zero, v(∅) = 0, and that the function "
          "be defined for every subset. Everything else is a modelling choice, and it is where the domain enters: "
          "in C1 the value of a coalition of features is the Silhouette of the K-Means solution computed on those "
@@ -905,7 +930,7 @@ GLOSSARY_A = [
 },
 {
  "term": "Marginal contribution", "tag": "Game theory", "where": "slides 29, 54, 55",
- "plain": "How much more the group can achieve with you than without you.",
+ "plain": "How much more the group can reach with you than without you.",
  "deep": "Formally, the marginal contribution of player j to coalition S is v(S ∪ {j}) − v(S). It is the natural "
          "definition of 'what you add', but it is coalition-dependent: a guitarist adds a lot to drums and little "
          "to another guitarist. That dependence is not a flaw to be removed but the reason a value must be "
@@ -936,7 +961,7 @@ GLOSSARY_A = [
          "features and clusters fair. **Null player**: a player who never changes any coalition's value receives "
          "zero, so irrelevant variables are not credited. **Additivity**: for two games v and w, φ(v + w) = φ(v) + "
          "φ(w), so explanations compose. Together they are not merely desirable properties; they characterise the "
-         "rule — the Shapley value is the only one satisfying all four (proved in Appendix A.1 via unanimity "
+         "rule — the Shapley value is the only one satisfying all four (proved in Appendix A.1 through unanimity "
          "games).",
  "why": "They are objective O3 of Contribution I: the justification of Shapley over LIME is axiomatic. Say the "
         "four names and what each one prevents; that is a complete answer.",
@@ -969,9 +994,9 @@ GLOSSARY_A = [
  "plain": "The same Shapley machinery with two different definitions of what a coalition is worth.",
  "deep": "In C1 and C2 a coalition's worth is the quality of the clustering it supports — the Silhouette of the "
          "K-Means solution on that subset of features. In C3 a coalition's worth is the quality of the "
-         "recommendation it can achieve — a weighted combination of NDCG@20, diversity and context alignment, plus "
+         "recommendation it can reach — a weighted combination of NDCG@20, diversity and context alignment, plus "
          "a preference term. Nothing about the Shapley value changes; what changes is what the players are trying "
-         "to achieve. This is the thesis's answer to 'why is this one framework and not three projects?'",
+         "to reach. This is the thesis's answer to 'why is this one framework and not three projects?'",
  "why": "It is the second philosophical pillar after the axioms, and the content of the takeaway box on slide 68: "
         "'one cooperative-game definition, three value functions'.",
 },
@@ -1003,7 +1028,7 @@ GLOSSARY_A = [
  "plain": "MSE is the average squared difference between the estimate and a reference; the reference here is a "
           "much larger sample, because the exact value cannot be computed.",
  "deep": "For an unbiased estimator, mean squared error equals variance, so MSE inherits the 1/M behaviour. The "
-         "reference against which accuracy is measured is a high-sample estimate — the deck says so explicitly — "
+         "reference against which accuracy is measured is a high-sample estimate — the deck says so plainly — "
          "not the exact Shapley value, because exact computation is infeasible at this scale. The reported pairs "
          "are M = 25 → MSE 5.6×10⁻⁵ and about 98 %; M = 50 → 1.4×10⁻⁵ and about 99 %; M = 100 → 3.5×10⁻⁶ and about "
          "99.5 %, at 2.5× the training cost.",
@@ -1031,7 +1056,7 @@ GLOSSARY_A = [
  "deep": "Each internal node tests a feature against a threshold; each split sends an instance left or right; each "
          "leaf holds a prediction. Depth is the number of questions on the longest path. A single tree is readable "
          "but weak; the power comes from combining many of them. The tree depth is one of the parameters tested in "
-         "the sensitivity analysis of C2, because deeper trees can fit the cluster labels more precisely while "
+         "the sensitivity analysis of C2, because deeper trees can fit the cluster labels more exactly while "
          "becoming less stable.",
  "why": "The surrogate used throughout C1 and C2 is a tree ensemble, and TreeSHAP exists because the tree "
         "structure makes exact Shapley values computable in polynomial time.",

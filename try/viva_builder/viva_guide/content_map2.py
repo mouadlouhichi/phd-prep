@@ -26,7 +26,7 @@ S4 = {
     ],
     "slides": [
         {"n": "26", "title": "Contribution I divider",
-         "screen": "Section 04: objectives, methodology, results in three cards.",
+         "screen": "Section 04: objectives, method, results in three cards.",
          "how": "Frame the contribution in one sentence: explain a black-box partition with a principled attribution "
                 "method, and keep the answer in the language of the domain. Say the time-check cue: about minute "
                 "fourteen. Do not read the three cards.",
@@ -38,7 +38,7 @@ S4 = {
                 "The sentence to land: in clustering the model creates its own structure, so cluster meaning must be "
                 "worked out after the fact.",
          "time": "≈ 34 s", "cue": "Do not say “SHAP is better than LIME empirically” here; the deck's position is that SHAP is better founded (question C5)."},
-        {"n": "28", "title": "RQ1 and Objectives",
+        {"n": "28", "title": "RQ1 and Goals",
          "screen": "RQ1 strip plus a three-row table: O1 cluster-level explanation, O2 original feature space, O3 justify Shapley over LIME, with where each is shown.",
          "how": "State RQ1 as a question, then the three objectives as three promises you will be held to. Point to the "
                 "“where it is shown” column so the jury knows the evidence is coming. Note the honest framing of O3: "
@@ -70,8 +70,8 @@ S4 = {
          "time": "≈ 14 s", "cue": "In v26 the comparison row was narrowed to “LIME surrogate, theoretical comparator (Ch. 5)”. Keep that wording."},
         {"n": "32", "title": "Choosing k: Interpretability over Geometry",
          "screen": "k-scan bullets, the two-row comparison table (k = 2: 0.214 / 1.775; k = 3: 0.144 / 2.097), the k* = 3 tile and the 0.82 fidelity tile.",
-         "how": "Say the trade-off explicitly: geometrically k = 2 wins, and we choose k = 3 anyway, because three "
-                "clusters give distinct explanatory profiles and therefore more actionable output. Name the price you "
+         "how": "Say the trade-off plainly: geometrically k = 2 wins, and we choose k = 3 anyway, because three "
+                "clusters give distinct explanatory profiles and so more actionable output. Name the price you "
                 "paid for that choice — a weaker separation — instead of hiding it. Then close the trap: the higher "
                 "Silhouette 0.63 belongs to Beijing, not to this partition.",
          "time": "≈ 31 s", "cue": "This is the most quotable slide of section 4. If the jury asks “is that scientific?”, answer with question C7. If pressed, add the corroborating detail: the same k = 3 choice also wins geometrically on the Beijing corpus (0.626 / 0.553 against 0.265 / 1.503 at k = 2), so the selection is a balance across both corpora, not a wine-only judgement."},
@@ -111,7 +111,7 @@ S4 = {
     "extra": [
         ("If the jury interrupts during section 4",
          "The two interruptions to expect are “why a surrogate?” and “why k = 3?”. Both are answered without leaving "
-         "the section: the surrogate is the only way to obtain exact tree attribution in the original variables, and "
+         "the section: the surrogate is the only way to get exact tree attribution in the original variables, and "
          "k = 3 is chosen for interpretability with the geometric cost stated openly. Answer in two sentences, point at "
          "the slide, and continue. Do not open the LIME comparison unless asked — it is theoretical in this thesis."),
     ],
@@ -145,7 +145,7 @@ S5 = {
     ],
     "slides": [
         {"n": "38", "title": "Contribution II divider",
-         "screen": "Section 05 with objectives, methodology and results cards.",
+         "screen": "Section 05 with objectives, method and results cards.",
          "how": "One sentence: extend Shapley explanation from single-level to large-scale multi-level clustering. Say "
                 "the time-check cue: about minute twenty. Name the two new things the jury should watch for — a real "
                 "multi-level workflow and a formal consistency argument.",
@@ -157,7 +157,7 @@ S5 = {
                 "missing link: existing hierarchical work reports structure but never relates a parent explanation to "
                 "its children.",
          "time": "≈ 24 s", "cue": "The word “provably” is doing real work here. Do not let it drift into “practically consistent” — the proposition is the claim."},
-        {"n": "40", "title": "RQ2 and Objectives",
+        {"n": "40", "title": "RQ2 and Goals",
          "screen": "RQ2 strip plus three objective rows: multi-level workflow, formal consistency argument, validation at scale on new data.",
          "how": "Three objectives, three sentences. Point at the “where it is shown” column: the workflow figure, "
                 "Proposition 6.1, and Table 6.1 with Figures 6.1 and 6.2. This mapping is what lets you say “yes, "
@@ -182,7 +182,7 @@ S5 = {
         {"n": "43", "title": "Evaluation Protocol",
          "screen": "Eight-row protocol table, then four success criteria (separation, physical reading, interpretable differences, stability under sensitivity).",
          "how": "Say what changed relative to Contribution I: clustering runs on the full Beijing dataset, and each "
-                "level gets its own surrogate. Name the sensitivity check explicitly, because it is the defence "
+                "level gets its own surrogate. Name the sensitivity check plainly, because it is the defence "
                 "against “your result is a parameter artefact”. Twenty seconds, no more.",
          "time": "≈ 23 s", "cue": "Sensitivity on k, projection dimension and tree depth is what question D7 will probe."},
         {"n": "44", "title": "Coarse-Level Clustering: Beijing Air Quality",
@@ -223,7 +223,7 @@ S5 = {
         {"n": "49", "title": "Limitations",
          "screen": "Four boxes: static clustering, smoothing, tabular only, post-hoc.",
          "how": "Volunteer all four, then make the last one the hinge: attribution still explains a partition that was "
-                "already computed, and does not influence learning. That is precisely the question Contribution III "
+                "already computed, and does not influence learning. That is exactly the question Contribution III "
                 "takes on. Say it as a design decision, not as a confession.",
          "time": "≈ 25 s", "cue": "The temporal point is sharp: Beijing data are hourly time series but the partition is static. Say “drift between years is not modelled” exactly."},
         {"n": "50", "title": "Takeaway: Contribution II",
@@ -276,7 +276,7 @@ S6 = {
     ],
     "slides": [
         {"n": "51", "title": "Contribution III divider",
-         "screen": "Section 06 with objectives, methodology and results, including the name DyHuCoG spelled out.",
+         "screen": "Section 06 with objectives, method and results, including the name DyHuCoG spelled out.",
          "how": "Name it and expand it: Dynamic Hypergraph Cooperative Game. Frame the transition in one sentence: in "
                 "the first two contributions Shapley values explained models after training; here the question is "
                 "whether attribution can become part of the learning process. Say the time-check cue: about minute "
@@ -289,8 +289,8 @@ S6 = {
                 "re-ranking heuristic applied after training. Problem three: interpretability is added after "
                 "prediction. Then the pivot from your own work: C1 and C2 showed Shapley attribution is faithful and "
                 "consistent, but it never changed what the model learned.",
-         "time": "≈ 24 s", "cue": "The word “during training” is the whole novelty claim. Say it explicitly; it is what separates DyHuCoG from attention mechanisms."},
-        {"n": "53", "title": "RQ3, RQ4 and Objectives",
+         "time": "≈ 24 s", "cue": "The word “during training” is the whole novelty claim. Say it plainly; it is what separates DyHuCoG from attention mechanisms."},
+        {"n": "53", "title": "RQ3, RQ4 and Goals",
          "screen": "Two RQ strips and a three-row objective table (game formulation, Shapley inside message passing, accuracy + coverage + diversity together).",
          "how": "Two questions, three objectives. First objective: model recommendation as a cooperative game over "
                 "users, items and contexts, with a utility that mixes accuracy, diversity and context. Second: put "
@@ -301,7 +301,7 @@ S6 = {
          "screen": "Player set N = U ∪ I ∪ C, the hypergraph H = (V, E, W) with dynamic weights, coalition definition, and the preference term.",
          "how": "Define the three objects in order: players are users, items and contexts; a coalition is the set of "
                 "entities taking part in one recommendation episode; the value of a coalition is the quality of the "
-                "recommendation it can achieve. Then the preference-aware extension with λpref = 0.20 and the reason "
+                "recommendation it can reach. Then the preference-aware extension with λpref = 0.20 and the reason "
                 "the design is elegant: the trade-off the recommender must satisfy is exactly the trade-off from which "
                 "attribution is computed, so explanatory game and predictive objective are aligned by design.",
          "time": "≈ 28 s", "cue": "If asked about the size of the player set, use question E4: the estimator is scoped to the local episode, so a coalition is on the order of a few dozen entities, not the whole catalogue."},
@@ -493,9 +493,9 @@ S7 = {
          "time": "≈ 14 s", "cue": "This slide is where you would point if asked about Holm-Bonferroni or Cohen's dz: references [27]."},
         {"n": "75", "title": "Thank You",
          "screen": "A thank-you statement, a large question mark, and the candidate, supervisor, laboratory and defence place cards.",
-         "how": "Thank the jury for their attention and say you are glad to take questions on methodology, theory or "
+         "how": "Thank the jury for their attention and say you are glad to take questions on method, theory or "
                 "results. Do not summarise again. This slide lasts about fifteen seconds and then you stop.",
-         "time": "≈ 16 s", "cue": "Say explicitly that you will stay on the closing slide: it tells the jury you intend to answer from the title slide with the jury table, which is the professional move."},
+         "time": "≈ 16 s", "cue": "Say plainly that you will stay on the closing slide: it tells the jury you intend to answer from the title slide with the jury table, which is the professional move."},
         {"n": "76", "title": "Closing title (Q&amp;A)",
          "screen": "The title slide again with the jury table and “Questions &amp; Discussion · Thank you”.",
          "how": "Leave this on screen for the whole discussion. It flatters the jury by keeping their names visible, "
@@ -528,7 +528,7 @@ SQ = {
 - Leave the closing title slide up for the whole discussion so the jury sees their own names while they question you.
 """,
     "arc": [
-        ("You are allowed to say “let me show you”", "Slides 77-79 exist precisely so that answers can be evidence "
+        ("You are allowed to say “let me show you”", "Slides 77-79 exist exactly so that answers can be evidence "
          "rather than memory. When a question touches stability, go to 77; significance, go to 78; cost or convergence, "
          "go to 79. Announcing the slide number is a professional move, not a stall."),
         ("Thirty seconds of silence is not a failure", "Aim to answer in three beats: the direct answer, the evidence, "
@@ -563,11 +563,11 @@ SQ = {
         ("Question-to-slide index for the discussion",
          "Stability, variance, seeds, error bars → slide 77. Significance, p-values, effect size, multiple comparisons "
          "→ slide 78. Cost, latency, memory, convergence, why M = 50 → slide 79. Thesis in one slide → slide 68. "
-         "Question mapping → slide 15. Method figures → slides 33, 45, 46, 56. Objectives and their status → slides 34, "
+         "Question mapping → slide 15. Method figures → slides 33, 45, 46, 56. Goals and their status → slides 34, "
          "47, 63. Limitations → slides 36, 49, 65, 70. Perspectives → slide 71."),
         ("The four moves when you do not know the answer",
          "1. Restate the question to buy three seconds and to make sure you answer the right thing. 2. Answer what you "
-         "do know, with the scope attached (“what I can tell you from the thesis is…”). 3. Name the boundary precisely "
+         "do know, with the scope attached (“what I can tell you from the thesis is…”). 3. Name the boundary exactly "
          "(“that analysis is not reported; it is listed as future work”). 4. Offer the adjacent evidence you do have, "
          "and stop. Do not fill silence with speculation."),
     ],

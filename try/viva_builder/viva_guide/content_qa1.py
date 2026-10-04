@@ -42,12 +42,12 @@ GROUPS = [
  Architecturally, the most original element is the DyHuCoG design: using a preference-aware Monte Carlo Shapley
  estimate, computed from the same multi-objective utility the model is trained on, as dynamic hyperedge weights.
  The thesis is careful not to claim either as a general theory: the first is a bounded identity under stated
- conditions, and the second is demonstrated on two benchmarks against a frozen baseline set.""",
+ conditions, and the second is shown on two benchmarks against a frozen baseline set.""",
  "tags": ["danger"],
 },
 {
  "q": "You define actionable insight in Definition 1.1. Did you measure actionability?",
- "a": """No, and the thesis says so explicitly. Definition 1.1 gives two conditions: the explanation must identify a
+ "a": """No, and the thesis says so plainly. Definition 1.1 gives two conditions: the explanation must identify a
  modifiable factor, and it must express that factor in the vocabulary of the domain — acidity in wine, pollution
  indicators in air quality, preference signals in recommendation. Actionability is used in this work as a framing
  concept and an interpretive criterion, illustrated by showing that the wine drivers (density, pH, fixed acidity,
@@ -65,7 +65,7 @@ GROUPS = [
  and recommendation is a domain in which the entities (users, items, contexts) have names and the objective
  (relevance, diversity, context) is a stated trade-off rather than a single accuracy number. The empirical work is
  evaluated with the standard apparatus of recommender-systems research — NDCG@20, Recall@20, coverage, intra-list
- diversity, six baselines from four families, HPCF as the strongest reference — precisely so that the claims are
+ diversity, six baselines from four families, HPCF as the strongest reference — exactly so that the claims are
  legible to that community. The two clustering chapters exist because clustering is the clearest test of
  faithfulness, since the model invents its own structure.""",
 },
@@ -85,7 +85,7 @@ GROUPS = [
  II, the claim "the same cooperative-game language works for explanation and for optimisation" would be an
  assertion rather than a demonstration: the two clustering chapters are what show that the framework is not
  specific to recommendation architecture. Second, the in-training signal in C3 is built from a utility over
- entities, whereas C1 and C2 compute attribution over features of a partition; having both makes the argument that
+ entities, while C1 and C2 compute attribution over features of a partition; having both makes the argument that
  the choice of players and value function is a design decision within one framework, not a different method each
  time. What C3 would gain is depth — more datasets, more baselines, an online evaluation — and that is exactly where
  the future work points.""",
@@ -99,7 +99,7 @@ GROUPS = [
  decomposes, with efficiency guaranteeing that the parts account for the whole. For the *end user* of a
  recommender, the thesis does not deliver a user-facing explanation interface: the waterfall read-out described in
  C3 is a mechanism for showing which terms the objective valued, not a natural-language justification, and
- user-facing explanation quality is explicitly left as future work.""",
+ user-facing explanation quality is plainly left as future work.""",
  "tags": ["danger"],
 },
 {
@@ -140,7 +140,7 @@ GROUPS = [
  (the attributions sum to the total value), symmetry (identical contributors receive equal credit), null player
  (irrelevant variables receive zero) and additivity (attributions compose across games). Chapter 2, section 2.8.2,
  states the axioms, and Appendix A.1 proves uniqueness by decomposing any game into unanimity games. That matters
- for this thesis in a specific way: cluster-level claims require that credit assigned to a feature be comparable
+ for this thesis in a specific way: cluster-level claims need credit assigned to a feature to be comparable
  across clusters, and LIME-style local surrogates give no such guarantee, because their explanation depends on the
  neighbourhood definition, the perturbation process and the quality of the local fit. So the argument is
  normative rather than empirical — and the thesis is explicit that the SHAP-versus-LIME comparison in Chapter 5 is
@@ -197,7 +197,7 @@ GROUPS = [
 },
 {
  "q": "If the value function is the Silhouette of the clustering, why are the SHAP values computed on the surrogate?",
- "a": """Because they are two different objects, and the thesis says so explicitly. The Silhouette-based cooperative
+ "a": """Because they are two different objects, and the thesis says so plainly. The Silhouette-based cooperative
  game motivates the analysis — it defines who the players are and what a coalition is worth in principle. The
  surrogate is the tractable bridge that makes exact TreeSHAP possible. A consequence is that the efficiency
  property holds with respect to the surrogate's log-odds output rather than with respect to the Silhouette-based game
@@ -337,10 +337,10 @@ GROUPS = [
  "q": "Where does the 0.63 Silhouette come from?",
  "a": """From the Beijing air-quality clustering, not from the wine partition. The wine partition at k = 3 has a
  Silhouette of 0.144 and a Davies-Bouldin index of 2.097; the Beijing coarse partition has a Silhouette of about
- 0.63 with Davies-Bouldin about 0.55. The thesis repeats this distinction twice, precisely because the two numbers
+ 0.63 with Davies-Bouldin about 0.55. The thesis repeats this distinction twice, exactly because the two numbers
  appear in consecutive chapters and are easy to confuse. In speech: whenever you say 0.63, say "Beijing"; whenever
  you say 0.144, say "wine". The reason the two differ so much is substantive, not a modelling error: the Beijing
- data contain a strong, physically driven regime structure, whereas the wine data are a small, dense,
+ data contain a strong, physically driven regime structure, while the wine data are a small, dense,
  chemically correlated table where a three-way split is a useful description rather than a natural separation.""",
  "tags": ["danger", "must know"],
 },
@@ -348,7 +348,7 @@ GROUPS = [
  "q": "What is macro-F1 ≈ 0.82, and what happens if the surrogate is not faithful?",
  "a": """Macro-F1 is the average of the per-class F1 scores — the harmonic mean of precision and recall for each
  cluster — computed without weighting by class size, so a small cluster counts as much as a large one. It measures
- how well the LightGBM surrogate reproduces the K-Means labels on held-out data; 0.82 is the value achieved with
+ how well the LightGBM surrogate reproduces the K-Means labels on held-out data; 0.82 is the value reached with
  the default 100-tree, 31-leaf configuration for both wine and Beijing, and the thesis treats roughly 0.80 as the
  practical floor. If fidelity were low, the explanation would describe a model that is not the partition: the
  attribution would be faithful to the surrogate and misleading about the clustering. That is why the thesis calls
@@ -365,7 +365,7 @@ GROUPS = [
  polynomial-time for tree ensembles; a neural surrogate would force a model-agnostic estimator such as KernelSHAP
  and add a second layer of approximation. And it must be stable under small changes of configuration, which the
  thesis checks in the sensitivity analysis on tree depth. LightGBM's leaf-wise growth also makes it fast on tabular
- data of this size, which matters for the Beijing study with 383,585 rows. The choice is therefore not a
+ data of this size, which matters for the Beijing study with 383,585 rows. The choice is so not a
  preference: it is determined by the requirement that the attribution step be exact for the model it explains.""",
 },
 {
@@ -425,7 +425,7 @@ GROUPS = [
  explanation's validity condition. The *interpretability* of the result is assessed qualitatively: the global
  ranking and cluster profiles are checked against domain knowledge in wine chemistry and air quality. What is not
  evaluated is the *human* dimension — whether the explanations improve understanding, trust, or decisions — and the
- thesis says so explicitly in the limitations and in the perspectives. Faithfulness metrics for explanations
+ thesis says so plainly in the limitations and in the perspectives. Faithfulness metrics for explanations
  themselves (for example deletion or perturbation-based tests on the explanation) are also not run in this work.
  So the honest answer is: the bridge was validated, the domain plausibility was argued, the user effect was left
  open.""",
@@ -438,7 +438,7 @@ GROUPS = [
  macro-F1 ≈ 0.82 rather than 1.0, and the efficiency guarantee applies to the surrogate's log-odds output rather
  than to the Silhouette-based game value. The thesis names this as surrogate dependence and states it on page 58.
  The second weakness is the single level: importance cannot be shown to change between a partition and its
- sub-partitions, which is precisely why the next contribution exists. The third is scope: tabular data only, with
+ sub-partitions, which is exactly why the next contribution exists. The third is scope: tabular data only, with
  no graph, text or image input. All three are volunteered on slide 36 rather than extracted by the jury, which is
  the correct posture.""",
  "tags": ["must know"],
@@ -450,7 +450,7 @@ GROUPS = [
  presupposes a fixed, low-dimensional, comparable feature space. The surrogate is a tree ensemble, which handles
  tabular data naturally and images or text poorly without a learned representation. And the actionability
  requirement demands that the players be named, modifiable factors, which is exactly what raw pixels or tokens are
- not. A non-tabular version would therefore need either a meaningful engineered feature space — as the eleven
+ not. A non-tabular version would so need either a meaningful engineered feature space — as the eleven
  physicochemical and pollutant variables are — or a different formulation in which players are concepts or
  learned factors whose meaning is established separately. That is a research programme, not an extension, and it is
  honest to say so.""",
@@ -473,7 +473,7 @@ GROUPS = [
  value function well defined. A Gaussian mixture would give probabilistic memberships and a likelihood, which is a
  different attribution question; DBSCAN produces density-based clusters with noise points and a variable number of
  clusters, which complicates both the partition and the cross-level nesting; hierarchical clustering gives a tree
- directly, but with a linkage-driven structure that the thesis wanted to control explicitly. K-Means with an
+ directly, but with a linkage-driven structure that the thesis wanted to control plainly. K-Means with an
  explicit k scan makes the selection criteria visible — elbow, Silhouette, Davies-Bouldin — and produces hard
  assignments that map cleanly onto the surrogate classification task, which is what makes the TreeSHAP bridge
  possible. The framework itself is not tied to K-Means: the players are the features and the value function is a
@@ -563,13 +563,13 @@ GROUPS = [
  "q": "Why not use an established hierarchical clustering algorithm with a dendrogram?",
  "a": """A dendrogram from agglomerative clustering would give a hierarchy, but not the object this contribution
  needs. Agglomerative linkage defines clusters by a merge criterion and produces a single tree whose levels are
- determined by the linkage, whereas the framework here needs an explicit, controllable level structure with a
+ determined by the linkage, while the framework here needs an explicit, controllable level structure with a
  surrogate fitted at each level and explanations expressed in the same feature space at every level — the
  conditions under which Proposition 6.1 applies. Recursive K-Means with a chosen k per level gives that control: it
  is transparent, reproducible, comparable across levels, and each level's partition is a strict refinement of the
  parent, which is exactly the nesting hypothesis. A dendrogram would also make the "subdivide where appropriate"
  decision implicit in the linkage rather than explicit in the analysis, and the thesis prefers the explicit
- version precisely because it has to be defended.""",
+ version exactly because it has to be defended.""",
 },
 {
  "q": "How sensitive are the conclusions to k, to the projection dimension and to surrogate depth?",
@@ -586,7 +586,7 @@ GROUPS = [
 {
  "q": "Your aggregation weights children by size. Why size and not importance?",
  "a": """Because size is what makes the identity true. Proposition 6.1 comes from the law of total expectation, and
- the law of total expectation requires the weights to be the probabilities of the conditioning events — here, the
+ the law of total expectation needs the weights to be the probabilities of the conditioning events — here, the
  relative frequencies of the children within the parent, w_c' = |c'| / |c|. Weighting by importance would introduce a
  second, unexplained weighting scheme and the identity would no longer hold; the residual would absorb the
  difference and stop being interpretable as surrogate mismatch. It is worth adding what the size weighting implies:
@@ -614,12 +614,12 @@ GROUPS = [
  "a": """It is a real limitation, and it is the first item on the limitations slide for a reason. The clustering
  treats the 383,585 records as one pool, so it describes the regimes that exist across the period rather than how
  those regimes evolve; inter-annual drift, seasonality and long-run trends are not modelled, and no temporal
- validation is reported. Two things mitigate the concern without removing it. First, the question the chapter asks
+ validation is reported. Two things reduce the concern without removing it. First, the question the chapter asks
  is about explanation at scale and across levels, not about forecasting, so a static partition is a legitimate
  object for that question. Second, the regime descriptions are consistent with the known seasonal structure of
  Beijing pollution, so the pooled view is not obviously misleading. But if the intended use were monitoring or
  early warning, a temporal model — sliding windows, change detection, or a streaming formulation — would be
- required, and that is exactly the online and streaming direction on the perspectives slide.""",
+ needed, and that is exactly the online and streaming direction on the perspectives slide.""",
  "tags": ["danger"],
 },
 {
@@ -629,7 +629,7 @@ GROUPS = [
  temperature, dew point and pressure lead the coarse-level ranking, and pollutants then vary within those regimes.
  For an air-quality analyst, that reframes the question from "which pollutant is high" to "which regime are we in,
  and what varies inside it" — a distinction that flat summary statistics typically do not make explicit, which is
- the point the chapter makes on page 73. It also demonstrates the method: the same pipeline that explained a
+ the point the chapter makes on page 73. It also shows the method: the same pipeline that explained a
  4,898-row wine table works on 383,585 rows with an interpretable result. What it does not provide is a forecasting
  or policy-evaluation tool, and the thesis does not claim one.""",
 },
@@ -639,7 +639,7 @@ GROUPS = [
  than completely. The proposition is proved under hypotheses that the empirical setting only approximates: the
  nesting is strict as imposed by the recursive clustering, the feature space is consistent by design, but the
  residual induced by surrogate approximation is not estimated — the thesis treats it as a conceptual term. So the
- honest status is analytical support for the cross-level reading, demonstrated on one dataset, rather than a
+ honest status is analytical support for the cross-level reading, shown on one dataset, rather than a
  verified quantitative identity. O1, the genuinely multi-level workflow, is met straightforwardly: coarse regimes,
  then level-specific surrogates, then size-weighted aggregation. O3, validation at scale on a new domain, is met:
  383,585 records, Silhouette ≈ 0.63, three physically readable regimes with a sensitivity check.""",
