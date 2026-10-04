@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overview &amp; deck map · Viva Presentation Guide</title>
+<meta name="description" content="The deck in one page, the timing ledger, how every section is built, ten delivery rules">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Overview &amp; deck map</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html" class="cur">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-stats.html">Cheat · statistical tests at a glance</a>
+<a href="cheat-never-say.html">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="#overview">The deck in one page</a>
+<a href="#timing">Timing ledger &amp; checkpoints</a>
+<a href="#anatomy">How every section is built</a>
+<a href="#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="playbook-contribution-ii.html#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="qa.html#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="cheat-stats.html#stats">Statistical tests at a glance</a>
+<a href="cheat-never-say.html#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+
+<div class="hero" id="overview">
+  <h1>How to present this viva, and how to defend every line of it</h1>
+  <p class="sub">A complete reading of <code>MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides),
+  its 4,584 spoken words, its speaker notes, the thesis it defends and the three papers behind it.</p>
+  <div class="meta">
+    <span class="pill o">4,584 spoken words in the main flow</span>
+    <span class="pill">≈ 35.3 min at 130 wpm</span>
+    <span class="pill">≈ 38.2 min at 120 wpm</span>
+    <span class="pill g">7 sections + Q&amp;A + 3 backup tables</span>
+    <span class="pill g">3 contributions · 5 research questions</span>
+  </div>
+  <p>This guide has four jobs. <strong>First</strong>, it explains what each of the seven sections is doing, and how
+  to deliver every one of the 79 slides: what is on screen, what to say, what to point at, how long it takes, and
+  where the risks are. <strong>Second</strong>, it gives sections 3, 4, 5 and 6 — the shared protocol, the two
+  clustering contributions and DyHuCoG — a beginner-level technical deep dive: every term, every formula, every
+  result, explained from first principles so you can defend the substance and not only the slides.
+  <strong>Third</strong>, it gives section 7 its own presentation plan, because a conclusion is delivered
+  differently from a results section. <strong>Fourth</strong>, it proposes 100 likely jury questions with
+  dissertation-level answers, each one written to be spoken.</p>
+  <div class="legend">
+    <div><b>If you have 20 minutes before the defence</b>Read “Ten delivery rules”, the timing ledger, and the
+    “Never say / always say” sheet. Then rehearse the seven transitions.</div>
+    <div><b>If you have two hours</b>Add the section playbooks for 3, 4, 5 and 6, and the eight walkthroughs.</div>
+    <div><b>If a jury member is a game theorist</b>Read glossary 43-54 and questions B1-B14, then Q021-Q026.</div>
+    <div><b>If a jury member is an applied ML researcher</b>Read the walkthroughs on SHAP, the surrogate bridge and
+    the statistics, then questions C1-C14 and F1-F15.</div>
+  </div>
+</div>
+
+<section class="sec" id="timing">
+  <div class="sec-head"><div class="sec-kicker">Orientation</div><h2>The deck at a glance, and the timing ledger</h2>
+  <div class="sec-meta"><span class="pill">79 slides</span><span class="pill g">76 spoken + 3 backup</span>
+  <span class="pill o">4,584 words = 35.3 min</span></div></div>
+  <p>Every word count below was measured from the speaker notes actually stored in the v28 file, excluding the
+  seven <em>Time check</em> cues and the two pre-defence reminder lines, which are not spoken. The deck so
+  fits a 40-minute slot with about four and a half minutes in hand at a normal 130 words per minute, or about one and
+  a half minutes at 120 wpm. If the 40 minutes include the jury's questions, you are 5 to 10 minutes over and should
+  use the cut list at the end of this page.</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Slides</th><th>Block</th><th>#</th><th>Spoken words</th><th>Min @130</th><th>Min @120</th></tr></thead><tbody><tr><td>1-2</td><td>Title slide with the jury table + Outline</td><td>2</td><td>161</td><td>1.2</td><td>1.3</td></tr><tr><td>3-7</td><td><strong>1 · Introduction</strong> — motivation, actionable insight, research context</td><td>5</td><td>405</td><td>3.1</td><td>3.4</td></tr><tr><td>8-16</td><td><strong>2 · Context &amp; Problematic</strong> — four approaches, limitations, RQ1-RQ5</td><td>9</td><td>682</td><td>5.2</td><td>5.7</td></tr><tr><td>17-25</td><td><strong>3 · Experimental Protocol</strong> — datasets, splits, baselines, metrics, hardware</td><td>9</td><td>503</td><td>3.9</td><td>4.2</td></tr><tr><td>26-37</td><td><strong>4 · Contribution I</strong> — explainable black-box clustering (wine)</td><td>12</td><td>730</td><td>5.6</td><td>6.1</td></tr><tr><td>38-50</td><td><strong>5 · Contribution II</strong> — multi-level XAI at scale (Beijing)</td><td>13</td><td>631</td><td>4.9</td><td>5.3</td></tr><tr><td>51-66</td><td><strong>6 · Contribution III</strong> — DyHuCoG, the in-training signal</td><td>16</td><td>971</td><td>7.5</td><td>8.1</td></tr><tr><td>67-76</td><td><strong>7 · Conclusion &amp; Perspectives</strong> — synthesis, publications, limits, answer</td><td>10</td><td>501</td><td>3.9</td><td>4.2</td></tr><tr><td><strong>1-76</strong></td><td><strong>Main flow, spoken</strong></td><td><strong>76</strong></td><td><strong>4,584</strong></td><td><strong>35.3</strong></td><td><strong>38.2</strong></td></tr><tr><td>77-79</td><td>Backup tables (7.1 with ± std, 7.6 paired tests, 7.3 + 7.4 cost and convergence)</td><td>3</td><td>45 (not spoken)</td><td>—</td><td>—</td></tr></tbody></table></div>
+  <h3>The seven time-check cues, verified</h3>
+  <p>The notes on slides 3, 8, 17, 26, 38, 51 and 67 carry a spoken cue. Here is what each cue means against the
+  measured script, so you know on the day whether you are ahead or behind.</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Checkpoint</th><th>Cue on the deck</th><th>Planned cumulative time @130 wpm</th><th>Reading</th></tr></thead><tbody><tr><td>Slide 3 (start of §1)</td><td>minute 1</td><td>1.2 min</td><td>on time</td></tr><tr><td>Slide 8 (start of §2)</td><td>about minute 5</td><td>4.4 min</td><td>slightly early — the cue is generous, use the margin</td></tr><tr><td>Slide 17 (start of §3)</td><td>about minute 10</td><td>9.6 min</td><td>on time</td></tr><tr><td>Slide 26 (start of §4)</td><td>about minute 14</td><td>13.5 min</td><td>on time</td></tr><tr><td>Slide 38 (start of §5)</td><td>about minute 20</td><td>19.1 min</td><td>on time</td></tr><tr><td>Slide 51 (start of §6)</td><td>about minute 26</td><td>23.9 min</td><td>cue is 2 min conservative — you have built-in slack</td></tr><tr><td>Slide 67 (start of §7)</td><td>about minute 34</td><td>31.4 min</td><td>2.5 min of buffer here: that is your safety margin</td></tr><tr><td>Slide 75/76 (end)</td><td>—</td><td>≈ 35.3 min</td><td>≈ 4.7 min in hand inside a 40-minute slot</td></tr></tbody></table></div>
+  <div class="callout win"><h4>The one number to remember</h4>
+  <p>At the start of section 7 you should be at about <strong>31 to 32 minutes</strong>, with the cue saying
+  “about minute thirty-four”. That gap is deliberate: the cue is a warning line, not a target. If you hear yourself
+  at the conclusion divider and you are past minute 34, you have lost the buffer and should compress slides 68-72
+  by reading only the takeaway box on each.</p></div>
+
+  <h3>How to spend a 40-minute slot, in four plans</h3>
+  <div class="grid2">
+    <div class="mini"><h5>Plan A · 40 minutes including questions</h5>Speak 30 minutes, keep 10 for the jury.
+    Cut, in this order: slide 13 (limits of classical recommenders, 50 words), slide 24 (metrics table, 45 words),
+    slide 73 and 74 (references, 83 words), slide 69 (publications table, 39 words), then trim slide 29 (band example)
+    and slide 42 (Proposition 6.1) to their takeaway boxes. That is ≈ 4.5 min of text plus the presentation of
+    tables that needs no narration.</div>
+    <div class="mini"><h5>Plan B · 40 minutes of presentation only</h5>Deliver the deck as written, at a measured
+    pace, and land at 35-36 minutes. Use the remaining minutes for a transition sentence between sections and for
+    pointing at the table you just described instead of talking over it.</div>
+    <div class="mini"><h5>Plan C · 30 minutes</h5>Keep every section but halve the per-slide commentary:
+    slide 4 (three motivation questions), slide 12 (graph and hypergraph families), slide 22 (splits), slide 29
+    (band example), slide 46 (cross-level change), slide 55 (Monte Carlo), slide 60 (ablation) and slide 68
+    (synthesis) are the eight slides worth the most words; the rest can be one sentence each.</div>
+    <div class="mini"><h5>Plan D · Questions go badly</h5>If the jury interrupts early, the deck still works in
+    fragments: every contribution is built as gap → objectives → method → protocol → results → answer → findings →
+    limitations → takeaway, so you can jump to any contribution's “Answer to RQ” slide and the story closes.</div>
+  </div>
+
+  <div class="callout warn"><h4>The three things you must not do with timing</h4>
+  <ul>
+    <li>Do not read the tables aloud cell by cell. Read the row that matters, name the comparison, move on.</li>
+    <li>Do not skip the limitations slides to save time. They are the cheapest credibility you have, and juries
+    test them (questions H1-H6).</li>
+    <li>Do not abandon a cue because you are ahead. Cues tell you to speed up or slow down; the buffer before
+    section 7 is intentional.</li>
+  </ul></div>
+</section>
+
+<section class="sec" id="anatomy">
+  <div class="sec-head"><div class="sec-kicker">Structure</div><h2>How every contribution is built (the same spine, three times)</h2></div>
+  <p>The three contributions use one repeatable spine, which is why the deck feels calm even though it carries
+  three datasets, six baselines and forty numbers. Learn the spine and you can find your place from any slide.</p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Beat</th><th>C1 (26-37)</th><th>C2 (38-50)</th><th>C3 (51-66)</th><th>What it must do on the day</th></tr></thead><tbody>
+  <tr><td><strong>Divider</strong></td><td>26</td><td>38</td><td>51</td><td>Name the contribution, its RQ, and the one-line result. Do not read the three bullets.</td></tr>
+  <tr><td><strong>Research gap</strong></td><td>27</td><td>39</td><td>52</td><td>State what the literature does not have, in one sentence, then read the orange gap box.</td></tr>
+  <tr><td><strong>RQ + objectives</strong></td><td>28</td><td>40</td><td>53</td><td>Give the objective table as three promises. The jury will check them later, so say them cleanly.</td></tr>
+  <tr><td><strong>Method</strong></td><td>29-30</td><td>41-42</td><td>54-56</td><td>The only part that is genuinely technical: players, value function, pipeline, aggregation.</td></tr>
+  <tr><td><strong>Protocol</strong></td><td>31-32</td><td>43</td><td>57</td><td>One slide of settings. Signal that the details are in Chapter 4 and move on.</td></tr>
+  <tr><td><strong>Results</strong></td><td>33</td><td>44-46</td><td>58-62</td><td>Point at the figure or the bold row; give the number and the reading, never the whole table.</td></tr>
+  <tr><td><strong>Answer to the RQ</strong></td><td>34</td><td>47</td><td>63</td><td>Say “Yes”, then the one condition that limits the yes.</td></tr>
+  <tr><td><strong>Findings</strong></td><td>35</td><td>48</td><td>64</td><td>Four numbered findings: the jury may quote these back to you.</td></tr>
+  <tr><td><strong>Limitations</strong></td><td>36</td><td>49</td><td>65</td><td>Volunteer them before you are asked. This is where trust is bought.</td></tr>
+  <tr><td><strong>Takeaway</strong></td><td>37</td><td>50</td><td>66</td><td>One sentence, plus the bridge to the next contribution.</td></tr>
+  </tbody></table></div>
+  <div class="callout"><h4>Why this matters for delivery</h4>
+  <p>Because the spine repeats, the jury learns your rhythm by slide 34 and stops needing orientation. That means the
+  two things you must never improvise are the <em>answer slides</em> and the <em>limitation slides</em>: those are the
+  anchors they will remember when they write their report.</p></div>
+</section>
+
+<section class="sec" id="rules">
+  <div class="sec-head"><div class="sec-kicker">Delivery</div><h2>Ten delivery rules for this deck</h2></div>
+  <div class="steps-wrap"><ol class="steps">
+  <li><strong>Say the number, then the meaning.</strong> “NDCG@20 goes from 0.2528 to 0.2775, about ten percent” —
+  number first, interpretation second. Never leave a number uninterpreted, never interpret one you have not said.</li>
+  <li><strong>Point, then speak.</strong> The tables and figures are dense; name the column, the row, the colour,
+  then give the sentence. Silence while you point is fine and reads as control.</li>
+  <li><strong>One idea per slide, one transition per section.</strong> The transitions are written for you in each
+  playbook below; say them out loud in rehearsal.</li>
+  <li><strong>Never read a bullet verbatim.</strong> The slide already says it. Say the consequence of it, or the
+  evidence for it, or the caveat on it.</li>
+  <li><strong>Volunteer the limitation before the jury asks.</strong> Every contribution has its own limitation
+  slide; use the sentence “this is the honest boundary of the claim” and stop there.</li>
+  <li><strong>Keep the three scope fences.</strong> Significance is tabulated on MovieLens-1M; the SHAP-versus-LIME
+  comparison is theoretical; the hierarchy has coarse regimes then sub-clusters with no published count.</li>
+  <li><strong>Give the jury a landing place.</strong> Every results slide ends with what the result means, not with
+  the last table cell.</li>
+  <li><strong>Slow down on the four most technical slides</strong> (29, 42, 54, 55). Those are the ones where a
+  jury member decides whether you understand your own mathematics.</li>
+  <li><strong>Treat the backup slides as instruments.</strong> Slides 77-79 are not decoration: if someone asks about
+  stability, significance or cost, you can show the exact table instead of paraphrasing it.</li>
+  <li><strong>End on the claim, not on the thanks.</strong> The last spoken sentence of the presentation should be
+  the thesis answer on slide 72. Slide 75 is the handshake; slide 76 stays up for the discussion.</li>
+  </ol></div>
+</section>
+
+<section class="sec" id="sections-intro">
+  <div class="sec-head"><div class="sec-kicker">Part two</div><h2>Section playbooks · how to present slides 1 to 79</h2>
+  <div class="sec-meta"><span class="pill">7 sections</span><span class="pill g">every slide covered</span>
+  <span class="pill o">time, content, delivery, risk</span></div></div>
+  <p>Each section below opens with what that section must reach in front of the jury, then gives a row for every
+  slide: what the jury sees, how to present it, the measured speaking time, and the cue or the risk attached to that
+  slide. The times are computed from the v28 speaker notes at 130 words per minute, which is a normal academic
+  delivery pace; add roughly 8 percent if you speak at 120 wpm.</p>
+  <div class="callout"><h4>How to read a “How to present it” cell</h4>
+  <p>The cell is not a script; the speaker notes in the deck are the script. The cell tells you the <em>intention</em>
+  of the slide — what the jury should be able to say back to you after it — and the delivery move that makes that
+  happen. Where the deck already contains a good sentence, the cell quotes it so you can keep the wording consistent
+  between the screen and your voice.</p></div>
+</section>
+
+  </main>
+</div>
+<nav class="pager"><span></span><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="playbook-title-and-outline.html">Playbook · Title slide and outline ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>

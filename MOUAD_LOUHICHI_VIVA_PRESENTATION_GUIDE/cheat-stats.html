@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cheat · statistical tests at a glance · Viva Presentation Guide</title>
+<meta name="description" content="The paired t-test end to end: hypotheses, assumptions, Holm, effect size">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Cheat · statistical tests at a glance</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-stats.html" class="cur">Cheat · statistical tests at a glance</a>
+<a href="cheat-never-say.html">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="index.html#overview">The deck in one page</a>
+<a href="index.html#timing">Timing ledger &amp; checkpoints</a>
+<a href="index.html#anatomy">How every section is built</a>
+<a href="index.html#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="playbook-contribution-ii.html#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="qa.html#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="#stats">Statistical tests at a glance</a>
+<a href="cheat-never-say.html#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+<section class="sec" id="stats">
+  <div class="sec-head"><div class="sec-kicker">Cheat sheet 2</div><h2>Statistical tests at a glance</h2>
+  <div class="sec-meta"><span class="pill">know this end to end</span><span class="pill o">the most likely technical probe</span></div></div>
+  <p>Your supervisor is right: expect the jury to probe the statistics. The whole defence rests on one test — the
+  paired t-test on slides 62 and 78 — plus one correction and one effect size. Below is the full chain, then the
+  one-breath answers to the questions examiners actually ask. Rehearse the four-sentence drill until it is
+  automatic: <em>name the test, give the hypotheses, give the statistic with its degrees of freedom, give the
+  correction and the effect size.</em></p>
+  <div class="tw"><table class="tbl"><thead><tr><th>Item</th><th>What you must be able to say</th></tr></thead><tbody><tr><td><strong>Which test</strong></td><td>Paired samples t-test on per-user NDCG@20 differences: for each user u, d = NDCG@20_u(DyHuCoG) − NDCG@20_u(baseline). Six comparisons, one per baseline.</td></tr><tr><td><strong>Why paired</strong></td><td>The same 6,040 users are scored by both models. Pairing removes the between-user variance — some users are simply easier to predict — so the test sees only the model difference. An unpaired test would answer the wrong question.</td></tr><tr><td><strong>Hypotheses</strong></td><td>H0: the mean of the differences is zero (no model effect). H1: the mean difference is not zero — two-sided. The direction of the gain is read from the sign of the mean difference, not from the choice of tail.</td></tr><tr><td><strong>Statistic and df</strong></td><td><span class="math">\(t = \dfrac{\overline{d}}{s_d / \sqrt{n}}\)</span>, df = n − 1 = 6,039 (6,040 users, one constraint consumed by the estimated mean). Headline row: t = 46.38 versus HPCF.</td></tr><tr><td><strong>Assumptions</strong></td><td>1. Differences are independent across users — one row per user. 2. Differences are roughly normal — with n = 6,040 the central limit theorem makes the test robust to moderate non-normality, and Wilcoxon (no normality assumption) agrees at p < 0.001. 3. NDCG@20 is a bounded continuous score, so its differences are on a usable scale.</td></tr><tr><td><strong>p-value</strong></td><td>The probability, assuming H0, of seeing |t| at least this large. Not the probability that H0 is true; not the size of the gain. With 6,040 users it only separates noise from signal — which is why effect size is reported next to it.</td></tr><tr><td><strong>α and multiplicity</strong></td><td>α = 0.05 per test. Six tests would raise the chance of at least one false positive well above 5 %; Holm–Bonferroni controls the family-wise error rate at 5 %.</td></tr><tr><td><strong>Holm step-down</strong></td><td>Sort the six p-values, compare the k-th with <span class="math">\(\alpha/(m-k+1)\)</span>: 0.00833, 0.0100, 0.0125, 0.0167, 0.0250, 0.0500; stop at the first failure. All six comparisons pass (slide 78).</td></tr><tr><td><strong>Effect size</strong></td><td>Cohen's dz = mean(d)/sd(d). Conventional benchmarks: 0.2 small, 0.5 medium, 0.8 large. The thesis reports dz ≥ 1.33 against every baseline — <span class="math">\(d_z = 1.33\)</span> against the strongest (HPCF).</td></tr><tr><td><strong>Robustness check</strong></td><td>Wilcoxon's signed-rank test, which does not assume normality, agrees at p < 0.001 on all six comparisons, so the conclusion does not rest on the normality assumption.</td></tr><tr><td><strong>What is not tested</strong></td><td>Amazon-Book and the other metrics are descriptive over five seeds (±1σ bands, slide 77). The five seeds measure run-to-run noise; the 6,040 users measure generalisation across users — two different questions, both reported, neither confused with the other.</td></tr><tr><td><strong>If asked for a confidence interval</strong></td><td>“The thesis reports means, standard deviations and dz; a confidence interval follows from the same quantities — mean(d) ± t* · sd(d)/√n. Tabulating it is future work.” Then stop.</td></tr></tbody></table></div>
+  <h3>If the jury probes the statistics</h3>
+  <div class="tw"><table class="tbl"><thead><tr><th>Question</th><th>Answer in one breath</th></tr></thead><tbody><tr><td>Why a paired t-test?</td><td>Same users, two models: the pairing removes user difficulty and tests only the model difference.</td></tr><tr><td>Why not an unpaired test?</td><td>It would mix user-to-user variance into the error term and ask whether two user populations differ — not the question.</td></tr><tr><td>Are the differences normal?</td><td>That is the assumption; with 6,040 users the central limit theorem covers moderate non-normality, and Wilcoxon agrees at p < 0.001.</td></tr><tr><td>One-tailed or two-tailed?</td><td>Two-sided, by convention. The sign of the mean difference gives the direction; the test itself does not.</td></tr><tr><td>What does p = <span class="math">\(1.81\times 10^{-270}\)</span> mean?</td><td>Under no real difference, a t this large would be almost impossible. It is not the probability that H0 is true, and it says nothing about the size of the gain.</td></tr><tr><td>Why correct for multiplicity?</td><td>Six tests at α = 0.05 inflate the chance of a false positive; Holm keeps the family-wise error at 5 % with only a small loss of power.</td></tr><tr><td>What is a Type I error here?</td><td>Declaring DyHuCoG better when the difference is noise. Holm controls the chance of even one such error across the six comparisons. At n = 6,040 the Type II risk is small.</td></tr><tr><td>What does df = 6,039 mean?</td><td>6,040 user differences minus one for the estimated mean; it fixes the exact shape of the t distribution used for the p-value.</td></tr><tr><td>Why not a z-test, why not bootstrap?</td><td>A z-test needs a known standard deviation; with an estimated one, the t distribution is the right reference. Bootstrap is a fair extra robustness check — future work.</td></tr><tr><td>Why 6,040 and not 5 seeds?</td><td>Seeds measure training noise (the ±1σ bands on slide 77); users support the claim about users. The test is over users, the bands are over seeds.</td></tr><tr><td>What does <span class="math">\(d_z = 1.33\)</span> mean?</td><td>The average gain is 1.33 standard deviations of the per-user differences — 'large' against the 0.8 benchmark — and it rides on a +9.8 % relative NDCG@20 gain.</td></tr><tr><td>Is the effect large in practice?</td><td>Effect size and relative gain answer together: <span class="math">\(d_z = 1.33\)</span> and +9.8 % NDCG@20 over HPCF on MovieLens-1M.</td></tr></tbody></table></div>
+  <div class="callout warn"><h4>The four-sentence drill</h4>
+  <p>“The comparison is a <strong>paired t-test</strong> on per-user NDCG@20 differences across 6,040 users. The
+  null hypothesis is that the mean difference is zero; the alternative is that it is not. The statistic is
+  t = 46.38 with 6,039 degrees of freedom, and the six baseline comparisons are corrected with Holm–Bonferroni.
+  The effect size is Cohen's dz = 1.33 — large by the standard benchmarks.” Then stop.</p></div>
+</section>
+
+
+  </main>
+</div>
+<nav class="pager"><a class="p-prev" href="cheat-numbers.html">‹ Cheat · every number in one table</a><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="cheat-never-say.html">Cheat · never say / always say ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>

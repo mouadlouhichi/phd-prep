@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playbook · Contribution II: multi-level XAI at large scale · Viva Presentation Guide</title>
+<meta name="description" content="How to present slides 38-50">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true},{left:'$$',right:'$$',display:true}],throwOnError:false,strict:false});"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <b>Viva Presentation Guide</b>
+      <span>Mouad LOUHICHI · PhD Defence · ENSIAS / UM5 Rabat 2026</span>
+    </div>
+    <nav class="crumbs"><a href="index.html">Overview</a><span>›</span><b>Playbook · Contribution II: multi-level XAI at large scale</b></nav>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Search this page…  (press /)" autocomplete="off">
+      <span class="hits" id="hits"></span>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside>
+<h5>Pages</h5>
+<a href="index.html">Overview &amp; deck map</a>
+<a href="playbook-title-and-outline.html">Playbook · Title slide and outline</a>
+<a href="playbook-introduction.html">Playbook · Introduction: the motivation and the definition</a>
+<a href="playbook-context-problematic.html">Playbook · Context &amp;amp; Problematic: four families, four limits, five questions</a>
+<a href="playbook-protocol.html">Playbook · Experimental Protocol: datasets, splits, baselines, metrics, hardware</a>
+<a href="playbook-contribution-i.html">Playbook · Contribution I: explainable black-box clustering</a>
+<a href="playbook-contribution-ii.html" class="cur">Playbook · Contribution II: multi-level XAI at large scale</a>
+<a href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal</a>
+<a href="playbook-conclusion.html">Playbook · Conclusion &amp;amp; Perspectives: synthesis, publications, limits, answer</a>
+<a href="playbook-discussion.html">Playbook · The Q&amp;amp;A stage and the three backup slides</a>
+<a href="walkthroughs.html">Technical deep dive · 12 walkthroughs</a>
+<a href="glossary.html">Technical deep dive · glossary</a>
+<a href="section-07-delivery.html">Section 7 · delivery plan</a>
+<a href="qa.html">Q&amp;A · 100 questions</a>
+<a href="qa-a.html">Q&amp;A A</a>
+<a href="qa-b.html">Q&amp;A B</a>
+<a href="qa-c.html">Q&amp;A C</a>
+<a href="qa-d.html">Q&amp;A D</a>
+<a href="qa-e.html">Q&amp;A E</a>
+<a href="qa-f.html">Q&amp;A F</a>
+<a href="qa-g.html">Q&amp;A G</a>
+<a href="qa-h.html">Q&amp;A H</a>
+<a href="cheat-numbers.html">Cheat · every number in one table</a>
+<a href="cheat-stats.html">Cheat · statistical tests at a glance</a>
+<a href="cheat-never-say.html">Cheat · never say / always say</a>
+<a href="cheat-checklist.html">Cheat · pre-defence checklist</a>
+<h5>Jump to</h5>
+<a href="index.html#overview">The deck in one page</a>
+<a href="index.html#timing">Timing ledger &amp; checkpoints</a>
+<a href="index.html#anatomy">How every section is built</a>
+<a href="index.html#rules">Ten delivery rules</a>
+<a href="playbook-title-and-outline.html#sec-title-and-outline">Title + Outline · slides 1-2</a>
+<a href="playbook-introduction.html#sec-introduction">1 · Introduction · 3-7</a>
+<a href="playbook-context-problematic.html#sec-context-problematic">2 · Context &amp; Problematic · 8-16</a>
+<a href="playbook-protocol.html#sec-protocol">3 · Experimental Protocol · 17-25</a>
+<a href="playbook-contribution-i.html#sec-contribution-i">4 · Contribution I · 26-37</a>
+<a href="#sec-contribution-ii">5 · Contribution II · 38-50</a>
+<a href="playbook-contribution-iii.html#sec-contribution-iii">6 · Contribution III · 51-66</a>
+<a href="playbook-conclusion.html#sec-conclusion">7 · Conclusion · 67-76</a>
+<a href="playbook-discussion.html#sec-discussion">Q&amp;A stage + backup · 75-79</a>
+<a href="walkthroughs.html#walk">Twelve concept walkthroughs</a>
+<a href="glossary.html#glossary">Beginner glossary</a>
+<a href="section-07-delivery.html#sec7">How to present the conclusion</a>
+<a href="qa.html#qa-intro">How to handle the discussion</a>
+<a href="qa-a.html#qa-framing">A · Framing &amp; contribution</a>
+<a href="qa-b.html#qa-game">B · Cooperative game theory</a>
+<a href="qa-c.html#qa-c1">C · Contribution I</a>
+<a href="qa-d.html#qa-c2">D · Contribution II</a>
+<a href="qa-e.html#qa-c3">E · Contribution III</a>
+<a href="qa-f.html#qa-method">F · Protocol, metrics, statistics</a>
+<a href="qa-g.html#qa-ethics">G · Ethics, regulation, actionability</a>
+<a href="qa-h.html#qa-limits">H · Limitations &amp; future work</a>
+<a href="cheat-numbers.html#numbers">Every number in one table</a>
+<a href="cheat-stats.html#stats">Statistical tests at a glance</a>
+<a href="cheat-never-say.html#never">Never say / always say</a>
+<a href="cheat-checklist.html#checklist">Pre-defence checklist</a>
+  </aside>
+  <main>
+<section class="sec" id="sec-contribution-ii" data-search="contribution II multi-level hierarchical clustering Beijing proposition 6.1 cross-level aggregation regime weather temperature dew point pressure">
+<div class="sec-head"><div class="sec-kicker">Section 5 · slides 38-50 · 4.9 min</div><h2>Contribution II: multi-level XAI at large scale</h2><div class="sec-meta"><span class="pill">slides 38-50</span><span class="pill">631 spoken words</span><span class="pill">4.9 min @ 130 wpm</span><span class="pill">5.3 min @ 120 wpm</span></div></div>
+<div class="callout goal"><h4>What this section must achieve</h4><ul><li>Extend the C1 pipeline from a flat partition to a nested one, without letting the extension look like “the same thing run twice”.</li><li>Deliver Proposition 6.1 as the formal backbone: parent importance equals the size-weighted expectation over children plus a residual, which vanishes under perfect fidelity.</li><li>Show that scale and hierarchy together are survivable: 383,585 records, three physically readable atmospheric regimes, and a sensitivity check on the parameters that could have produced the result by accident.</li></ul></div>
+<div class="grid2"><div class="mini"><h5>Proposition 6.1 is an accounting identity, not a theorem of nature</h5><p>Deliver it exactly that way. It says the parent story is an expectation over the child stories, up to a residual induced by surrogate approximation; it does not say explanations are identical across levels. The second half of that sentence is what makes slide 46 work, so say it twice.</p></div><div class="mini"><h5>The Beijing result is a domain result, not a number</h5><p>Temperature, dew point and pressure lead; CO, NO2, PM10 and PM2.5 follow; inside clusters the pollutants or wind speed take over. The claim that matters is interpretive: meteorology sets the regime, pollution varies within it. If you only say “Silhouette 0.63”, the section collapses into benchmarking.</p></div></div>
+<h3>Slide-by-slide delivery</h3>
+<div class="tw"><table class="tbl slides"><thead><tr><th><p>#</p></th><th><p>Slide</p></th><th><p>What the jury sees</p></th><th><p>How to present it</p></th><th><p>Spoken</p></th><th><p>Cue / risk</p></th></tr></thead><tbody><tr><td class="slidecell"><p><span class="sn">38</span></p></td><td><p><strong>Contribution II divider</strong></p></td><td><p>Section 05 with objectives, method and results cards.</p></td><td><p>One sentence: extend Shapley explanation from single-level to large-scale multi-level clustering. Say the time-check cue: about minute twenty. Name the two new things the jury should watch for — a real multi-level workflow and a formal consistency argument.</p></td><td><p>≈ 18 s</p></td><td><p>Cue 5. Arrival ≈ 19.1 min.</p></td></tr><tr><td class="slidecell"><p><span class="sn">39</span></p></td><td><p><strong>Research Gap</strong></p></td><td><p>Four gap bullets and the orange box: no multi-level explanation method that is both feasible and provably consistent.</p></td><td><p>Frame the gap as a conjunction: readable within a cluster, across sub-clusters and across levels; and feasible on 383,585 records, where coalition-by-coalition explanation is impossible. Then the key missing link: existing hierarchical work reports structure but never relates a parent explanation to its children.</p></td><td><p>≈ 24 s</p></td><td><p>The word “provably” is doing real work here. Do not let it drift into “practically consistent” — the proposition is the claim.</p></td></tr><tr><td class="slidecell"><p><span class="sn">40</span></p></td><td><p><strong>RQ2 and Goals</strong></p></td><td><p>RQ2 strip plus three objective rows: multi-level workflow, formal consistency argument, validation at scale on new data.</p></td><td><p>Three objectives, three sentences. Point at the “where it is shown” column: the workflow figure, Proposition 6.1, and Table 6.1 with Figures 6.1 and 6.2. This mapping is what lets you say “yes, within bounds” later on slide 47.</p></td><td><p>≈ 23 s</p></td><td><p>Note the phrasing “within bounds” on slide 47. It is deliberate and it protects you in questions D1-D3.</p></td></tr><tr><td class="slidecell"><p><span class="sn">41</span></p></td><td><p><strong>Multi-Level Workflow with Cross-Level Aggregation</strong></p></td><td><p>Five workflow bullets, the level-1 diagram with regime A/B/C and sub-clusters, and the Proposition 6.1 banner.</p></td><td><p>Explain the recursion: coarse clustering on the full data, then each coarse cluster subdivided where appropriate; a surrogate per level; SHAP always in the same eleven variables; aggregation that respects size and nesting rather than averaging. Then the honest note that raises your credibility: the hierarchy is a practical analysis tool, not a claim that nature is organised this way.</p></td><td><p>≈ 26 s</p></td><td><p>Say “where appropriate”, not “every cluster is split”. And never say “nine sub-clusters” — no source gives that count.</p></td></tr><tr><td class="slidecell"><p><span class="sn">42</span></p></td><td><p><strong>Proposition 6.1: Cross-Level Consistency</strong></p></td><td><p>The proposition with the size-weighted sum, the two definition strips (expected absolute importance; relative child size), three explanation bullets, the why-it-matters block and two KPI tiles.</p></td><td><p>Read the formula as a sentence: expected absolute importance of a feature at a parent level equals the size-weighted expectation over its children, plus a residual from surrogate mismatch. Then the three qualifiers: the residual vanishes under perfect fidelity; the derivation uses the law of total expectation because children partition the parent; and the result does not make levels identical, it makes their differences interpretable. Finally, why it matters: parent importance is an accounting identity over children, not a separate story.</p></td><td><p>≈ 27 s</p></td><td><p>If asked for the proof, go to question D6 and quote the unanimity-game argument from Appendix A.1 and the partitioning argument in A.2 — and admit that ε is conceptual, not estimated.</p></td></tr><tr><td class="slidecell"><p><span class="sn">43</span></p></td><td><p><strong>Evaluation Protocol</strong></p></td><td><p>Eight-row protocol table, then four success criteria (separation, physical reading, interpretable differences, stability under sensitivity).</p></td><td><p>Say what changed relative to Contribution I: clustering runs on the full Beijing dataset, and each level gets its own surrogate. Name the sensitivity check plainly, because it is the defence against “your result is a parameter artefact”. Twenty seconds, no more.</p></td><td><p>≈ 23 s</p></td><td><p>Sensitivity on k, projection dimension and tree depth is what question D7 will probe.</p></td></tr><tr><td class="slidecell"><p><span class="sn">44</span></p></td><td><p><strong>Coarse-Level Clustering: Beijing Air Quality</strong></p></td><td><p>Three KPI tiles (k = 3 with all criteria agreeing; Silhouette ≈ 0.63; Davies-Bouldin ≈ 0.55), setup and sensitivity blocks, Gramegna and Giudici 0.37 comparison.</p></td><td><p>Give the two metrics, then immediately the context that stops the number floating: 0.63 is much stronger than the wine partition's 0.144 and clearly better than the 0.37 reported in the SHAP-clustering credit-risk study — but that comparison is a positioning point, not a like-for-like benchmark. Say that distinction yourself.</p></td><td><p>≈ 20 s</p></td><td><p>Never let “0.63” be attached to wine in your speech. The thesis repeats the correction twice on purpose.</p></td></tr><tr><td class="slidecell"><p><span class="sn">45</span></p></td><td><p><strong>Global SHAP Ranking: Weather Variables Are Central</strong></p></td><td><p>Reading bullets plus Fig. 6.1 (global importance at coarse level).</p></td><td><p>Lead with the finding, not the figure: temperature, dew point and pressure come first; CO, NO2, PM10 and PM2.5 follow — meteorology conditions dispersion, trapping and photochemistry, so the explanation reveals that pollution regimes are not decided by pollutant concentrations alone. This is the sentence that makes a domain expert in the room nod.</p></td><td><p>≈ 22 s</p></td><td><p>Be ready for “isn't that obvious to an air-quality scientist?” — answer with question D9.</p></td></tr><tr><td class="slidecell"><p><span class="sn">46</span></p></td><td><p><strong>How Importance Changes Across Levels</strong></p></td><td><p>Fig. 6.3 (cluster-specific importance), two blocks — coarse level: regime selection; within clusters: variation inside a regime — and the reconciliation paragraph.</p></td><td><p>This is the slide that justifies the whole multi-level machinery. Say the two readings: at the coarse level temperature and dew point dominate because they separate broad atmospheric regimes; inside a cluster, CO, SO2, PM10, wind speed, pressure or ozone become more informative. Then the reconciliation: this is not a contradiction; a variable can be globally important and locally uninformative, and Proposition 6.1 makes the two readings agree up to the surrogate residual.</p></td><td><p>≈ 29 s</p></td><td><p>Do not over-claim Fig. 6.3 as a level-2 analysis; the thesis figure shows cluster-specific panels at the coarse level.</p></td></tr><tr><td class="slidecell"><p><span class="sn">47</span></p></td><td><p><strong>Answer to RQ2</strong></p></td><td><p>ANSWER TO RQ2 box: “Yes, within bounds…”, plus the three-row objective table.</p></td><td><p>Say the answer with its boundary in the same breath: yes, consistency is kept at scale and across levels, through a nested workflow with level-specific surrogates and Proposition 6.1, explaining 383,585 records in the original variable space. Then the honest closing clause the notes already carry: attribution is still post-hoc.</p></td><td><p>≈ 22 s</p></td><td><p>“Within bounds” is the strongest form of the claim the thesis supports. Do not upgrade it to “proved in general”.</p></td></tr><tr><td class="slidecell"><p><span class="sn">48</span></p></td><td><p><strong>Key Findings</strong></p></td><td><p>Four numbered findings: weather defines structure; importance legitimately changes with level; the explanation scales; the logic transfers across domains.</p></td><td><p>Four titles, four evidence clauses. Finding 4 is the transplant argument: the same pipeline and the same reading, from 4,898 wines to 383,585 hourly air-quality records. Do not mention the 0.37 comparison again unless asked.</p></td><td><p>≈ 17 s</p></td><td><p>Finding 3's phrase “linear in the data, not exponential in the features” is a good line to have ready for question D10.</p></td></tr><tr><td class="slidecell"><p><span class="sn">49</span></p></td><td><p><strong>Limitations</strong></p></td><td><p>Four boxes: static clustering, smoothing, tabular only, post-hoc.</p></td><td><p>Volunteer all four, then make the last one the hinge: attribution still explains a partition that was already computed, and does not influence learning. That is exactly the question Contribution III takes on. Say it as a design decision, not as a confession.</p></td><td><p>≈ 25 s</p></td><td><p>The temporal point is sharp: Beijing data are hourly time series but the partition is static. Say “drift between years is not modelled” exactly.</p></td></tr><tr><td class="slidecell"><p><span class="sn">50</span></p></td><td><p><strong>Takeaway: Contribution II</strong></p></td><td><p>Three cards — consistent, against scale, still post-hoc — plus the takeaway box and the arrow to Contribution III.</p></td><td><p>One sentence: Shapley attribution stays consistent across levels of detail when the hierarchy is explicit, so explanations become interpretable against scale, not just against one flat partition. Then the pivot: the pipeline is still static, and preferences change over time.</p></td><td><p>≈ 18 s</p></td><td><p>The pivot sentence introduces Contribution III; deliver it as a question, not a summary.</p></td></tr></tbody></table></div>
+<div class="callout"><h4>The two sentences that carry section 5</h4><p>“The parent story is regime selection; the child story is variation within a regime, and Proposition 6.1 makes those differences interpretable rather than contradictory.” · “It does not say explanations are identical across levels; it says the differences can be interpreted.” If you remember only two lines from this section, remember those.</p></div>
+<div class="callout"><h4>What to do if someone asks for the residual ε</h4><p>Say three things: it is induced by surrogate approximation; it vanishes under perfect fidelity; and in this thesis it is treated as a conceptual residual rather than an empirically estimated quantity, because a separate Beijing-level residual analysis is not reported. That answer is both accurate and impressive, because it shows you know exactly where your own formal result stops.</p></div>
+<div class="transition"><span>Say this as you change section</span><p>“<p>“So explanation scales and stays consistent, but it is still post-hoc. In the third contribution I ask the question the thesis was built on: can attribution change how the model learns?”</p>”</p></div>
+</section>
+  </main>
+</div>
+<nav class="pager"><a class="p-prev" href="playbook-contribution-i.html">‹ Playbook · Contribution I: explainable black-box clustering</a><a class="p-home" href="index.html">▲ All pages</a><a class="p-next" href="playbook-contribution-iii.html">Playbook · Contribution III: DyHuCoG, attribution as an in-training signal ›</a></nav>
+<footer class="foot">
+  <p><strong>Built for:</strong> <code>try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides) ·
+  <strong>Sources:</strong> MOUAD_LOUHICHI_Thesis.pdf (159 pp), the three source papers, the French résumé,
+  and a full extraction of every slide, table cell and speaker note of v28.</p>
+  <p>Every number quoted in this guide was checked against the thesis or the source papers. Generated by
+  <code>try/viva_builder/viva_guide/build_site.py</code>; it does not modify the deck, the thesis or any PDF.</p>
+</footer>
+<button class="toTop" id="totop">↑ Top</button>
+<script src="assets/app.js"></script>
+</body>
+</html>
