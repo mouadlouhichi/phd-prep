@@ -111,7 +111,7 @@ def render_sec7():
   sentence is swallowed by the courtesy.</p>
 
   <h3>What to say, in the deck's own words</h3>
-  <p>The v28 speaker notes for this section are the delivered script, and they are already the right length. The
+  <p>The v32 speaker notes for this section are the delivered script, and they are already the right length. The
   three that matter most, quoted so you can keep the wording stable between rehearsal and delivery:</p>
   <div class="callout"><h4>Slide 68 · the arc</h4>
   <p>“This table is the thesis in one view. C1 explains a black-box partition with Shapley attribution. C2 keeps that

@@ -542,7 +542,7 @@ GROUPS = [
  eleven modelling variables: six pollutants (PM2.5, PM10, SO2, NO2, CO, O3) and five weather variables —
  temperature, pressure, dew point, wind direction and wind speed. "Rain" appeared in a draft of the slide and was
  replaced with "wind direction" in v26 after the deck was checked against the thesis (p. 43) and the IJACSA paper
- (Table III). The current v28 file is correct, and this is a good example of why the deck was audited against the
+ (Table III). The current v32 file is correct, and this is a good example of why the deck was audited against the
  sources rather than trusted: the version history in the repository documents the change, including the exact
  before-and-after text.""",
  "tags": ["danger"],

@@ -57,12 +57,12 @@ def render_hero():
     return """
 <div class="hero" id="overview">
   <h1>How to present this viva, and how to defend every line of it</h1>
-  <p class="sub">A complete reading of <code>MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx</code> (79 slides),
-  its 4,584 spoken words, its speaker notes, the thesis it defends and the three papers behind it.</p>
+  <p class="sub">A complete reading of <code>MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v32.pptx</code> (79 slides),
+  its 4,567 spoken words, its speaker notes, the thesis it defends and the three papers behind it.</p>
   <div class="meta">
-    <span class="pill o">4,584 spoken words in the main flow</span>
-    <span class="pill">≈ 35.3 min at 130 wpm</span>
-    <span class="pill">≈ 38.2 min at 120 wpm</span>
+    <span class="pill o">4,567 spoken words in the main flow</span>
+    <span class="pill">≈ 35.1 min at 130 wpm</span>
+    <span class="pill">≈ 38.1 min at 120 wpm</span>
     <span class="pill g">7 sections + Q&amp;A + 3 backup tables</span>
     <span class="pill g">3 contributions · 5 research questions</span>
   </div>
@@ -77,7 +77,7 @@ def render_hero():
   <div class="legend">
     <div><b>If you have 20 minutes before the defence</b>Read “Ten delivery rules”, the timing ledger, and the
     “Never say / always say” sheet. Then rehearse the seven transitions.</div>
-    <div><b>If you have two hours</b>Add the section playbooks for 3, 4, 5 and 6, and the eight walkthroughs.</div>
+    <div><b>If you have two hours</b>Add the section playbooks for 3, 4, 5 and 6, and the twelve walkthroughs.</div>
     <div><b>If a jury member is a game theorist</b>Read glossary 43-54 and questions B1-B14, then Q021-Q026.</div>
     <div><b>If a jury member is an applied ML researcher</b>Read the walkthroughs on SHAP, the surrogate bridge and
     the statistics, then questions C1-C14 and F1-F15.</div>
@@ -88,15 +88,15 @@ def render_hero():
 
 def render_deckmap():
     rows = [
-        ["1-2", "Title slide with the jury table + Outline", "2", "161", "1.2", "1.3"],
-        ["3-7", "<strong>1 · Introduction</strong> — motivation, actionable insight, research context", "5", "405", "3.1", "3.4"],
-        ["8-16", "<strong>2 · Context &amp; Problematic</strong> — four approaches, limitations, RQ1-RQ5", "9", "682", "5.2", "5.7"],
-        ["17-25", "<strong>3 · Experimental Protocol</strong> — datasets, splits, baselines, metrics, hardware", "9", "503", "3.9", "4.2"],
-        ["26-37", "<strong>4 · Contribution I</strong> — explainable black-box clustering (wine)", "12", "730", "5.6", "6.1"],
-        ["38-50", "<strong>5 · Contribution II</strong> — multi-level XAI at scale (Beijing)", "13", "631", "4.9", "5.3"],
-        ["51-66", "<strong>6 · Contribution III</strong> — DyHuCoG, the in-training signal", "16", "971", "7.5", "8.1"],
-        ["67-76", "<strong>7 · Conclusion &amp; Perspectives</strong> — synthesis, publications, limits, answer", "10", "501", "3.9", "4.2"],
-        ["<strong>1-76</strong>", "<strong>Main flow, spoken</strong>", "<strong>76</strong>", "<strong>4,584</strong>", "<strong>35.3</strong>", "<strong>38.2</strong>"],
+        ["1-2", "Title slide with the jury table + Outline", "2", "174", "1.3", "1.4"],
+        ["3-7", "<strong>1 · Introduction</strong> — motivation, actionable insight, research context", "5", "335", "2.6", "2.8"],
+        ["8-16", "<strong>2 · Context &amp; Problematic</strong> — four approaches, limitations, RQ1-RQ5", "9", "687", "5.3", "5.7"],
+        ["17-25", "<strong>3 · Experimental Protocol</strong> — datasets, splits, baselines, metrics, hardware", "9", "501", "3.9", "4.2"],
+        ["26-37", "<strong>4 · Contribution I</strong> — explainable black-box clustering (wine)", "12", "738", "5.7", "6.2"],
+        ["38-50", "<strong>5 · Contribution II</strong> — multi-level XAI at scale (Beijing)", "13", "636", "4.9", "5.3"],
+        ["51-66", "<strong>6 · Contribution III</strong> — DyHuCoG, the in-training signal", "16", "977", "7.5", "8.1"],
+        ["67-76", "<strong>7 · Conclusion &amp; Perspectives</strong> — synthesis, publications, limits, answer", "10", "519", "4.0", "4.3"],
+        ["<strong>1-76</strong>", "<strong>Main flow, spoken</strong>", "<strong>76</strong>", "<strong>4,567</strong>", "<strong>35.1</strong>", "<strong>38.1</strong>"],
         ["77-79", "Backup tables (7.1 with ± std, 7.6 paired tests, 7.3 + 7.4 cost and convergence)", "3", "45 (not spoken)", "—", "—"],
     ]
     t = ('<div class="tw"><table class="tbl"><thead><tr><th>Slides</th><th>Block</th><th>#</th>'
@@ -106,14 +106,14 @@ def render_deckmap():
     t += "</tbody></table></div>"
 
     ck = [
-        ["Slide 3 (start of §1)", "minute 1", "1.2 min", "on time"],
-        ["Slide 8 (start of §2)", "about minute 5", "4.4 min", "slightly early — the cue is generous, use the margin"],
-        ["Slide 17 (start of §3)", "about minute 10", "9.6 min", "on time"],
-        ["Slide 26 (start of §4)", "about minute 14", "13.5 min", "on time"],
-        ["Slide 38 (start of §5)", "about minute 20", "19.1 min", "on time"],
-        ["Slide 51 (start of §6)", "about minute 26", "23.9 min", "cue is 2 min conservative — you have built-in slack"],
-        ["Slide 67 (start of §7)", "about minute 34", "31.4 min", "2.5 min of buffer here: that is your safety margin"],
-        ["Slide 75/76 (end)", "—", "≈ 35.3 min", "≈ 4.7 min in hand inside a 40-minute slot"],
+        ["Slide 3 (start of §1)", "minute 1", "1.3 min", "on time"],
+        ["Slide 8 (start of §2)", "about minute 5", "3.9 min", "slightly early — the cue is generous, use the margin"],
+        ["Slide 17 (start of §3)", "about minute 10", "9.2 min", "on time"],
+        ["Slide 26 (start of §4)", "about minute 14", "13.1 min", "on time"],
+        ["Slide 38 (start of §5)", "about minute 20", "18.7 min", "on time"],
+        ["Slide 51 (start of §6)", "about minute 26", "23.6 min", "cue is 2.4 min conservative — you have built-in slack"],
+        ["Slide 67 (start of §7)", "about minute 34", "31.1 min", "≈ 3 min of buffer here: that is your safety margin"],
+        ["Slide 75/76 (end)", "—", "≈ 35.1 min", "≈ 4.9 min in hand inside a 40-minute slot"],
     ]
     ck_t = ('<div class="tw"><table class="tbl"><thead><tr><th>Checkpoint</th><th>Cue on the deck</th>'
             '<th>Planned cumulative time @130 wpm</th><th>Reading</th></tr></thead><tbody>')
@@ -125,8 +125,8 @@ def render_deckmap():
 <section class="sec" id="timing">
   <div class="sec-head"><div class="sec-kicker">Orientation</div><h2>The deck at a glance, and the timing ledger</h2>
   <div class="sec-meta"><span class="pill">79 slides</span><span class="pill g">76 spoken + 3 backup</span>
-  <span class="pill o">4,584 words = 35.3 min</span></div></div>
-  <p>Every word count below was measured from the speaker notes actually stored in the v28 file, excluding the
+  <span class="pill o">4,567 words = 35.1 min</span></div></div>
+  <p>Every word count below was measured from the speaker notes actually stored in the v32 file, excluding the
   seven <em>Time check</em> cues and the two pre-defence reminder lines, which are not spoken. The deck so
   fits a 40-minute slot with about four and a half minutes in hand at a normal 130 words per minute, or about one and
   a half minutes at 120 wpm. If the 40 minutes include the jury's questions, you are 5 to 10 minutes over and should
@@ -229,7 +229,7 @@ def render_sections_intro():
   <span class="pill o">time, content, delivery, risk</span></div></div>
   <p>Each section below opens with what that section must reach in front of the jury, then gives a row for every
   slide: what the jury sees, how to present it, the measured speaking time, and the cue or the risk attached to that
-  slide. The times are computed from the v28 speaker notes at 130 words per minute, which is a normal academic
+  slide. The times are computed from the v32 speaker notes at 130 words per minute, which is a normal academic
   delivery pace; add roughly 8 percent if you speak at 120 wpm.</p>
   <div class="callout"><h4>How to read a “How to present it” cell</h4>
   <p>The cell is not a script; the speaker notes in the deck are the script. The cell tells you the <em>intention</em>
@@ -254,12 +254,12 @@ def render_sidebar():
 # --------------------------------------------------------------------------
 S0 = {
     "id": "title-and-outline",
-    "kicker": "Slides 1-2 · 1.2 min",
+    "kicker": "Slides 1-2 · 1.3 min",
     "title": "Title slide and outline",
     "range": "1-2",
-    "words": "161",
-    "m130": "1.2",
-    "m120": "1.3",
+    "words": "174",
+    "m130": "1.3",
+    "m120": "1.4",
     "search": "title slide jury outline presentation opening speech",
     "purpose": """
 - Establish, in about seventy seconds, who you are, what the thesis is called, and the one idea the jury should carry into the whole presentation.
@@ -291,7 +291,7 @@ S0 = {
                 "conclusion. Then say the sentence that buys you the right to a uniform structure: each contribution "
                 "follows the same path, gap → objectives → method → protocol → results → findings. Finish with "
                 "“the next thirty-six minutes” as the note says. Do not describe the Q&amp;A block, just name it.",
-         "time": "≈ 25 s", "cue": "The note says “the next 36 minutes”, which matches the measured 35.3 min at 130 wpm. "
+         "time": "≈ 25 s", "cue": "The note says “the next 36 minutes”, which matches the measured 35.1 min at 130 wpm. "
                                   "If you know you speak faster, say “about half an hour”."},
     ],
     "extra": [
@@ -310,12 +310,12 @@ S0 = {
 # --------------------------------------------------------------------------
 S1 = {
     "id": "introduction",
-    "kicker": "Section 1 · slides 3-7 · 3.1 min",
+    "kicker": "Section 1 · slides 3-7 · 2.6 min",
     "title": "Introduction: the motivation and the definition",
     "range": "3-7",
-    "words": "405",
-    "m130": "3.1",
-    "m120": "3.4",
+    "words": "335",
+    "m130": "2.6",
+    "m120": "2.8",
     "search": "introduction motivation actionable insight research context black box Netflix Spotify Amazon Yelp",
     "purpose": """
 - Move the jury from “recommenders are everywhere” to “and their reasoning is hidden, which is a governance problem as well as a technical one”.
@@ -337,13 +337,16 @@ S1 = {
          "how": "Open with the framing question: why has explainability become a core requirement for recommendation? "
                 "Give the arc in one sentence: systems that decide what billions of people see, buy and watch are "
                 "accurate but not transparent. Say the first time-check cue without drama: “time check: minute one”.",
-         "time": "≈ 17 s", "cue": "Cue 1. Keep it. It tells the jury that you manage your slot, which is itself a signal of preparation."},
-        {"n": "4", "title": "Motivation: Three Questions",
-         "screen": "Three cards — Everywhere, The Black Box, Toward Trust — plus the tension strip.",
-         "how": "This is the most spoken slide of the section (105 words) and it deserves it: read the three questions "
-                "as three questions, with a small pause after each. Land on the tension sentence: as models gain power "
-                "they lose transparency, and this thesis refuses the trade-off. Do not read the card subtitles.",
-         "time": "≈ 48 s", "cue": "The “&#36;15B by 2029” market number was removed in v26 because it could not be sourced. Do not reintroduce it from memory or from an older deck."},
+         "time": "≈ 18 s", "cue": "Cue 1. Keep it. It tells the jury that you manage your slot, which is itself a signal of preparation."},
+        {"n": "4", "title": "Motivation: Why Explainability Matters",
+         "screen": "Three statement cards — Everywhere (recommenders decide at scale), The Black Box (the reasoning "
+                   "behind those decisions is hidden), Toward Trust (transparency is now expected) — each carrying "
+                   "its claim and the facts behind it, then the tension strip and the full citation band.",
+         "how": "This slide describes, it does not ask — that is what v32 changed. The speech is 85 words: one short "
+                "paragraph per card, the claim and then its facts, and you land on the closing sentence: this thesis "
+                "treats accuracy and interpretability as goals to be met together. Say the claims in your own rhythm; "
+                "do not read the small fact lines word for word.",
+         "time": "≈ 39 s", "cue": "The “&#36;15B by 2029” market number was removed in v26 because it could not be sourced. Do not reintroduce it from memory or from an older deck. Older versions of this slide asked three questions; v32 states three facts — do not slide back into question phrasing."},
         {"n": "5", "title": "Actionable Insight: the Definition",
          "screen": "Definition 1.1 in three blocks: what we can change, the language of the domain, why it matters.",
          "how": "Read the definition once, slowly, then give the three domains that instantiate it: acidity in wine, "
@@ -352,12 +355,15 @@ S1 = {
                 "later (question G1-G4), so the wording must be identical every time.",
          "time": "≈ 35 s", "cue": "Do not claim that actionability was measured. It is a framing concept in this thesis; the user study is future work (slide 70)."},
         {"n": "6", "title": "Research Context",
-         "screen": "Evolution timeline: similarity models → matrix factorisation → neural CF → graph CNN → hypergraph, plus the two blocks “Why the gap matters” and “What this thesis argues”.",
+         "screen": "Evolution timeline: similarity models → matrix factorisation → neural CF → graph CNN → hypergraph, "
+                   "then the full-width card “Why the gap matters”: users get outputs without reasons (trust drops), "
+                   "designers cannot debug what they cannot inspect, regulation asks for transparency (EU AI Act, GDPR).",
          "how": "Walk the timeline with your hand, one step per generation, and say the same clause each time: each step "
-                "improved ranking and hid more of the reasoning. Then the three reasons the gap matters (trust, "
-                "debugging, regulation) and the three claims of the thesis (attribution inside the model, consistent "
-                "across levels, domain language). The note for this slide is deliberately in spoken register; keep it.",
-         "time": "≈ 61 s", "cue": "This slide and its note say the same three things three times. Nothing on screen is left unsaid, and nothing said is missing from the screen — that symmetry is the point."},
+                "improved ranking and hid more of the reasoning — the gap keeps growing. Then the three reasons the gap "
+                "matters. The note for this slide is deliberately in spoken register; keep it. v30 removed the one-line "
+                "“the interpretability gap grows” conclusion and the card “What this thesis argues”: do not present them "
+                "from memory — the thesis claims now live on slides 68 and 72.",
+         "time": "≈ 36 s", "cue": "The speech and the card say the same three reasons; nothing on screen is left unsaid. If you hear yourself reciting the three claims of the removed card, stop — that content is not on the screen anymore."},
         {"n": "7", "title": "AI-Powered Recommendation Is Everywhere",
          "screen": "Four platform cards — Netflix, Spotify, Yelp, Amazon — with logos.",
          "how": "Fast slide, about 25 seconds. Name the four and give the shared punchline: everywhere, and hidden. "
@@ -369,7 +375,7 @@ S1 = {
         ("The three sentences to rehearse until they are automatic",
          "“An explanation is actionable when it points to something we can actually change, and changing it clearly "
          "affects the model output.” · “Each step improved ranking and hid more of the reasoning.” · “This thesis "
-         "argues that attribution belongs inside the model, not added on afterwards.” These three lines carry section 1; "
+         "treats accuracy and interpretability as goals to be met together.” These three lines carry section 1; "
          "everything else on slides 3-7 supports them."),
     ],
     "transition": "“That is the motivation. Now the research problem itself: what the main approaches can do, and where each one stops.”",
@@ -381,11 +387,11 @@ S1 = {
 # --------------------------------------------------------------------------
 S2 = {
     "id": "context-problematic",
-    "kicker": "Section 2 · slides 8-16 · 5.2 min",
+    "kicker": "Section 2 · slides 8-16 · 5.3 min",
     "title": "Context &amp; Problematic: four families, four limits, five questions",
     "range": "8-16",
-    "words": "682",
-    "m130": "5.2",
+    "words": "687",
+    "m130": "5.3",
     "m120": "5.7",
     "search": "context problematic content-based collaborative filtering hybrid matrix factorisation graph hypergraph limitations research questions",
     "purpose": """
@@ -484,7 +490,7 @@ S3 = {
     "kicker": "Section 3 · slides 17-25 · 3.9 min",
     "title": "Experimental Protocol: datasets, splits, baselines, metrics, hardware",
     "range": "17-25",
-    "words": "503",
+    "words": "501",
     "m130": "3.9",
     "m120": "4.2",
     "search": "protocol datasets wine bjair movielens amazon split preprocessing baselines metrics NDCG silhouette hardware",

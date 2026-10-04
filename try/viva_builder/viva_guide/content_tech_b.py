@@ -195,7 +195,7 @@ GLOSSARY_B = [
         "Amazon-Book (+16.2 %) — the second half of every results slide.",
 },
 {
- "term": "Precision@K (and why it is not on the metrics slide)", "tag": "Metrics", "where": "not shown in v28",
+ "term": "Precision@K (and why it is not on the metrics slide)", "tag": "Metrics", "where": "not shown in v32",
  "plain": "The share of the K recommended items that are relevant.",
  "deep": "Precision answers the complementary question to Recall: how much of what I showed was wanted? With "
          "binary implicit feedback and leave-one-out evaluation it is largely determined by Recall (with 1 relevant "

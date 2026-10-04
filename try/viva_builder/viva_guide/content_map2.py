@@ -3,12 +3,12 @@
 
 S4 = {
     "id": "contribution-i",
-    "kicker": "Section 4 · slides 26-37 · 5.6 min",
+    "kicker": "Section 4 · slides 26-37 · 5.7 min",
     "title": "Contribution I: explainable black-box clustering",
     "range": "26-37",
-    "words": "730",
-    "m130": "5.6",
-    "m120": "6.1",
+    "words": "738",
+    "m130": "5.7",
+    "m120": "6.2",
     "search": "contribution I clustering shapley value cooperative game band example surrogate LightGBM TreeSHAP wine k selection interpretability density pH",
     "purpose": """
 - Make the cooperative-game idea concrete before any result appears: players, coalitions, the value function, the Shapley value, the four axioms.
@@ -30,7 +30,7 @@ S4 = {
          "how": "Frame the contribution in one sentence: explain a black-box partition with a principled attribution "
                 "method, and keep the answer in the language of the domain. Say the time-check cue: about minute "
                 "fourteen. Do not read the three cards.",
-         "time": "≈ 18 s", "cue": "Cue 4. Arrival time ≈ 13.5 min, on plan."},
+         "time": "≈ 18 s", "cue": "Cue 4. Arrival time ≈ 13.1 min, on plan."},
         {"n": "27", "title": "Research Gap",
          "screen": "Five gap bullets and the orange gap box: no axiomatic way to explain why clustering put an observation in a cluster, in the original space and consistently across clusters.",
          "how": "Give the four reasons clustering is the hardest test bed — no target variable, structure created by the "
@@ -124,7 +124,7 @@ S5 = {
     "kicker": "Section 5 · slides 38-50 · 4.9 min",
     "title": "Contribution II: multi-level XAI at large scale",
     "range": "38-50",
-    "words": "631",
+    "words": "636",
     "m130": "4.9",
     "m120": "5.3",
     "search": "contribution II multi-level hierarchical clustering Beijing proposition 6.1 cross-level aggregation regime weather temperature dew point pressure",
@@ -149,7 +149,7 @@ S5 = {
          "how": "One sentence: extend Shapley explanation from single-level to large-scale multi-level clustering. Say "
                 "the time-check cue: about minute twenty. Name the two new things the jury should watch for — a real "
                 "multi-level workflow and a formal consistency argument.",
-         "time": "≈ 18 s", "cue": "Cue 5. Arrival ≈ 19.1 min."},
+         "time": "≈ 18 s", "cue": "Cue 5. Arrival ≈ 18.7 min."},
         {"n": "39", "title": "Research Gap",
          "screen": "Four gap bullets and the orange box: no multi-level explanation method that is both feasible and provably consistent.",
          "how": "Frame the gap as a conjunction: readable within a cluster, across sub-clusters and across levels; and "
@@ -254,7 +254,7 @@ S6 = {
     "kicker": "Section 6 · slides 51-66 · 7.5 min",
     "title": "Contribution III: DyHuCoG, attribution as an in-training signal",
     "range": "51-66",
-    "words": "971",
+    "words": "977",
     "m130": "7.5",
     "m120": "8.1",
     "search": "contribution III DyHuCoG hypergraph cooperative game monte carlo shapley in-training ablation results movielens amazon significance efficiency cold start",
@@ -281,7 +281,7 @@ S6 = {
                 "the first two contributions Shapley values explained models after training; here the question is "
                 "whether attribution can become part of the learning process. Say the time-check cue: about minute "
                 "twenty-six.",
-         "time": "≈ 26 s", "cue": "Cue 6. Arrival ≈ 23.9 min, so the cue is conservative by about two minutes — that slack is your protection for section 6, the longest one."},
+         "time": "≈ 26 s", "cue": "Cue 6. Arrival ≈ 23.6 min, so the cue is conservative by about two and a half minutes — that slack is your protection for section 6, the longest one."},
         {"n": "52", "title": "Research Gap",
          "screen": "Four gap bullets and the orange box: no recommender decides during training how much each user, item and context should count, while keeping accuracy, context and diversity in one objective.",
          "how": "Three problems, one gap. Problem one: hypergraph recommenders treat message importance as uniform or "
@@ -419,12 +419,12 @@ S6 = {
 
 S7 = {
     "id": "conclusion",
-    "kicker": "Section 7 · slides 67-76 · 3.9 min",
+    "kicker": "Section 7 · slides 67-76 · 4.0 min",
     "title": "Conclusion &amp; Perspectives: synthesis, publications, limits, answer",
     "range": "67-76",
-    "words": "501",
-    "m130": "3.9",
-    "m120": "4.2",
+    "words": "519",
+    "m130": "4.0",
+    "m120": "4.3",
     "search": "conclusion synthesis publications limitations perspectives references thank you thesis answer",
     "purpose": """
 - Compress the whole thesis into three sentences the jury can repeat, then show that the work has a public record (three first-author papers) and a stated edge (limitations).
@@ -444,7 +444,7 @@ S7 = {
          "screen": "Section 07 with three cards: synthesis, limitations, perspectives.",
          "how": "Take a breath and reset the pace. Announce the five beats you will cover: synthesis, publications, "
                 "limitations, perspectives, thesis answer. Say the time-check cue: about minute thirty-four.",
-         "time": "≈ 16 s", "cue": "Cue 7. Measured arrival ≈ 31.4 min, so you should still have about 2.5 minutes of buffer; the cue is your alarm, not your deadline."},
+         "time": "≈ 16 s", "cue": "Cue 7. Measured arrival ≈ 31.1 min, so you should still have about 3 minutes of buffer; the cue is your alarm, not your deadline."},
         {"n": "68", "title": "Synthesis of the Three Contributions",
          "screen": "A three-row synthesis table (main idea, achievement, key finding), three verbs on the right — explain, scale, guide — and the thesis takeaway box.",
          "how": "Read the three rows as three sentences, then the three verbs as the arc: C1 explains, C2 scales, C3 "

@@ -1,6 +1,6 @@
 # Viva guide generator
 
-Generates the presentation guide for `try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx`.
+Generates the presentation guide for `try/MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v32.pptx`.
 
 ## Builds
 
