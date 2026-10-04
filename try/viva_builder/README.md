@@ -109,6 +109,7 @@ What is new, per area:
 | v23 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v23.pptx` | `build_v23.py` | `notes_v23.json` | slide 4 note rewritten as natural spoken delivery while keeping the slide's facts ($15B by 2029, EU AI Act, accountable/auditable/actionable, core tension); slide 5 text rewritten to mirror the speech (what we can change, domain language, what to change to improve the outcome); 4,737 words = 36.4 min at 130 wpm |
 | v24 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v24.pptx` | `build_v24.py` | `notes_v24.json` | dataset slides (18-21) reduced to the example deck's level: SAMPLE RECORDS tables dropped, intro bullets and the specification table get the freed room; speech unchanged |
 | v25 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v25.pptx` | `build_v25.py` | `notes_v25.json` | footer never replaced: citations move to a compact `[n] Surname Year` band above the intact running footer (40 slides), no font below 14 pt anywhere and no equation below 16 pt (metrics formulas 18 pt), slide 29 coalition table trimmed to 6 rows, Precision@K row dropped, speech unchanged |
+| v26 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v26.pptx` | `build_v26.py` | `notes_v26.json` | **review pass** (see `../../DEEP_READING_REVIEW_v25.md`): slide facts corrected against the thesis and the three papers (Beijing weather = wind direction, Monte-Carlo M = 25 = 98 %, coalition utility = context not novelty, the unsupported "3 → 9 sub-clusters" count dropped, Fig. 6.3 caption, GroupLens wording, refs [19] and [28]); claims trimmed to thesis scope (market figure removed, AI Act Art. 13/86 wording, LIME comparator theoretical, significance tabulated on MovieLens-1M only, backup-slide SD claim corrected); speaker notes re-aligned slide by slide (the Contribution III off-by-one, the RQ note parked on slide 14, the duplicated dataset / conclusion / reference notes), seven `Time check` cues restored and the speech de-duplicated to **4,692 words = 36.1 min at 130 wpm** |
 
 v9 changes in detail:
 
@@ -232,3 +233,21 @@ python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense P
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
+
+## v26: how the delivered deck was produced
+
+The v26 PPTX was not rebuilt from the template: the template's embedded fonts and the
+thesis-figure crops live outside the repository (`/tmp/viva_build`), so the deck was patched in
+place, which also guarantees that every layout, font, native OMML equation and the v25
+footer/citation fix survive untouched.
+
+```bash
+python3 patch_v26.py    # ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v26.pptx + notes_v26.json
+```
+
+`patch_v26.py` carries the same corrections as `build_v26.py` (kept for provenance and for a
+future rebuild) and fails loudly if any target string does not match exactly once. Both files
+apply the findings of `../../DEEP_READING_REVIEW_v25.md`; the notes in `notes_v26.json` are the
+delivered speech and are the only thing you need to edit to change wording in future versions,
+since the builder writes them onto the deck by slide number.
+
