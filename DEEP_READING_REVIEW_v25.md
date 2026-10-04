@@ -133,6 +133,11 @@ matters". The one-line conclusion above the cards ("The interpretability gap gro
 which keeps it clear of the three-line citation band below) with its three points in three columns at
 22 pt. The speech for the slide loses its closing paragraph, the one about the removed card.
 
+### v31 addendum: slide 4 speech shortened
+
+The note on slide 4 is now eighty words: the three motivation questions the slide asks, then the
+tension the banner states. Nothing else changed anywhere else in the deck.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
