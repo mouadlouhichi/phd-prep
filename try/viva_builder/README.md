@@ -110,6 +110,7 @@ What is new, per area:
 | v24 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v24.pptx` | `build_v24.py` | `notes_v24.json` | dataset slides (18-21) reduced to the example deck's level: SAMPLE RECORDS tables dropped, intro bullets and the specification table get the freed room; speech unchanged |
 | v25 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v25.pptx` | `build_v25.py` | `notes_v25.json` | footer never replaced: citations move to a compact `[n] Surname Year` band above the intact running footer (40 slides), no font below 14 pt anywhere and no equation below 16 pt (metrics formulas 18 pt), slide 29 coalition table trimmed to 6 rows, Precision@K row dropped, speech unchanged |
 | v26 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v26.pptx` | `build_v26.py` | `notes_v26.json` | **review pass** (see `../../DEEP_READING_REVIEW_v25.md`): slide facts corrected against the thesis and the three papers (Beijing weather = wind direction, Monte-Carlo M = 25 = 98 %, coalition utility = context not novelty, the unsupported "3 → 9 sub-clusters" count dropped, Fig. 6.3 caption, GroupLens wording, refs [19] and [28]); claims trimmed to thesis scope (market figure removed, AI Act Art. 13/86 wording, LIME comparator theoretical, significance tabulated on MovieLens-1M only, backup-slide SD claim corrected); speaker notes re-aligned slide by slide (the Contribution III off-by-one, the RQ note parked on slide 14, the duplicated dataset / conclusion / reference notes), seven `Time check` cues restored and the speech de-duplicated to **4,692 words = 36.1 min at 130 wpm** |
+| v27 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v27.pptx` | `build_v27.py` | `notes_v27.json` | **the candidate's own opening speech**: slides 1 and 2 carry the speech as written (the spoken title spells out "artificial intelligence"), slide 4 is a short spoken note that follows the three motivation cards, and slide 6's notes and the two blocks "Why the gap matters" / "What this thesis argues" were rewritten short so that screen and speech say the same three things; speech now **4,594 words = 35.3 min at 130 wpm** |
 
 v9 changes in detail:
 
@@ -233,6 +234,19 @@ python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense P
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
+
+## v27: the opening speech
+
+The candidate's own opening and plan (slides 1 and 2), a short spoken note on slide 4, and a
+short note plus rewritten cards on slide 6.
+
+```bash
+python3 patch_v27.py    # ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v27.pptx + notes_v27.json
+```
+
+`patch_v27.py` takes v26 as its source, so the whole review pass of v26 stays in the chain. The
+slide 6 cards are rebuilt from the paragraph style already in the file, so the bold lead-in and
+the two font families are preserved; the extra fourth bullet of the left card is dropped.
 
 ## v26: how the delivered deck was produced
 

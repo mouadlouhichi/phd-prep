@@ -90,6 +90,17 @@ matched.
   makes the 90 / 70 / 40 average work out (the table has no room for a seventh coalition row:
   it would collide with the footer band).
 
+### v27 addendum: the candidate's own opening speech
+
+The opening and the plan (slides 1 and 2) are now the speech Mouad Louhichi delivered, verbatim
+except that the spoken thesis title spells out "artificial intelligence" (the slide title keeps
+the registered wording, "Explainable AI"). Slide 4 carries a short spoken note that follows its
+three motivation cards, and slide 6 is now internally consistent: the note and the two blocks
+("Why the gap matters", "What this thesis argues") say the same three things, in three short
+bullets each, so nothing on screen is left unsaid and nothing said is missing from the screen.
+The last "Pre-defence check" line on notes 1 and 76 still stands until the jury list is confirmed.
+Speech total: 4,594 words on slides 1-76 = 35.3 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
