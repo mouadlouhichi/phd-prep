@@ -145,6 +145,15 @@ scale, the reasoning behind those decisions is hidden, and transparency is now e
 with them ("Motivation: Why Explainability Matters") and the speech was replaced so that each column is said
 once, in 85 words.
 
+### v33 addendum: slide 16 speech
+
+Slide 16 (the three contribution cards) now carries the candidate's own spoken text: the research questions
+lead to three concrete contributions, presented in order; the first introduces the Shapley framework for
+black-box clustering on Wine Quality, the second extends it to large-scale multi-level clustering on Beijing
+Air Quality with the cross-level consistency guarantee, the third is DyHuCoG, which brings attribution inside
+the recommendation model on MovieLens-1M and Amazon-Book. It closes on the sentence the candidate wrote:
+"from explanation, to scalability, and finally to action."
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
