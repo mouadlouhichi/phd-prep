@@ -112,6 +112,7 @@ What is new, per area:
 | v26 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v26.pptx` | `build_v26.py` | `notes_v26.json` | **review pass** (see `../../DEEP_READING_REVIEW_v25.md`): slide facts corrected against the thesis and the three papers (Beijing weather = wind direction, Monte-Carlo M = 25 = 98 %, coalition utility = context not novelty, the unsupported "3 → 9 sub-clusters" count dropped, Fig. 6.3 caption, GroupLens wording, refs [19] and [28]); claims trimmed to thesis scope (market figure removed, AI Act Art. 13/86 wording, LIME comparator theoretical, significance tabulated on MovieLens-1M only, backup-slide SD claim corrected); speaker notes re-aligned slide by slide (the Contribution III off-by-one, the RQ note parked on slide 14, the duplicated dataset / conclusion / reference notes), seven `Time check` cues restored and the speech de-duplicated to **4,692 words = 36.1 min at 130 wpm** |
 | v27 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v27.pptx` | `build_v27.py` | `notes_v27.json` | **the candidate's own opening speech**: slides 1 and 2 carry the speech as written (the spoken title spells out "artificial intelligence"), slide 4 is a short spoken note that follows the three motivation cards, and slide 6's notes and the two blocks "Why the gap matters" / "What this thesis argues" were rewritten short so that screen and speech say the same three things; speech now **4,594 words = 35.3 min at 130 wpm** |
 | v28 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v28.pptx` | `build_v28.py` | `notes_v28.json` | the title on slides 1 and 76 spells out **Explainable Artificial Intelligence**, re-broken as "Cooperative Game Theory for Explainable" / "Artificial Intelligence in Recommendation Systems" and still 50 pt (measured with the embedded Roca Two Bold: 82.3 % of the box); the slide 6 speech is rewritten in spoken register; **4,641 words = 35.7 min at 130 wpm** |
+| v29 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v29.pptx` | `build_v28.py` + `patch_v29.py` | `notes_v28.json` | **full-citation bands**: every citation band now carries the complete reference from slides 73-74 instead of "[21] Zhang 2020", at 14 pt over one to three lines; the bands are drawn last (nothing can cover them again) and the content that used to sit over them was moved up shape by shape, only as far as needed (49 slides, 94 shapes, no card overlaps created) |
 
 v9 changes in detail:
 
@@ -235,6 +236,28 @@ python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense P
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
+
+## v29: the reference bands in full
+
+```bash
+python3 patch_v29.py    # ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v29.pptx
+```
+
+There is no `build_v29.py`: the bands are a post-build pass, and doing it here rather than in the
+builder is what makes it safe. The pass reads the 28 entries out of the deck's own reference
+slides, joins the works inside one numbered reference with ` · ` and separate references with
+three spaces, wraps them at 14 pt with the metrics of the embedded Nunito Semi-Bold (measured on a
+3 % narrower box than PowerPoint will use, so a borderline wrap counts as a line), and then:
+
+* puts each band's white strip and text at the bottom of the tree, so no shape can cover them;
+* lifts whatever sat over the band, group by group, never further than the nearest shape above
+  it, and gives up the empty strip under a card's text when the group is boxed in (three panels on
+  slides 12, 27, 29, 61, 68, 72 lost 0.03-0.18 in of padding);
+* keeps the footer and page number exactly where they were.
+
+Slides that cite four or more works (23 with seven, 52 with five) would need four or five lines, so
+they print authors, venue, volume, pages and year and drop the paper title, which brings them back to
+three lines. Everything is asserted in the report, including any group that could not move.
 
 ## v28: the full title
 

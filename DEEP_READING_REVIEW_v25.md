@@ -112,6 +112,19 @@ should be rolled out. The speech on slide 6 is now spoken register ("Let me put 
 context", "Why does this matter?", "So what does this thesis argue?") and still says the same
 three things as the two cards. Speech total 4,641 words = 35.7 min at 130 wpm.
 
+### v29 addendum: the citation bands, in full and visible
+
+Every slide that cites work now prints the complete reference in its band (the text of slides 73-74,
+verbatim), at 14 pt, over one to three lines, split into a maximum of three so that no band eats the
+slide. On the two dense slides (23, seven references; 52, five) the title of the cited paper is
+dropped to keep it to three lines, authors, venue, volume, pages and year staying in.
+
+Visibility was the other half of the problem, and it was real: the bands sat at z-order four of
+thirty-odd, and on twelve slides a card or note bar ended at y = 10.28 over a band that ended at
+10.50. The bands are now drawn last and the content was lifted group by group, only as far as the
+shape above it allows (49 slides, 94 shapes, 3 card panels gave up padding, no new overlaps were
+created). Text height is measured with the embedded Nunito Semi-Bold, so the line counts are real.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
