@@ -115,6 +115,7 @@ What is new, per area:
 | v29 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v29.pptx` | `build_v28.py` + `patch_v29.py` | `notes_v28.json` | **full-citation bands**: every citation band now carries the complete reference from slides 73-74 instead of "[21] Zhang 2020", at 14 pt over one to three lines; the bands are drawn last (nothing can cover them again) and the content that used to sit over them was moved up shape by shape, only as far as needed (49 slides, 94 shapes, no card overlaps created) |
 | v30 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v30.pptx` | `build_v30.py` | `notes_v30.json` | slide 6 keeps the evolution timeline and **one** card: the one-line "The interpretability gap grows" note and the card "What this thesis argues" are gone, and "Why the gap matters" is now a full-width card whose three bullets sit in three columns at 22 pt; the speech for slide 6 loses its last paragraph, spoken total **4,587 words = 35.3 min** |
 | v31 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v31.pptx` | `build_v31.py` | `notes_v31.json` | speech only: the note on slide 4 is cut to **80 words** (the three motivation questions and the tension, nothing else); spoken total **4,562 words = 35.1 min at 130 wpm** |
+| v32 | `../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v32.pptx` | `build_v32.py` | `notes_v32.json` | slide 4 describes instead of asking: same three cards, new headline "Motivation: Why Explainability Matters", and each card now states a claim plus the facts behind it (recommenders decide at scale / the reasoning is hidden / transparency is now expected); slide 4 speech replaced, **85 words**; spoken total **4,567 words = 35.1 min** |
 
 v9 changes in detail:
 
@@ -238,6 +239,25 @@ python3 build_v9.py "../Beige Green Modern Illustrative Playful Thesis Defense P
 ```
 
 `tpl.table()` now understands `**bold**` and `x_{i}` / `x^{2}` inside cell strings.
+
+## v32: slide 4 describes, it does not ask
+
+```bash
+python3 patch_v32.py    # ../MOUAD_LOUHICHI_VIVA_40min_BeigeGreen_v32.pptx + notes_v32.json
+```
+
+The first slide where the talk starts describing its subject carried three questions. It now carries three
+statements, in the same three cards (same geometry, colours, pills and type sizes):
+
+| Card | Claim (23 pt) | Facts (18 pt) |
+|---|---|---|
+| Everywhere | Recommenders decide at scale. | They shape what billions of users see, buy and watch every day: news, study, health and credit decisions. |
+| The Black Box | The reasoning behind those decisions is hidden. | Matrix factorisation hid it in latent factors; deep and graph models hide it in message passing. Neither can be audited or acted on. |
+| Toward Trust | Transparency is now expected. | Users, designers and regulators now ask for reasons. It has to be built into the model, not added afterwards. |
+
+The headline follows ("Motivation: Why Explainability Matters") and the speech is replaced to match the three
+columns word for word, in 85 words. Measured with the embedded fonts, the longest card needs four lines at
+18 pt in a box that holds ten, so nothing overflows.
 
 ## v30: slide 6, two blocks only
 

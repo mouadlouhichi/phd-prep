@@ -138,6 +138,13 @@ which keeps it clear of the three-line citation band below) with its three point
 The note on slide 4 is now eighty words: the three motivation questions the slide asks, then the
 tension the banner states. Nothing else changed anywhere else in the deck.
 
+### v32 addendum: slide 4 turned into description
+
+The three cards on slide 4 stated questions; they now state what the talk is about: recommenders decide at
+scale, the reasoning behind those decisions is hidden, and transparency is now expected. The headline changed
+with them ("Motivation: Why Explainability Matters") and the speech was replaced so that each column is said
+once, in 85 words.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
