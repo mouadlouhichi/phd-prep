@@ -101,6 +101,17 @@ bullets each, so nothing on screen is left unsaid and nothing said is missing fr
 The last "Pre-defence check" line on notes 1 and 76 still stands until the jury list is confirmed.
 Speech total: 4,594 words on slides 1-76 = 35.3 min at 130 wpm.
 
+### v28 addendum: the title in full, and the slide 6 speech in spoken register
+
+The title block of slides 1 and 76 now reads "Cooperative Game Theory for Explainable /
+Artificial Intelligence in Recommendation Systems", still at 50 pt: with the metrics of the
+embedded Roca Two Bold the long line measures 1054.9 pt against a 1281.6 pt box (82 %), so
+nothing wraps and the subtitle below is untouched. The running footer on the other 77 slides
+keeps the acronym; measured, the full form fits there too (88-92 % of the footer box) if it
+should be rolled out. The speech on slide 6 is now spoken register ("Let me put this in
+context", "Why does this matter?", "So what does this thesis argue?") and still says the same
+three things as the two cards. Speech total 4,641 words = 35.7 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
