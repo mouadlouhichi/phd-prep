@@ -26,6 +26,7 @@ SIDEBAR = [
         ("sec-contribution-ii", "5 · Contribution II · 38-50"),
         ("sec-contribution-iii", "6 · Contribution III · 51-66"),
         ("sec-conclusion", "7 · Conclusion · 67-76"),
+        ("sec-discussion", "Q&A stage + backup · 75-79"),
     ]),
     ("Technical deep dive (sections 3-6)", [
         ("walk", "Eight concept walkthroughs"),
