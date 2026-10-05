@@ -154,6 +154,20 @@ Air Quality with the cross-level consistency guarantee, the third is DyHuCoG, wh
 the recommendation model on MovieLens-1M and Amazon-Book. It closes on the sentence the candidate wrote:
 "from explanation, to scalability, and finally to action."
 
+### v34 addendum: slide 10 figure made accurate
+
+The slide 10 picture was a decorative bipartite sketch: users and items joined by curves, a dashed
+"predicted" edge, and two similarity chips (u1~u2 0.87, u1~u4 0.21) derived from nothing on the slide.
+v34 replaces it with a figure in which every number follows from what is printed (fig_slide10.py asserts
+this at run time): a 4 x 5 user-item rating matrix with 16 of 20 cells observed; Pearson similarity of u2,
+u3, u4 with u1 computed on the columns both rated (i1, i2, i4), giving 0.87, 0.50 and 0.00; the missing
+cell r(u1, i3) filled by the similarity-weighted average over the neighbours who rated i3, (0.87×5 +
+0.50×3) / (0.87 + 0.50) = 5.85 / 1.37 = 4.3 out of 5; and a strip recalling the sparsity of the real
+matrices, MovieLens-1M 4.47% of cells observed (6,040 users, 3,706 items) and Amazon-Book 0.06%
+(52,643 users, 91,599 items), which is what makes cold start hard. The figure is drawn at 300 dpi in the
+deck palette with the deck's own Nunito (operators the embedded subset lacks are drawn as vectors), and
+no label is set below 14 pt at slide scale. Note 10 gains the paragraph that walks the jury through it.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
