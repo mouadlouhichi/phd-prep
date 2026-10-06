@@ -168,6 +168,21 @@ matrices, MovieLens-1M 4.47% of cells observed (6,040 users, 3,706 items) and Am
 deck palette with the deck's own Nunito (operators the embedded subset lacks are drawn as vectors), and
 no label is set below 14 pt at slide scale. Note 10 gains the paragraph that walks the jury through it.
 
+### v35 addendum: slide 12 figure made accurate
+
+The slide 12 picture drew the pairwise graph as a near-complete graph over users, items and context
+(clock-tag, pin-tag, clock-pin edges that no recommender graph contains), and its hypergraph blobs
+grouped nodes arbitrarily with no tie to message passing or to DyHuCoG. v35 replaces it with a figure
+that shows exactly what the slide text claims (fig_slide12.py): left, the bipartite user-item graph of
+LightGCN / HCCF / HPCF, whose five edges are the observed interactions only, with the 2-hop message
+u2 - i2 - u1 drawn as a directed teal path and every edge carrying the same weight (the limitation named
+on the slide); right, the same six nodes plus a context node c1, with hyperedge e1 joining u1, u2, i2 and
+c1 (a user, an item and a context at once, as the speech says) and hyperedge e2 joining u2, u3, i3, the
+pairwise edges kept underneath and the caption stating that hyperedge weights are re-learned at every
+step t, which is DyHuCoG's dynamic part. The bottom tag keeps the old line in spirit: one hyperedge joins
+many nodes. Same palette, Nunito and 300 dpi as the v34 figure, placed at the old geometry (8.75 x 4.88 in,
+1:1 pixels), no label below 14 pt. Note 12 gains the paragraph that walks the jury through it.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
