@@ -215,6 +215,23 @@ local-versus-global clustering point, the three structural limits with the hundr
 records and the accuracy / diversity / context trade-off, then the gap and the claim. Spoken total 4,715
 words on slides 1-75 = 36.3 min at 130 wpm.
 
+### v38 addendum: thesis Figure 2.4 on slide 12, slide 13 rebuilt slim
+
+Two rejections in a row of hand-drawn figures settled the question: slide 12 now carries a real published
+figure, the thesis's own Figure 2.4 "Graph versus hypergraph representation" (p. 38), cropped before the
+concatenation tail so the comparison fills the picture zone at 7.01 x 4.88 in. Left: eight nodes as an
+ordinary graph with its adjacency matrix W. Right: the hypergraph view with hyperedge groups per data
+type and the incidence matrices H1 to HN. Because the crop is placed larger than in the thesis page, every
+label inside the figure projects at 17 pt or above, so the 14 pt floor holds even inside the image; a
+one-line grey caption names the source. Note 12 was rewritten to describe exactly this figure (70 words).
+
+Slide 13, still judged crowded, was rebuilt from scratch: a grey lead-in "Classical limits of recommender
+systems:" followed by four slim pills (Data sparsity, Cold-start, Popularity bias, No interpretability, the
+last in teal), a second lead-in "Three structural limits this thesis addresses:" followed by three airy
+blue cards (gold oval number, 22 pt title, 20 pt one-line key), and the THESIS GAP bar closing the slide.
+The 191-word note is untouched and carries everything the slide no longer shows. Spoken total 4,618 words
+on slides 1-75 = 35.5 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
