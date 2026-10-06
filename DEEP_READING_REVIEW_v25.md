@@ -232,6 +232,19 @@ blue cards (gold oval number, 22 pt title, 20 pt one-line key), and the THESIS G
 The 191-word note is untouched and carries everything the slide no longer shows. Spoken total 4,618 words
 on slides 1-75 = 35.5 min at 130 wpm.
 
+### v39 addendum: slide 12 figure redrawn, no crop
+
+The cropped thesis figure showed its cut edges, so v39 replaces it with a new figure drawn from scratch in
+the same visual language as thesis Figure 2.4 (fig_slide12.py): two dashed panels on the deck background;
+left, "Graph:" with eight grey nodes n1 to n8 joined by the six pairwise edges and the adjacency matrix W
+below; right, "Hypergraph:" with the same eight nodes, hyperedge e1 drawn as a solid curve through n1, n2,
+n3, n4, e2 dashed through n4, n5, n6, e3 dash-dot through n6, n7, n8, n1, the caption "Hyperedge group 1",
+and the incidence matrix H beside them. Both matrices are generated from the edge and hyperedge lists at
+draw time, so W and H can never disagree with the drawing. Type is DejaVu Sans as in the thesis figure,
+every glyph at 14 pt or above at slide scale, and the picture returns to the full 8.75 x 4.88 in slot at
+1:1 pixels. The caption now reads "Same data as a graph (W) and as a hypergraph (H)." and note 12 (72
+words) describes exactly this figure. Spoken total 4,620 words on slides 1-75 = 35.5 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
