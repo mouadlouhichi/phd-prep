@@ -183,6 +183,20 @@ step t, which is DyHuCoG's dynamic part. The bottom tag keeps the old line in sp
 many nodes. Same palette, Nunito and 300 dpi as the v34 figure, placed at the old geometry (8.75 x 4.88 in,
 1:1 pixels), no label below 14 pt. Note 12 gains the paragraph that walks the jury through it.
 
+### v36 addendum: slides 13 and 14 merged
+
+Slide 13 (four classical limits plus a clustering panel) and slide 14 (three structural limits plus the
+thesis gap) told one story in two passes, repeating the interpretability and scaling arguments. v36 keeps
+slide 13 as the single problem-statement slide, headed "Limitations & Problem Statement", and lays the
+content in three rows: the four classical limits in the original blue cards (04 still teal, the limit the
+thesis targets); the three structural limits in slide 14's gold-oval card style; and the THESIS GAP bar with
+slide 14's gap sentence verbatim, including the claim that Shapley-value attribution can be that framework.
+The clustering panel's distinct point (local or global, not both; consistency across levels) survives inside
+the gap sentence and the merged note. The band is the union of both bands, [21], [23] with its two works and
+[24], still in the v29 full form because it wraps on exactly three lines. Slide 14 is deleted, every later
+page number decrements, the deck is 78 slides (spoken 1-75, backup 76-78), and the two notes merge into one
+103-word note that repeats nothing. Spoken total 4,627 words = 35.6 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
