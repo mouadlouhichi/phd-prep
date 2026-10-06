@@ -197,6 +197,24 @@ the gap sentence and the merged note. The band is the union of both bands, [21],
 page number decrements, the deck is 78 slides (spoken 1-75, backup 76-78), and the two notes merge into one
 103-word note that repeats nothing. Spoken total 4,627 words = 35.6 min at 130 wpm.
 
+### v37 addendum: paper-style slide 12 figure, slimmed slide 13
+
+The slide 12 figure was redrawn the way the recommender-systems literature draws these objects, after
+reviewing paper figures (LightGCN's bipartite propagation figure, hypergraph surveys that pair a
+hypergraph with its incidence matrix): panel (a) shows the pairwise graph G = (U, I, E) with observed
+interactions as thin grey edges, the 2-hop message u2 to i2 to u1 as a bold directed path, and the
+symmetric-normalisation propagation rule of LightGCN / HCCF / HPCF set in serif mathematical type at
+16 pt with true sub and superscripts; panel (b) shows the hypergraph H = (V, E) with hyperedges e1 and e2
+as dashed closed contours with translucent fills, the context node c1 as a diamond, the idle node i1
+outside every hyperedge, and the incidence matrix H (seven nodes by two hyperedges) in bracketed matrix
+style beside them; a two-line caption states the normalisation and that DyHuCoG re-learns hyperedge
+weights w(e, t) at every step. Slide 13, judged too dense, keeps only the card titles and a one-line key
+per card (numbers and titles at 22 and 20 pt, keys at 20 pt, gap bar at 18 pt), while note 13 grows from
+103 to 191 words and now carries the full argument: the four classical limits with their mechanisms, the
+local-versus-global clustering point, the three structural limits with the hundreds of thousands of nested
+records and the accuracy / diversity / context trade-off, then the gap and the claim. Spoken total 4,715
+words on slides 1-75 = 36.3 min at 130 wpm.
+
 **Not done, on purpose**
 
 * No new backup slides. The three candidates I suggested (Proposition 6.1 + proof sketch, Table 7.5
